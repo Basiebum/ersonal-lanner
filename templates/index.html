@@ -254,7 +254,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
     <button class="btn-secondary" onclick="exportData()" title="Export all data as JSON backup">⬇ Export</button>
     <label class="btn-secondary" style="cursor:pointer;margin:0;" title="Import data from JSON backup">⬆ Import<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
-    <button class="btn-secondary" onclick="syncLoad()" title="Load latest plan from server">⤾ Sync</button>
+    <button class="btn-secondary" onclick="syncLoad()" title="Load latest plan from server">⤾ Pull</button>
+    <button class="btn-secondary" onclick="syncSave()" title="Push local plan to server">⤴ Push</button>
   </div>
   <div id="cal-controls" style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
     <div class="view-tabs">
