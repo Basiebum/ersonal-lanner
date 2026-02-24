@@ -21,7 +21,18 @@ else:
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    # Landing page — if authenticated redirect to app, else show landing
+    if session.get('user_id'):
+        return render_template('index.html')
+    return render_template('landing.html')
+
+
+@app.route('/app')
+def app_page():
+    # serve the single-page app; require authentication
+    if not session.get('user_id'):
+        return render_template('landing.html')
+    return render_template('index.html')
 
 
 @app.route("/api/save", methods=["POST"])

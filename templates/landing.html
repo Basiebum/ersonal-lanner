@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>plan. — Sign in</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;background:#0f0f13;color:#f0f0f5;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+    .card{width:380px;background:#16161a;padding:22px;border-radius:12px;border:1px solid #2e2e3d}
+    h1{font-family:Syne,system-ui,Arial;font-weight:800;margin:0 0 12px}
+    label{display:block;margin-top:10px;font-size:.9rem;color:#cfcff5}
+    input{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #2e2e3d;background:#0f0f13;color:#f0f0f5}
+    .row{display:flex;gap:8px;margin-top:14px}
+    button{flex:1;padding:10px;border-radius:8px;border:none;cursor:pointer}
+    .primary{background:#ff6b35;color:#fff}
+    .secondary{background:transparent;border:1px solid #2e2e3d;color:#f0f0f5}
+    .muted{color:#9090b8;font-size:.9rem;margin-top:12px;text-align:center}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>plan.</h1>
+    <div class="muted">Sign in to sync your planner across devices</div>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="username">
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password">
+    <div class="row">
+      <button class="secondary" id="register-btn">Register</button>
+      <button class="primary" id="login-btn">Log in</button>
+    </div>
+    <div class="muted">Or go to the <a href="/app" style="color:#ff6b35">app</a> if already logged in</div>
+  </div>
+
+  <script>
+    async function apiCall(path, body){
+      const res = await fetch(path,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const j = await res.json().catch(()=>({error:'invalid'}));
+      return {ok:res.ok, json:j};
+    }
+    document.getElementById('login-btn').addEventListener('click', async ()=>{
+      const email=document.getElementById('email').value.trim();
+      const password=document.getElementById('password').value;
+      if(!email||!password){alert('Email and password required');return}
+      const {ok,json}=await apiCall('/api/login',{email,password});
+      if(!ok){alert('Login failed: '+(json.error||'unknown'));return}
+      // on success go to app
+      window.location='/app';
+    });
+    document.getElementById('register-btn').addEventListener('click', async ()=>{
+      const email=document.getElementById('email').value.trim();
+      const password=document.getElementById('password').value;
+      if(!email||!password){alert('Email and password required');return}
+      const {ok,json}=await apiCall('/api/register',{email,password});
+      if(!ok){alert('Register failed: '+(json.error||'unknown'));return}
+      // registered and logged in — go to app
+      window.location='/app';
+    });
+  </script>
+</body>
+</html>
