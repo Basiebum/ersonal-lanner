@@ -1775,6 +1775,7 @@ if(!_sportSeeded){
 }
 
 let editSportId=null, editGoalId=null, editRaceId=null, editWorkoutId=null;
+let sportsWeekOffset = 0; // 0 = this week, 1 = next week, -1 = prev week
 
 // ══════════════════════════════════════════════════
 // SPORTS PAGE RENDER
@@ -1789,8 +1790,9 @@ function renderSports(){
   }
 
   const now = today0();
-  const dow  = now.getDay();
-  const wMon = addDays(now, dow===0?-6:1-dow);
+  const displayRef = addDays(now, sportsWeekOffset * 7);
+  const dow  = displayRef.getDay();
+  const wMon = addDays(displayRef, dow===0?-6:1-dow);
   const wSun = addDays(wMon, 6);
   const weekDays = Array.from({length:7},(_,i)=>addDays(wMon,i));
 
@@ -1831,7 +1833,13 @@ function renderSports(){
   }
 
   // ── WEEKLY CARDS ──
-  html += '<div class="sports-section-title">📅 This week</div>';
+  const weekLabel = sportsWeekOffset===0 ? 'This week' : (sportsWeekOffset>0 ? `Week +${sportsWeekOffset}` : `Week ${sportsWeekOffset}`);
+  html += `<div style="display:flex;align-items:center;justify-content:space-between;"><div class="sports-section-title">📅 ${weekLabel}</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="btn-secondary" onclick="changeSportsWeek(-1)">◀ Prev</button>
+      <button class="btn-secondary" onclick="gotoSportsThisWeek()">This week</button>
+      <button class="btn-secondary" onclick="changeSportsWeek(1)">Next ▶</button>
+    </div></div>`;
   html += '<div class="sports-grid">';
 
   sports.forEach(sp=>{
@@ -1950,6 +1958,16 @@ function renderSports(){
   }
 
   cont.innerHTML=html;
+}
+
+function changeSportsWeek(delta){
+  sportsWeekOffset += delta;
+  renderSports();
+}
+
+function gotoSportsThisWeek(){
+  sportsWeekOffset = 0;
+  renderSports();
 }
 
 // ── SPORT MODAL ──
