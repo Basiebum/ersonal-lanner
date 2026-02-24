@@ -255,7 +255,12 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <button class="btn-secondary" onclick="exportData()" title="Export all data as JSON backup">⬇ Export</button>
     <label class="btn-secondary" style="cursor:pointer;margin:0;" title="Import data from JSON backup">⬆ Import<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
     <button class="btn-secondary" onclick="syncLoad()" title="Load latest plan from server">⤾ Pull</button>
-    <button class="btn-secondary" onclick="syncSave()" title="Push local plan to server">⤴ Push</button>
+      <button class="btn-secondary" onclick="syncSave()" title="Push local plan to server">⤴ Push</button>
+      <div id="auth-controls" style="display:flex;align-items:center;gap:8px;margin-left:10px;">
+        <div id="user-email" style="color:var(--muted);font-size:.86rem;display:none;"></div>
+        <button class="btn-secondary" id="login-btn" onclick="openModal('auth-modal')">Log in</button>
+        <button class="btn-secondary" id="logout-btn" onclick="logout()" style="display:none;">Log out</button>
+      </div>
   </div>
   <div id="cal-controls" style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
     <div class="view-tabs">
@@ -617,6 +622,20 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   </div>
 </div>
 
+  <!-- ── AUTH MODAL ── -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal">
+      <h2>Account</h2>
+      <div class="form-group"><label>Email</label><input type="email" id="auth-email" placeholder="you@domain.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="auth-password" placeholder="choose a password"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal('auth-modal')">Cancel</button>
+        <button class="btn-secondary" onclick="register()">Register</button>
+        <button class="btn-primary" onclick="login()">Log in</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 // ══════════════════════════════════════════════════
 // CONSTANTS & UTILS
@@ -654,6 +673,65 @@ function fmtD(d){
 function toMin(t){if(!t)return 0;const[h,m]=t.split(':').map(Number);return h*60+m;}
 function minToTime(m){return`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;}
 function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x;}
+
+// ── AUTH HELPERS
+async function fetchCurrentUser(){
+  try{
+    const res = await fetch('/api/me',{credentials:'same-origin'});
+    if(!res.ok) return null;
+    const j=await res.json();
+    return j.data||null;
+  }catch(e){console.error('fetchCurrentUser',e);return null;}
+}
+
+function updateAuthUI(user){
+  const emailEl=document.getElementById('user-email');
+  const loginBtn=document.getElementById('login-btn');
+  const logoutBtn=document.getElementById('logout-btn');
+  if(user && user.email){
+    emailEl.textContent = user.email; emailEl.style.display='block';
+    loginBtn.style.display='none'; logoutBtn.style.display='inline-flex';
+  }else{
+    emailEl.textContent=''; emailEl.style.display='none';
+    loginBtn.style.display='inline-flex'; logoutBtn.style.display='none';
+  }
+}
+
+async function register(){
+  const email=document.getElementById('auth-email').value.trim();
+  const password=document.getElementById('auth-password').value;
+  if(!email||!password){alert('Email and password required');return}
+  try{
+    const res=await fetch('/api/register',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const j=await res.json();
+    if(!res.ok)throw new Error(j.error||'register failed');
+    closeModal('auth-modal');
+    const user=await fetchCurrentUser(); updateAuthUI(user);
+    alert('Registered and logged in.');
+  }catch(err){console.error(err);alert('Register failed: '+err.message);}  
+}
+
+async function login(){
+  const email=document.getElementById('auth-email').value.trim();
+  const password=document.getElementById('auth-password').value;
+  if(!email||!password){alert('Email and password required');return}
+  try{
+    const res=await fetch('/api/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const j=await res.json();
+    if(!res.ok)throw new Error(j.error||'login failed');
+    closeModal('auth-modal');
+    const user=await fetchCurrentUser(); updateAuthUI(user);
+    alert('Logged in.');
+  }catch(err){console.error(err);alert('Login failed: '+err.message);}  
+}
+
+async function logout(){
+  try{await fetch('/api/logout',{method:'POST',credentials:'same-origin'});}catch(e){}
+  updateAuthUI(null);
+}
+
+// initialize auth UI on load
+fetchCurrentUser().then(u=>updateAuthUI(u));
 
 // ══════════════════════════════════════════════════
 // DATA
@@ -2091,7 +2169,7 @@ async function syncSave(silent=false){
       pl3_events:events,pl3_phases:phases,pl3_tasks:tasks,pl3_sessions:sessions,pl3_subtasks:subtasks,
       pl3_sports:sports,pl3_goals:goals,pl3_workouts:workouts,pl3_races:races,exportedAt:new Date().toISOString()
     };
-    const res=await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'plan-backup',data})});
+    const res=await fetch('/api/save',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'plan-backup',data})});
     const j=await res.json();
     if(!res.ok)throw new Error(j.error||'save failed');
     if(!silent) alert('Synced to server successfully.');
@@ -2105,7 +2183,7 @@ async function syncSave(silent=false){
 
 async function syncLoad(){
   try{
-    const res = await fetch('/api/plans');
+    const res = await fetch('/api/plans',{credentials:'same-origin'});
     const ctype = res.headers.get('content-type') || '';
     let j;
     if (ctype.includes('application/json')) {
@@ -2122,6 +2200,19 @@ async function syncLoad(){
     if(!latest.data){alert('Latest plan has no data.');return;}
     if(!confirm('This will overwrite local data with the latest server plan. Continue?'))return;
     const d=latest.data;
+    // apply server plan
+    if(d.pl3_events)  {events=d.pl3_events;   persist('pl3_events',events);}    
+    if(d.pl3_phases)  {phases=d.pl3_phases;   persist('pl3_phases',phases);}    
+    if(d.pl3_tasks)   {tasks=d.pl3_tasks;     persist('pl3_tasks',tasks);}    
+    if(d.pl3_sessions){sessions=d.pl3_sessions;persist('pl3_sessions',sessions);}    
+    if(d.pl3_subtasks){subtasks=d.pl3_subtasks;persist('pl3_subtasks',subtasks);}    
+    if(d.pl3_sports)  {sports=d.pl3_sports;   persist('pl3_sports',sports);}    
+    if(d.pl3_goals)   {goals=d.pl3_goals;     persist('pl3_goals',goals);}    
+    if(d.pl3_workouts){workouts=d.pl3_workouts;persist('pl3_workouts',workouts);}    
+    if(d.pl3_races)   {races=d.pl3_races;     persist('pl3_races',races);}    
+    render();
+    if(currentPage==='project')renderGantt();
+    if(currentPage==='sports')renderSports();
     if(d.pl3_events)  {events=d.pl3_events;   persist('pl3_events',events);} else events=[];
     if(d.pl3_phases)  {phases=d.pl3_phases;   persist('pl3_phases',phases);} else phases=[];
     if(d.pl3_tasks)   {tasks=d.pl3_tasks;     persist('pl3_tasks',tasks);} else tasks=[];
