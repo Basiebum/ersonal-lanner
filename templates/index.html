@@ -625,7 +625,17 @@ const DS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function load(k,d){try{return JSON.parse(localStorage.getItem(k)||'null')||d;}catch{return d;}}
-function persist(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function persist(k,v){localStorage.setItem(k,JSON.stringify(v));
+  // schedule auto-push for planner data keys
+  if(k && k.startsWith && k.startsWith('pl3_')) scheduleAutoSync();
+}
+// Auto-sync: debounce push to server when local data changes
+let __autoSyncTimer = null;
+function scheduleAutoSync(){
+  // cancel previous
+  if(__autoSyncTimer) clearTimeout(__autoSyncTimer);
+  __autoSyncTimer = setTimeout(()=>{ __autoSyncTimer = null; try{ syncSave(); }catch(e){console.error('auto sync failed',e);} }, 1500);
+}
 function uid(){return Math.random().toString(36).slice(2,9);}
 function today0(){const d=new Date();d.setHours(0,0,0,0);return d;}
 function parseD(s){
