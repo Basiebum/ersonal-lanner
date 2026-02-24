@@ -240,6 +240,41 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text);}
 .stat-lbl{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
 .no-sports-empty{color:var(--muted);text-align:center;padding:60px 20px;font-size:.9rem;}
+
+/* ── WEEKLY REVIEW ── */
+.review-layout{display:grid;grid-template-columns:260px 1fr;gap:18px;height:100%;}
+@media(max-width:760px){.review-layout{grid-template-columns:1fr;}}
+.review-sidebar{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px;}
+.review-entry{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:border-color .15s;}
+.review-entry:hover{border-color:var(--muted);}
+.review-entry.rv-active{border-color:var(--accent);background:var(--surface2);}
+.rv-entry-top{display:flex;align-items:center;gap:8px;}
+.rv-entry-mood{font-size:1.3rem;line-height:1;flex-shrink:0;}
+.rv-entry-week{font-family:'Syne',sans-serif;font-weight:800;font-size:.78rem;}
+.rv-entry-preview{font-size:.7rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rv-entry-chips{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap;}
+.rv-chip{font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:5px;letter-spacing:.2px;}
+.review-main{overflow-y:auto;display:flex;flex-direction:column;gap:0;}
+.rv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;}
+.rv-card-title{font-family:'Syne',sans-serif;font-weight:800;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;}
+.rv-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;}
+.rv-stat{background:var(--surface2);border-radius:9px;padding:11px 12px;text-align:center;}
+.rv-stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;line-height:1.1;}
+.rv-stat-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-top:2px;}
+.rv-sport-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.rv-bar-wrap{flex:1;height:7px;background:var(--surface3);border-radius:10px;overflow:hidden;}
+.rv-bar{height:100%;border-radius:10px;transition:width .5s;}
+.rv-task-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:.82rem;}
+.rv-task-row:last-child{border-bottom:none;}
+.rv-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.rv-notes-block{background:var(--surface2);border-radius:9px;padding:12px 14px;font-size:.83rem;line-height:1.75;white-space:pre-wrap;color:var(--text);}
+.rv-write-cta{background:var(--surface2);border:1px dashed var(--border);border-radius:10px;padding:22px;text-align:center;color:var(--muted);font-size:.84rem;}
+.rv-week-heading{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;}
+.rv-mood-big{font-size:1.8rem;margin-bottom:14px;}
+.mood-row{display:flex;gap:7px;margin-top:5px;}
+.mood-opt{font-size:1.3rem;background:var(--surface2);border:2px solid transparent;border-radius:8px;padding:5px 8px;cursor:pointer;transition:all .15s;line-height:1;}
+.mood-opt:hover,.mood-opt.rv-sel{border-color:var(--accent);background:rgba(255,107,53,.12);}
+.rv-highlight-pill{display:inline-block;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2);color:var(--accent);font-size:.8rem;font-weight:600;padding:4px 12px;border-radius:20px;}
 </style>
 </head>
 <body>
@@ -250,6 +285,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <button class="page-tab active" onclick="showPage('calendar')">📅 Calendar</button>
     <button class="page-tab" onclick="showPage('project')">📊 Project</button>
     <button class="page-tab" onclick="showPage('sports')">🏃 Sports</button>
+    <button class="page-tab" onclick="showPage('review')">📝 Review</button>
   </div>
   <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
     <button class="btn-secondary" onclick="exportData()" title="Export all data as JSON backup">⬇ Export</button>
@@ -279,6 +315,12 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <button class="btn-primary" onclick="openTaskModal()">+ Add Task</button>
     <button class="btn-secondary" onclick="openPhaseModal()">+ Add Phase</button>
   </div>
+  <div id="review-controls" style="display:none;align-items:center;gap:9px;">
+    <button class="nav-arrow" onclick="reviewNav(-1)">←</button>
+    <div id="review-week-label" style="font-family:'Syne',sans-serif;font-weight:700;font-size:.86rem;min-width:180px;text-align:center;color:var(--text);"></div>
+    <button class="nav-arrow" onclick="reviewNav(1)">→</button>
+    <button class="btn-primary" onclick="openReviewModal()">✎ Write Review</button>
+  </div>
   <div id="sports-controls" style="display:none;align-items:center;gap:9px;">
     <button class="btn-primary" onclick="openSportModal()">+ Add Sport</button>
     <button class="btn-secondary" onclick="openRaceModal()">+ Add Race</button>
@@ -305,6 +347,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   <!-- SPORTS PAGE -->
   <div id="sports-page" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
     <div style="flex:1;overflow-y:auto;padding:20px 24px;" id="sports-content"></div>
+  </div>
+
+  <!-- REVIEW PAGE -->
+  <div id="review-page" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+    <div style="flex:1;overflow-y:auto;padding:20px 24px;" id="review-content"></div>
   </div>
 </div>
 
@@ -636,6 +683,62 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     </div>
   </div>
 
+<!-- ── WEEKLY REVIEW MODAL ── -->
+<div class="modal-overlay" id="review-modal">
+  <div class="modal wide">
+    <h2 id="review-modal-title">Weekly Review</h2>
+    <div id="review-modal-wklabel" style="font-size:.78rem;color:var(--muted);margin:-8px 0 16px;"></div>
+
+    <div class="form-group">
+      <label>How was your week overall?</label>
+      <div class="mood-row">
+        <button class="mood-opt" data-mood="😫" onclick="rvSelectMood(this)" title="Rough">😫</button>
+        <button class="mood-opt" data-mood="😕" onclick="rvSelectMood(this)" title="Below average">😕</button>
+        <button class="mood-opt" data-mood="😐" onclick="rvSelectMood(this)" title="Okay">😐</button>
+        <button class="mood-opt" data-mood="🙂" onclick="rvSelectMood(this)" title="Good">🙂</button>
+        <button class="mood-opt" data-mood="🔥" onclick="rvSelectMood(this)" title="Fired up">🔥</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Energy level this week</label>
+      <input type="range" id="rv-energy" min="1" max="10" value="7"
+        oninput="document.getElementById('rv-energy-lbl').textContent=this.value"
+        style="width:100%;accent-color:var(--accent);">
+      <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-top:2px;">
+        <span>Drained</span><span id="rv-energy-lbl" style="font-weight:700;color:var(--text);">7</span><span>Peak</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Highlight of the week</label>
+      <input type="text" id="rv-highlight" placeholder="Best thing that happened…">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>What went well?</label>
+        <textarea id="rv-went-well" rows="3" placeholder="Wins, progress, good moments…"></textarea>
+      </div>
+      <div class="form-group">
+        <label>What to improve next week?</label>
+        <textarea id="rv-improve" rows="3" placeholder="What slipped? What can be better?"></textarea>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Free notes</label>
+      <textarea id="rv-notes" rows="3" placeholder="Anything else on your mind…"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-delete" id="rv-del-btn" style="display:none" onclick="deleteReview()">Delete</button>
+      <button class="btn-cancel" onclick="closeModal('review-modal')">Cancel</button>
+      <button class="btn-save" onclick="saveReview()">Save Review</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════════
 // CONSTANTS & UTILS
@@ -918,13 +1021,17 @@ function showPage(p){
   document.getElementById('project-page').style.flexDirection='column';
   document.getElementById('sports-page').style.display=p==='sports'?'flex':'none';
   document.getElementById('sports-page').style.flexDirection='column';
+  document.getElementById('review-page').style.display=p==='review'?'flex':'none';
+  document.getElementById('review-page').style.flexDirection='column';
   document.getElementById('cal-controls').style.display=p==='calendar'?'flex':'none';
   document.getElementById('proj-controls').style.display=p==='project'?'flex':'none';
   document.getElementById('sports-controls').style.display=p==='sports'?'flex':'none';
+  document.getElementById('review-controls').style.display=p==='review'?'flex':'none';
   document.getElementById('legend-bar').style.display=p==='calendar'?'flex':'none';
-  document.querySelectorAll('.page-tab').forEach((t,i)=>t.classList.toggle('active',['calendar','project','sports'][i]===p));
+  document.querySelectorAll('.page-tab').forEach((t,i)=>t.classList.toggle('active',['calendar','project','sports','review'][i]===p));
   if(p==='project')renderGantt();
   else if(p==='sports')renderSports();
+  else if(p==='review')renderReview();
   else render();
 }
 
@@ -1742,12 +1849,12 @@ function deletePhase(){
 }
 
 // ── CLOSE HANDLERS ──
-['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal'].forEach(id=>{
+['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','review-modal'].forEach(id=>{
   document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape')
-    ['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal'].forEach(id=>closeModal(id));
+    ['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','review-modal'].forEach(id=>closeModal(id));
 });
 
 
@@ -2239,6 +2346,7 @@ function exportData(){
     pl3_goals:goals,
     pl3_workouts:workouts,
     pl3_races:races,
+    pl3_reviews:weeklyReviews,
     pl3_seeded:true,
     pl3_sport_seeded:true,
     exportedAt:new Date().toISOString()
@@ -2265,6 +2373,7 @@ function importData(e){
       if(data.pl3_goals)   {goals=data.pl3_goals;     persist('pl3_goals',goals);}
       if(data.pl3_workouts){workouts=data.pl3_workouts;persist('pl3_workouts',workouts);}
       if(data.pl3_races)   {races=data.pl3_races;     persist('pl3_races',races);}
+      if(data.pl3_reviews) {weeklyReviews=data.pl3_reviews; persist('pl3_reviews',weeklyReviews);}
       persist('pl3_seeded',true);
       persist('pl3_sport_seeded',true);
       render();
@@ -2284,7 +2393,7 @@ async function syncSave(silent=false){
   try{
     const data={
       pl3_events:events,pl3_phases:phases,pl3_tasks:tasks,pl3_sessions:sessions,pl3_subtasks:subtasks,
-      pl3_sports:sports,pl3_goals:goals,pl3_workouts:workouts,pl3_races:races,exportedAt:new Date().toISOString()
+      pl3_sports:sports,pl3_goals:goals,pl3_workouts:workouts,pl3_races:races,pl3_reviews:weeklyReviews,exportedAt:new Date().toISOString()
     };
     const res=await fetch('/api/save',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'plan-backup',data})});
     const j=await res.json();
@@ -2339,9 +2448,326 @@ async function syncLoad(){
     if(d.pl3_goals)   {goals=d.pl3_goals;     persist('pl3_goals',goals);} else goals=[];
     if(d.pl3_workouts){workouts=d.pl3_workouts;persist('pl3_workouts',workouts);} else workouts=[];
     if(d.pl3_races)   {races=d.pl3_races;     persist('pl3_races',races);} else races=[];
-    render();if(currentPage==='project')renderGantt();if(currentPage==='sports')renderSports();
+    if(d.pl3_reviews) {weeklyReviews=d.pl3_reviews; persist('pl3_reviews',weeklyReviews);} else weeklyReviews=[];
+    render();if(currentPage==='project')renderGantt();if(currentPage==='sports')renderSports();if(currentPage==='review')renderReview();
     alert('Local data replaced with server plan.');
   }catch(err){console.error(err);alert('Sync load failed: '+err.message);}  
+}
+
+// ══════════════════════════════════════════════════
+// WEEKLY REVIEW
+//   weeklyReviews = [{id, weekKey, mood, energy,
+//                     highlight, wentWell, improve,
+//                     notes, createdAt}]
+//   weekKey = "YYYY-Www"  e.g. "2026-W08"
+// ══════════════════════════════════════════════════
+let weeklyReviews = load('pl3_reviews',[]);
+let rvWeekOffset  = 0;   // 0 = this week
+let rvEditId      = null;
+let rvMood        = '';
+
+// ── week key helpers ──
+function rvWeekKey(d){
+  // ISO week key: YYYY-Www
+  const dt=new Date(d); dt.setHours(0,0,0,0);
+  dt.setDate(dt.getDate()+4-(dt.getDay()||7));
+  const y=dt.getFullYear();
+  const jan4=new Date(y,0,4);
+  const wk=Math.ceil(((dt-jan4)/86400000+1)/7);
+  return `${y}-W${String(wk).padStart(2,'0')}`;
+}
+function rvMonday(wkKey){
+  // Monday Date from "YYYY-Www"
+  const [yr,w]=wkKey.split('-W').map(Number);
+  const jan4=new Date(yr,0,4);
+  const dow=jan4.getDay()||7;
+  const mon=new Date(jan4);
+  mon.setDate(jan4.getDate()-dow+1+(w-1)*7);
+  mon.setHours(0,0,0,0);
+  return mon;
+}
+function rvLabel(wkKey){
+  const mon=rvMonday(wkKey);
+  const sun=addDays(mon,6);
+  const sameYear=mon.getFullYear()===sun.getFullYear();
+  return `${mon.getDate()} ${MN[mon.getMonth()].slice(0,3)}${sameYear?'':' '+mon.getFullYear()} – ${sun.getDate()} ${MN[sun.getMonth()].slice(0,3)} ${sun.getFullYear()}`;
+}
+function rvCurrentKey(){
+  const ref=addDays(today0(),rvWeekOffset*7);
+  const dow=ref.getDay(); 
+  const mon=addDays(ref,dow===0?-6:1-dow);
+  return rvWeekKey(mon);
+}
+function rvOffsetOf(wkKey){
+  const thisMon=rvMonday(rvWeekKey(today0()));
+  const thatMon=rvMonday(wkKey);
+  return Math.round((thatMon-thisMon)/(7*86400000));
+}
+function reviewNav(dir){ rvWeekOffset+=dir; renderReview(); }
+
+// ── compute stats for any week ──
+function rvStats(wkKey){
+  const mon=rvMonday(wkKey);
+  const sun=addDays(mon,6);
+  const inWk=d=>{const dt=parseD(d);return dt&&dt>=mon&&dt<=sun;};
+
+  // Work hours from calendar work events
+  const workHrs=events.filter(e=>e.cat==='work'&&inWk(e.date)).reduce((a,e)=>{
+    const m=(toMin(e.end||'17:00')-toMin(e.start||'09:00'));
+    return a+(m>0?m/60:0);
+  },0);
+
+  // Task session hours
+  const wkSess=sessions.filter(s=>inWk(s.date));
+  const sessHrs=wkSess.reduce((a,s)=>{
+    const m=toMin(s.endTime||'11:00')-toMin(s.startTime||'09:00');
+    return a+(m>0?m/60:0);
+  },0);
+
+  // Tasks active/completed this week
+  const activeTasks=tasks.filter(t=>{
+    const s=parseD(t.startDate),e=parseD(t.deadline);
+    return s&&e&&!(e<mon||s>sun);
+  });
+  const doneCount=activeTasks.filter(t=>t.status==='done').length;
+
+  // Events by category
+  const socialEvs=events.filter(e=>e.cat==='social'&&inWk(e.date)).length;
+  const personalEvs=events.filter(e=>e.cat==='personal'&&inWk(e.date)).length;
+
+  // Sports per sport
+  const calIds=new Set(workouts.map(w=>w.calEventId).filter(Boolean));
+  const sportRows=sports.map(sp=>{
+    const goal=goals.find(g=>g.sportId===sp.id);
+    const wks=workouts.filter(w=>w.sportId===sp.id&&inWk(w.date));
+    const calWks=events.filter(e=>e.cat==='sports'&&inWk(e.date)&&!calIds.has(e.id)&&
+      (e.sportId===sp.id||e.title.toLowerCase().includes(sp.name.toLowerCase())));
+    const done=wks.length+calWks.length;
+    const target=goal?goal.sessions:0;
+    const km=wks.reduce((a,w)=>a+(+w.distance||0),0);
+    const min=wks.reduce((a,w)=>a+(+w.duration||0),0);
+    return {sp,done,target,km,min};
+  }).filter(r=>r.done>0||r.target>0);
+
+  return {workHrs,sessHrs,activeTasks,doneCount,socialEvs,personalEvs,sportRows};
+}
+
+// ══════════════════════════════════════════════════
+// RENDER REVIEW PAGE
+// ══════════════════════════════════════════════════
+function renderReview(){
+  const cont=document.getElementById('review-content');
+  if(!cont) return;
+
+  const curKey=rvCurrentKey();
+
+  // Update header week label
+  const lbl=document.getElementById('review-week-label');
+  if(lbl) lbl.textContent=rvWeekOffset===0?`This week — ${rvLabel(curKey)}`:rvLabel(curKey);
+
+  const curReview=weeklyReviews.find(r=>r.weekKey===curKey);
+  const stats=rvStats(curKey);
+  const sorted=[...weeklyReviews].sort((a,b)=>b.weekKey.localeCompare(a.weekKey));
+
+  let html=`<div class="review-layout">`;
+
+  // ─── SIDEBAR ───
+  html+=`<div class="review-sidebar">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;">Past reviews</div>`;
+
+  if(!sorted.length){
+    html+=`<div style="color:var(--muted);font-size:.8rem;padding:10px 0;">No reviews yet. Write your first one!</div>`;
+  } else {
+    sorted.forEach(r=>{
+      const isActive=r.weekKey===curKey;
+      const off=rvOffsetOf(r.weekKey);
+      const rStats=rvStats(r.weekKey);
+      html+=`<div class="review-entry${isActive?' rv-active':''}" onclick="rvJump(${off})">
+        <div class="rv-entry-top">
+          <div class="rv-entry-mood">${r.mood||'📝'}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="rv-entry-week">${rvLabel(r.weekKey)}</div>
+            ${r.highlight?`<div class="rv-entry-preview">"${r.highlight}"</div>`:''}
+          </div>
+        </div>
+        <div class="rv-entry-chips">
+          ${r.energy?`<span class="rv-chip" style="background:rgba(245,158,11,.15);color:var(--warn);">⚡${r.energy}/10</span>`:''}
+          ${rStats.sportRows.map(s=>`<span class="rv-chip" style="background:rgba(62,207,142,.12);color:var(--ok);">${s.sp.icon}${s.done}${s.target?'/'+s.target:''}</span>`).join('')}
+          ${r.wentWell?`<span class="rv-chip" style="background:rgba(78,154,241,.12);color:var(--work);">✓ notes</span>`:''}
+        </div>
+      </div>`;
+    });
+  }
+  html+=`</div>`; // end sidebar
+
+  // ─── MAIN PANEL ───
+  html+=`<div class="review-main">`;
+
+  // Week title + edit btn
+  html+=`<div class="rv-card">
+    <div class="rv-week-heading">
+      <span>${rvLabel(curKey)}${curReview&&curReview.mood?' '+curReview.mood:''}</span>
+      <button class="${curReview?'btn-secondary':'btn-primary'}" style="font-size:.73rem;padding:5px 12px;" onclick="openReviewModal()">
+        ${curReview?'✎ Edit':'✎ Write review'}
+      </button>
+    </div>`;
+
+  if(curReview&&curReview.energy){
+    html+=`<div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Energy: <strong style="color:var(--text)">${curReview.energy}/10</strong></div>`;
+  }
+
+  // Auto stats
+  html+=`<div class="rv-stats" style="margin-top:14px;">
+    <div class="rv-stat">
+      <div class="rv-stat-num" style="color:var(--work)">${stats.workHrs.toFixed(1)}</div>
+      <div class="rv-stat-lbl">work hrs</div>
+    </div>
+    <div class="rv-stat">
+      <div class="rv-stat-num" style="color:var(--accent)">${stats.sessHrs.toFixed(1)}</div>
+      <div class="rv-stat-lbl">task hrs</div>
+    </div>
+    <div class="rv-stat">
+      <div class="rv-stat-num" style="color:var(--ok)">${stats.doneCount}<span style="font-size:.85rem;color:var(--muted)">/${stats.activeTasks.length}</span></div>
+      <div class="rv-stat-lbl">tasks done</div>
+    </div>
+    <div class="rv-stat">
+      <div class="rv-stat-num" style="color:var(--social)">${stats.socialEvs}</div>
+      <div class="rv-stat-lbl">social</div>
+    </div>
+  </div>
+  </div>`; // end top card
+
+  // Sports card
+  if(stats.sportRows.length){
+    html+=`<div class="rv-card">
+      <div class="rv-card-title">🏃 Training</div>`;
+    stats.sportRows.forEach(({sp,done,target,km,min})=>{
+      const pct=target?Math.min(100,Math.round(done/target*100)):100;
+      const over=target&&done>target;
+      html+=`<div class="rv-sport-row">
+        <div style="font-size:1rem;width:22px;text-align:center">${sp.icon}</div>
+        <div style="width:80px;font-size:.78rem;font-weight:600;color:${sp.color}">${sp.name}</div>
+        <div class="rv-bar-wrap"><div class="rv-bar" style="width:${pct}%;background:${sp.color}${over?';box-shadow:0 0 0 2px '+sp.color:''};"></div></div>
+        <div style="font-size:.72rem;color:var(--muted);margin-left:8px;min-width:90px;">
+          <strong style="color:${done>=target&&target?'var(--ok)':'var(--text)'}">${done}</strong>${target?`/${target}`:''} sessions
+          ${km?`· ${km.toFixed(1)} km`:''}${min?`· ${min} min`:''}
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  // Tasks card
+  if(stats.activeTasks.length){
+    html+=`<div class="rv-card">
+      <div class="rv-card-title">📋 Tasks this week</div>`;
+    stats.activeTasks.forEach(t=>{
+      const col=t.status==='done'?'var(--ok)':t.status==='in-progress'?'var(--warn)':'var(--border)';
+      const ph=phases.find(p=>p.id===t.phaseId);
+      html+=`<div class="rv-task-row">
+        <div class="rv-dot" style="background:${col}"></div>
+        <div style="flex:1;${t.status==='done'?'text-decoration:line-through;color:var(--muted)':''}">${t.name}</div>
+        ${ph?`<div style="font-size:.65rem;color:${ph.color};font-weight:600;">${ph.name}</div>`:''}
+        <div style="font-size:.65rem;color:var(--muted);margin-left:6px;">${t.status.replace('-',' ')}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  // Written notes card (only if review exists)
+  if(curReview){
+    html+=`<div class="rv-card">
+      <div class="rv-card-title">✍️ Your review</div>`;
+    if(curReview.highlight){
+      html+=`<div style="margin-bottom:12px;"><span class="rv-highlight-pill">✨ ${curReview.highlight}</span></div>`;
+    }
+    if(curReview.wentWell){
+      html+=`<div style="font-size:.72rem;font-weight:700;color:var(--ok);margin-bottom:4px;">✅ WHAT WENT WELL</div>
+        <div class="rv-notes-block" style="margin-bottom:12px;">${curReview.wentWell}</div>`;
+    }
+    if(curReview.improve){
+      html+=`<div style="font-size:.72rem;font-weight:700;color:var(--warn);margin-bottom:4px;">🎯 TO IMPROVE</div>
+        <div class="rv-notes-block" style="margin-bottom:12px;">${curReview.improve}</div>`;
+    }
+    if(curReview.notes){
+      html+=`<div style="font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:4px;">📓 NOTES</div>
+        <div class="rv-notes-block">${curReview.notes}</div>`;
+    }
+    html+=`</div>`;
+  } else {
+    html+=`<div class="rv-write-cta">
+      No written review for this week yet.<br>
+      <button class="btn-primary" style="margin-top:10px;" onclick="openReviewModal()">✎ Write this week's review</button>
+    </div>`;
+  }
+
+  html+=`</div>`; // end review-main
+  html+=`</div>`; // end review-layout
+  cont.innerHTML=html;
+}
+
+function rvJump(offset){ rvWeekOffset=offset; renderReview(); }
+
+// ══════════════════════════════════════════════════
+// REVIEW MODAL
+// ══════════════════════════════════════════════════
+function rvSelectMood(btn){
+  document.querySelectorAll('.mood-opt').forEach(b=>b.classList.remove('rv-sel'));
+  btn.classList.add('rv-sel');
+  rvMood=btn.dataset.mood;
+}
+
+function openReviewModal(){
+  const wkKey=rvCurrentKey();
+  const existing=weeklyReviews.find(r=>r.weekKey===wkKey);
+  rvEditId=existing?existing.id:null;
+  rvMood=existing?.mood||'';
+
+  document.getElementById('review-modal-title').textContent=existing?'Edit Weekly Review':'Write Weekly Review';
+  document.getElementById('review-modal-wklabel').textContent=rvLabel(wkKey);
+  document.getElementById('rv-highlight').value=existing?.highlight||'';
+  document.getElementById('rv-went-well').value=existing?.wentWell||'';
+  document.getElementById('rv-improve').value=existing?.improve||'';
+  document.getElementById('rv-notes').value=existing?.notes||'';
+  const energy=existing?.energy??7;
+  document.getElementById('rv-energy').value=energy;
+  document.getElementById('rv-energy-lbl').textContent=energy;
+  document.getElementById('rv-del-btn').style.display=existing?'block':'none';
+
+  document.querySelectorAll('.mood-opt').forEach(b=>b.classList.toggle('rv-sel',b.dataset.mood===rvMood));
+  openModal('review-modal');
+}
+
+function saveReview(){
+  const wkKey=rvCurrentKey();
+  const rev={
+    id:rvEditId||uid(),
+    weekKey:wkKey,
+    mood:rvMood,
+    energy:parseInt(document.getElementById('rv-energy').value),
+    highlight:document.getElementById('rv-highlight').value.trim(),
+    wentWell:document.getElementById('rv-went-well').value.trim(),
+    improve:document.getElementById('rv-improve').value.trim(),
+    notes:document.getElementById('rv-notes').value.trim(),
+    createdAt:new Date().toISOString()
+  };
+  if(rvEditId){
+    const i=weeklyReviews.findIndex(r=>r.id===rvEditId);
+    if(i!==-1) weeklyReviews[i]=rev; else weeklyReviews.push(rev);
+  } else {
+    weeklyReviews.push(rev);
+  }
+  persist('pl3_reviews',weeklyReviews);
+  closeModal('review-modal');
+  renderReview();
+}
+
+function deleteReview(){
+  if(!rvEditId||!confirm('Delete this review?'))return;
+  weeklyReviews=weeklyReviews.filter(r=>r.id!==rvEditId);
+  persist('pl3_reviews',weeklyReviews);
+  closeModal('review-modal');
+  renderReview();
 }
 
 // INIT
