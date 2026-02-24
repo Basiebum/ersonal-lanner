@@ -2090,9 +2090,16 @@ async function syncSave(){
 
 async function syncLoad(){
   try{
-    const res=await fetch('/api/plans');
-    const j=await res.json();
-    if(!res.ok)throw new Error(j.error||'load failed');
+    const res = await fetch('/api/plans');
+    const ctype = res.headers.get('content-type') || '';
+    let j;
+    if (ctype.includes('application/json')) {
+      j = await res.json();
+    } else {
+      const txt = await res.text();
+      throw new Error('Server returned non-JSON response: ' + txt.slice(0,200));
+    }
+    if (!res.ok) throw new Error(j.error||'load failed');
     const rows=j.data||[];
     if(!rows.length){alert('No plans found on server.');return;}
     // pick the latest row
