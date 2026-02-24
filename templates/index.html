@@ -275,6 +275,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .mood-opt{font-size:1.3rem;background:var(--surface2);border:2px solid transparent;border-radius:8px;padding:5px 8px;cursor:pointer;transition:all .15s;line-height:1;}
 .mood-opt:hover,.mood-opt.rv-sel{border-color:var(--accent);background:rgba(255,107,53,.12);}
 .rv-highlight-pill{display:inline-block;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2);color:var(--accent);font-size:.8rem;font-weight:600;padding:4px 12px;border-radius:20px;}
+
+/* ── DATA MENU DROPDOWN ── */
+#data-menu button, #data-menu label{
+  background:none;border:none;color:var(--text);padding:7px 10px;border-radius:7px;
+  font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;transition:background .15s;
+  text-align:left;width:100%;box-sizing:border-box;margin-bottom:2px;
+}
+#data-menu button:hover, #data-menu label:hover{background:var(--surface2);}
 </style>
 </head>
 <body>
@@ -285,18 +293,25 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <button class="page-tab active" onclick="showPage('calendar')">📅 Calendar</button>
     <button class="page-tab" onclick="showPage('project')">📊 Project</button>
     <button class="page-tab" onclick="showPage('sports')">🏃 Sports</button>
-    <button class="page-tab" onclick="showPage('review')">📝 Review</button>
+    <button class="page-tab" onclick="showPage('review')">📝 Report</button>
   </div>
-  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
-    <button class="btn-secondary" onclick="exportData()" title="Export all data as JSON backup">⬇ Export</button>
-    <label class="btn-secondary" style="cursor:pointer;margin:0;" title="Import data from JSON backup">⬆ Import<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
-    <button class="btn-secondary" onclick="syncLoad()" title="Load latest plan from server">⤾ Pull</button>
-      <button class="btn-secondary" onclick="syncSave()" title="Push local plan to server">⤴ Push</button>
-      <div id="auth-controls" style="display:flex;align-items:center;gap:8px;margin-left:10px;">
-        <div id="user-email" style="color:var(--muted);font-size:.86rem;display:none;"></div>
-        <button class="btn-secondary" id="login-btn" onclick="showAuthModal(false)">Log in</button>
-        <button class="btn-secondary" id="logout-btn" onclick="logout()" style="display:none;">Log out</button>
+  <div style="display:flex;align-items:center;gap:8px;margin-left:auto;position:relative;">
+    <!-- Compact data menu -->
+    <div style="position:relative;">
+      <button class="btn-secondary" onclick="toggleDataMenu()" id="data-menu-btn" title="Data & sync">⚙ Data</button>
+      <div id="data-menu" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:6px;z-index:300;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.4);">
+        <button class="btn-secondary" onclick="syncSave();toggleDataMenu()" style="width:100%;margin-bottom:4px;justify-content:flex-start;display:flex;gap:8px;">⬆ Push to server</button>
+        <button class="btn-secondary" onclick="syncLoad();toggleDataMenu()" style="width:100%;margin-bottom:4px;justify-content:flex-start;display:flex;gap:8px;">⬇ Pull from server</button>
+        <hr style="border:none;border-top:1px solid var(--border);margin:4px 0;">
+        <button class="btn-secondary" onclick="exportData();toggleDataMenu()" style="width:100%;margin-bottom:4px;justify-content:flex-start;display:flex;gap:8px;">💾 Export backup</button>
+        <label class="btn-secondary" style="cursor:pointer;width:100%;display:flex;gap:8px;margin:0;box-sizing:border-box;">📂 Import backup<input type="file" accept=".json" onchange="importData(event);toggleDataMenu()" style="display:none"></label>
       </div>
+    </div>
+    <div id="auth-controls" style="display:flex;align-items:center;gap:8px;">
+      <div id="user-email" style="color:var(--muted);font-size:.82rem;display:none;"></div>
+      <button class="btn-secondary" id="login-btn" onclick="showAuthModal(false)">Log in</button>
+      <button class="btn-secondary" id="logout-btn" onclick="logout()" style="display:none;">Log out</button>
+    </div>
   </div>
   <div id="cal-controls" style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
     <div class="view-tabs">
@@ -316,10 +331,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <button class="btn-secondary" onclick="openPhaseModal()">+ Add Phase</button>
   </div>
   <div id="review-controls" style="display:none;align-items:center;gap:9px;">
-    <button class="nav-arrow" onclick="reviewNav(-1)">←</button>
-    <div id="review-week-label" style="font-family:'Syne',sans-serif;font-weight:700;font-size:.86rem;min-width:180px;text-align:center;color:var(--text);"></div>
-    <button class="nav-arrow" onclick="reviewNav(1)">→</button>
-    <button class="btn-primary" onclick="openReviewModal()">✎ Write Review</button>
+    <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:.86rem;">Weekly Report</span>
   </div>
   <div id="sports-controls" style="display:none;align-items:center;gap:9px;">
     <button class="btn-primary" onclick="openSportModal()">+ Add Sport</button>
@@ -686,7 +698,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <!-- ── WEEKLY REVIEW MODAL ── -->
 <div class="modal-overlay" id="review-modal">
   <div class="modal wide">
-    <h2 id="review-modal-title">Weekly Review</h2>
+    <h2 id="review-modal-title">Weekly Report</h2>
     <div id="review-modal-wklabel" style="font-size:.78rem;color:var(--muted);margin:-8px 0 16px;"></div>
 
     <div class="form-group">
@@ -2468,23 +2480,16 @@ let rvMood        = '';
 
 // ── week key helpers ──
 function rvWeekKey(d){
-  // ISO week key: YYYY-Www
+  // Key = "YYYY-MM-DD" of that week's Monday — simple, no ISO quirks
   const dt=new Date(d); dt.setHours(0,0,0,0);
-  dt.setDate(dt.getDate()+4-(dt.getDay()||7));
-  const y=dt.getFullYear();
-  const jan4=new Date(y,0,4);
-  const wk=Math.ceil(((dt-jan4)/86400000+1)/7);
-  return `${y}-W${String(wk).padStart(2,'0')}`;
+  const dow=dt.getDay();
+  const mon=new Date(dt);
+  mon.setDate(dt.getDate()-(dow===0?6:dow-1));
+  return fmtD(mon);
 }
 function rvMonday(wkKey){
-  // Monday Date from "YYYY-Www"
-  const [yr,w]=wkKey.split('-W').map(Number);
-  const jan4=new Date(yr,0,4);
-  const dow=jan4.getDay()||7;
-  const mon=new Date(jan4);
-  mon.setDate(jan4.getDate()-dow+1+(w-1)*7);
-  mon.setHours(0,0,0,0);
-  return mon;
+  // wkKey is already the Monday date string
+  return parseD(wkKey);
 }
 function rvLabel(wkKey){
   const mon=rvMonday(wkKey);
@@ -2494,9 +2499,7 @@ function rvLabel(wkKey){
 }
 function rvCurrentKey(){
   const ref=addDays(today0(),rvWeekOffset*7);
-  const dow=ref.getDay(); 
-  const mon=addDays(ref,dow===0?-6:1-dow);
-  return rvWeekKey(mon);
+  return rvWeekKey(ref); // rvWeekKey now returns Monday's fmtD
 }
 function rvOffsetOf(wkKey){
   const thisMon=rvMonday(rvWeekKey(today0()));
@@ -2561,10 +2564,6 @@ function renderReview(){
 
   const curKey=rvCurrentKey();
 
-  // Update header week label
-  const lbl=document.getElementById('review-week-label');
-  if(lbl) lbl.textContent=rvWeekOffset===0?`This week — ${rvLabel(curKey)}`:rvLabel(curKey);
-
   const curReview=weeklyReviews.find(r=>r.weekKey===curKey);
   const stats=rvStats(curKey);
   const sorted=[...weeklyReviews].sort((a,b)=>b.weekKey.localeCompare(a.weekKey));
@@ -2603,12 +2602,16 @@ function renderReview(){
   // ─── MAIN PANEL ───
   html+=`<div class="review-main">`;
 
-  // Week title + edit btn
+  // Week title + nav + edit btn (nav lives here, not in header)
   html+=`<div class="rv-card">
     <div class="rv-week-heading">
-      <span>${rvLabel(curKey)}${curReview&&curReview.mood?' '+curReview.mood:''}</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="nav-arrow" onclick="reviewNav(-1)">←</button>
+        <span style="min-width:200px;text-align:center;">${rvLabel(curKey)}${curReview&&curReview.mood?' '+curReview.mood:''}</span>
+        <button class="nav-arrow" onclick="reviewNav(1)">→</button>
+      </div>
       <button class="${curReview?'btn-secondary':'btn-primary'}" style="font-size:.73rem;padding:5px 12px;" onclick="openReviewModal()">
-        ${curReview?'✎ Edit':'✎ Write review'}
+        ${curReview?'✎ Edit':'✎ Write report'}
       </button>
     </div>`;
 
@@ -2696,8 +2699,7 @@ function renderReview(){
     html+=`</div>`;
   } else {
     html+=`<div class="rv-write-cta">
-      No written review for this week yet.<br>
-      <button class="btn-primary" style="margin-top:10px;" onclick="openReviewModal()">✎ Write this week's review</button>
+      No written report for this week yet — click <strong>✎ Write report</strong> above to add one.
     </div>`;
   }
 
@@ -2723,7 +2725,7 @@ function openReviewModal(){
   rvEditId=existing?existing.id:null;
   rvMood=existing?.mood||'';
 
-  document.getElementById('review-modal-title').textContent=existing?'Edit Weekly Review':'Write Weekly Review';
+  document.getElementById('review-modal-title').textContent=existing?'Edit Weekly Report':'Write Weekly Report';
   document.getElementById('review-modal-wklabel').textContent=rvLabel(wkKey);
   document.getElementById('rv-highlight').value=existing?.highlight||'';
   document.getElementById('rv-went-well').value=existing?.wentWell||'';
@@ -2769,6 +2771,19 @@ function deleteReview(){
   closeModal('review-modal');
   renderReview();
 }
+
+function toggleDataMenu(){
+  const m=document.getElementById('data-menu');
+  m.style.display=m.style.display==='none'?'block':'none';
+}
+// Close data menu when clicking outside
+document.addEventListener('click',function(e){
+  const btn=document.getElementById('data-menu-btn');
+  const menu=document.getElementById('data-menu');
+  if(menu&&btn&&!btn.contains(e.target)&&!menu.contains(e.target)){
+    menu.style.display='none';
+  }
+});
 
 // INIT
 render();
