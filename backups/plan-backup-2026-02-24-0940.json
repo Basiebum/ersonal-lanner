@@ -1,0 +1,1171 @@
+{
+  "pl3_events": [
+    {
+      "id": "e1",
+      "title": "Internship",
+      "cat": "work",
+      "date": "2026-02-24",
+      "start": "08:10",
+      "end": "16:30",
+      "notes": ""
+    },
+    {
+      "id": "e4",
+      "title": "Internship",
+      "cat": "work",
+      "date": "2026-02-25",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": ""
+    },
+    {
+      "id": "e5",
+      "title": "Gym",
+      "cat": "sports",
+      "date": "2026-02-25",
+      "start": "07:00",
+      "end": "08:00",
+      "notes": ""
+    },
+    {
+      "id": "e6",
+      "title": "Internship",
+      "cat": "work",
+      "date": "2026-02-26",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": ""
+    },
+    {
+      "id": "e7",
+      "title": "Internship",
+      "cat": "work",
+      "date": "2026-02-27",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": ""
+    },
+    {
+      "id": "e8",
+      "title": "Internship",
+      "cat": "work",
+      "date": "2026-02-28",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": ""
+    },
+    {
+      "id": "kb799lw",
+      "title": "Legday",
+      "cat": "sports",
+      "date": "2026-02-25",
+      "start": "07:00",
+      "end": "08:00",
+      "notes": "",
+      "sportId": "sp2"
+    },
+    {
+      "id": "rsbcg3w",
+      "title": "Pull day",
+      "cat": "sports",
+      "date": "2026-02-27",
+      "start": "07:00",
+      "end": "08:00",
+      "notes": "",
+      "sportId": "sp2"
+    },
+    {
+      "id": "9sr5ghm",
+      "title": "10km tempo run",
+      "cat": "sports",
+      "date": "2026-02-26",
+      "start": "07:00",
+      "end": "08:00",
+      "notes": "",
+      "sportId": "sp1"
+    },
+    {
+      "id": "98fz8zl",
+      "title": "8km easy run",
+      "cat": "sports",
+      "date": "2026-02-24",
+      "start": "18:00",
+      "end": "18:53",
+      "notes": "",
+      "sportId": "sp1"
+    },
+    {
+      "id": "yatyl07",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-03"
+    },
+    {
+      "id": "ovjmkt0",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-04"
+    },
+    {
+      "id": "ux8otwg",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-05"
+    },
+    {
+      "id": "adg1iaq",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-06"
+    },
+    {
+      "id": "0edyaxa",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-09"
+    },
+    {
+      "id": "7oh7ub9",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-10"
+    },
+    {
+      "id": "vf2aoz3",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-11"
+    },
+    {
+      "id": "qns0rqa",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-12"
+    },
+    {
+      "id": "o5h3dlh",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-13"
+    },
+    {
+      "id": "em9wt28",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-16"
+    },
+    {
+      "id": "bcfry3s",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-17"
+    },
+    {
+      "id": "ftbg2wy",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-18"
+    },
+    {
+      "id": "yba1ef2",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-19"
+    },
+    {
+      "id": "crv9z8m",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-20"
+    },
+    {
+      "id": "z9jltal",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-23"
+    },
+    {
+      "id": "54pw3v3",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-24"
+    },
+    {
+      "id": "td507qk",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-25"
+    },
+    {
+      "id": "7mao9i5",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-26"
+    },
+    {
+      "id": "xwfkg7l",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-27"
+    },
+    {
+      "id": "u6wc6f6",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-30"
+    },
+    {
+      "id": "mp47k0h",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-31"
+    },
+    {
+      "id": "ck04zt5",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-01"
+    },
+    {
+      "id": "hclu1mq",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-02"
+    },
+    {
+      "id": "9h1f2nc",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-03"
+    },
+    {
+      "id": "s6r39t5",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-06"
+    },
+    {
+      "id": "w7hs38u",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-07"
+    },
+    {
+      "id": "xhm5gay",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-08"
+    },
+    {
+      "id": "3bw4v41",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-09"
+    },
+    {
+      "id": "n4rhrkh",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-10"
+    },
+    {
+      "id": "yzsdxep",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-13"
+    },
+    {
+      "id": "wr3i06z",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-14"
+    },
+    {
+      "id": "2bnlwp0",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-15"
+    },
+    {
+      "id": "56vak1d",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-16"
+    },
+    {
+      "id": "01500vn",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-17"
+    },
+    {
+      "id": "1gqpnou",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-20"
+    },
+    {
+      "id": "spvgp05",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-21"
+    },
+    {
+      "id": "5kxmqrw",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-22"
+    },
+    {
+      "id": "9hkx2vp",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-23"
+    },
+    {
+      "id": "qvxyxz1",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-24"
+    },
+    {
+      "id": "81yhdzh",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-27"
+    },
+    {
+      "id": "ygwml1o",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-28"
+    },
+    {
+      "id": "8xrwbw5",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-29"
+    },
+    {
+      "id": "21q4ii2",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-04-30"
+    },
+    {
+      "id": "v7zy54k",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-01"
+    },
+    {
+      "id": "vppe8uy",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-04"
+    },
+    {
+      "id": "d02o2up",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-05"
+    },
+    {
+      "id": "mwd7qcq",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-06"
+    },
+    {
+      "id": "yfdycwu",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-07"
+    },
+    {
+      "id": "ma2o2na",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-08"
+    },
+    {
+      "id": "y2m40pu",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-11"
+    },
+    {
+      "id": "and9etw",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-12"
+    },
+    {
+      "id": "ykyq66f",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-13"
+    },
+    {
+      "id": "s6yn800",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-14"
+    },
+    {
+      "id": "rkb0bf1",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-15"
+    },
+    {
+      "id": "ausgagi",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-18"
+    },
+    {
+      "id": "bbacplt",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-19"
+    },
+    {
+      "id": "xluspxf",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-20"
+    },
+    {
+      "id": "ki8qzwh",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-21"
+    },
+    {
+      "id": "sdz314t",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-22"
+    },
+    {
+      "id": "dfl9qx7",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-25"
+    },
+    {
+      "id": "54lcppo",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-26"
+    },
+    {
+      "id": "8lz7eqg",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-27"
+    },
+    {
+      "id": "mnqdhht",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-28"
+    },
+    {
+      "id": "1dqjq1r",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-05-29"
+    },
+    {
+      "id": "fdkldiu",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-06-01"
+    },
+    {
+      "id": "khsvwhx",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-06-02"
+    },
+    {
+      "id": "2orporc",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-06-03"
+    },
+    {
+      "id": "m86igfh",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-06-04"
+    },
+    {
+      "id": "141vn7d",
+      "seriesId": "fn2mf9z",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-06-05"
+    },
+    {
+      "id": "kuuvq9d",
+      "title": "Internship",
+      "cat": "work",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": "",
+      "date": "2026-03-02"
+    }
+  ],
+  "pl3_phases": [
+    {
+      "id": "ph1",
+      "name": "Planning",
+      "start": "2026-02-02",
+      "end": "2026-02-06",
+      "color": "#4e9af1"
+    },
+    {
+      "id": "ph2",
+      "name": "Research",
+      "start": "2026-02-09",
+      "end": "2026-02-20",
+      "color": "#a78bfa"
+    },
+    {
+      "id": "ph3",
+      "name": "Design",
+      "start": "2026-02-23",
+      "end": "2026-04-24",
+      "color": "#f97fcf"
+    },
+    {
+      "id": "2g46v1g",
+      "name": "Manufacturing and testing",
+      "start": "2026-04-27",
+      "end": "2026-05-15",
+      "color": "#f59e0b"
+    },
+    {
+      "id": "30w44hm",
+      "name": "Reporting",
+      "start": "2026-05-12",
+      "end": "2026-05-06",
+      "color": "#ff6b35"
+    }
+  ],
+  "pl3_tasks": [
+    {
+      "id": "t4",
+      "name": "PMP",
+      "phaseId": "ph2",
+      "priority": "high",
+      "startDate": "2026-02-09",
+      "deadline": "2026-02-13",
+      "status": "done",
+      "notes": ""
+    },
+    {
+      "id": "t5",
+      "name": "Torque sensing research",
+      "phaseId": "ph2",
+      "priority": "high",
+      "startDate": "2026-02-09",
+      "deadline": "2026-02-20",
+      "status": "in-progress",
+      "notes": ""
+    },
+    {
+      "id": "t6",
+      "name": "NX training",
+      "phaseId": "ph2",
+      "priority": "medium",
+      "startDate": "2026-02-09",
+      "deadline": "2026-02-20",
+      "status": "done",
+      "notes": ""
+    },
+    {
+      "id": "t7",
+      "name": "Make design concepts",
+      "phaseId": "ph3",
+      "priority": "high",
+      "startDate": "2026-02-23",
+      "deadline": "2026-03-06",
+      "status": "in-progress",
+      "notes": ""
+    },
+    {
+      "id": "t8",
+      "name": "Choose concepts",
+      "phaseId": "ph3",
+      "priority": "high",
+      "startDate": "2026-03-09",
+      "deadline": "2026-03-13",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "snigwyd",
+      "name": "Onboarding",
+      "phaseId": "ph1",
+      "priority": "medium",
+      "startDate": "2026-02-02",
+      "deadline": "2026-02-06",
+      "status": "done",
+      "notes": ""
+    },
+    {
+      "id": "wrj3eub",
+      "name": "Planning",
+      "phaseId": "ph1",
+      "priority": "medium",
+      "startDate": "2026-02-04",
+      "deadline": "2026-02-06",
+      "status": "done",
+      "notes": ""
+    },
+    {
+      "id": "ppqfeku",
+      "name": "Work out chosen concepts",
+      "phaseId": "ph3",
+      "priority": "medium",
+      "startDate": "2026-03-16",
+      "deadline": "2026-03-20",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "58crqcb",
+      "name": "Detailed design",
+      "phaseId": "ph3",
+      "priority": "medium",
+      "startDate": "2026-03-23",
+      "deadline": "2026-04-10",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "ibudupy",
+      "name": "Validation",
+      "phaseId": "ph3",
+      "priority": "medium",
+      "startDate": "2026-04-13",
+      "deadline": "2026-04-24",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "o60rylr",
+      "name": "Order first materials",
+      "phaseId": "2g46v1g",
+      "priority": "high",
+      "startDate": "2026-03-23",
+      "deadline": "2026-03-27",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "qk2hsbn",
+      "name": "Manufacture parts",
+      "phaseId": "2g46v1g",
+      "priority": "medium",
+      "startDate": "2026-04-27",
+      "deadline": "2026-05-01",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "8pzg0qd",
+      "name": "Implement parts",
+      "phaseId": "2g46v1g",
+      "priority": "medium",
+      "startDate": "2026-05-05",
+      "deadline": "2026-05-06",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "1au5ra4",
+      "name": "Testing",
+      "phaseId": "2g46v1g",
+      "priority": "medium",
+      "startDate": "2026-05-07",
+      "deadline": "2026-05-15",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "q8e7hbg",
+      "name": "Finish report",
+      "phaseId": "30w44hm",
+      "priority": "high",
+      "startDate": "2026-05-12",
+      "deadline": "2026-05-22",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "ennj13i",
+      "name": "Polish report",
+      "phaseId": "30w44hm",
+      "priority": "medium",
+      "startDate": "2026-05-25",
+      "deadline": "2026-06-05",
+      "status": "todo",
+      "notes": ""
+    }
+  ],
+  "pl3_sessions": [
+    {
+      "id": "97pm7ry",
+      "taskId": "t7",
+      "date": "2026-02-24",
+      "startTime": "08:10",
+      "endTime": "12:30"
+    }
+  ],
+  "pl3_subtasks": [
+    {
+      "id": "xxxgv8i",
+      "taskId": "t4",
+      "name": "Clearly define design goals",
+      "done": true
+    },
+    {
+      "id": "00khx7o",
+      "taskId": "t4",
+      "name": "Set up structure of the doccument",
+      "done": true
+    },
+    {
+      "id": "q8i32me",
+      "taskId": "wrj3eub",
+      "name": "Make a Gantt chart",
+      "done": true
+    },
+    {
+      "id": "rr72y1f",
+      "taskId": "snigwyd",
+      "name": "Try programs on the laptop",
+      "done": true
+    },
+    {
+      "id": "l02wox0",
+      "taskId": "t5",
+      "name": "Look into all types of torque sensing",
+      "done": true
+    },
+    {
+      "id": "txibuqf",
+      "taskId": "t5",
+      "name": "collect data of inline torque sensors",
+      "done": false
+    },
+    {
+      "id": "3hb9jhw",
+      "taskId": "t5",
+      "name": "validate if reaction torque ripple can be measured",
+      "done": true
+    },
+    {
+      "id": "iok6g8u",
+      "taskId": "t6",
+      "name": "Follow LinkedIn course",
+      "done": true
+    },
+    {
+      "id": "6cljsqe",
+      "taskId": "t6",
+      "name": "Try FEM simulations",
+      "done": true
+    },
+    {
+      "id": "8sc2hgh",
+      "taskId": "t7",
+      "name": "Make a collection of posible designs",
+      "done": false
+    },
+    {
+      "id": "ugtcefr",
+      "taskId": "t7",
+      "name": "make rough sketches of concepts",
+      "done": false
+    }
+  ],
+  "pl3_sports": [
+    {
+      "id": "sp1",
+      "name": "Running",
+      "icon": "🏃",
+      "color": "#3ecf8e"
+    },
+    {
+      "id": "sp2",
+      "name": "Gym",
+      "icon": "💪",
+      "color": "#4e9af1"
+    }
+  ],
+  "pl3_goals": [
+    {
+      "id": "g1",
+      "sportId": "sp1",
+      "sessions": 3,
+      "duration": 50,
+      "distance": 8,
+      "notes": "Marathon training — easy/medium pace"
+    },
+    {
+      "id": "g2",
+      "sportId": "sp2",
+      "sessions": 2,
+      "duration": 60,
+      "distance": 0,
+      "notes": "Strength + conditioning"
+    }
+  ],
+  "pl3_workouts": [
+    {
+      "id": "meazaq4",
+      "sportId": "sp2",
+      "date": "2026-02-25",
+      "startTime": "07:00",
+      "endTime": "08:00",
+      "distance": "",
+      "duration": "60",
+      "notes": "Legday",
+      "calEventId": "kb799lw",
+      "pace": "",
+      "gymType": "Leg day"
+    },
+    {
+      "id": "mu2eqq0",
+      "sportId": "sp2",
+      "date": "2026-02-27",
+      "startTime": "07:00",
+      "endTime": "08:00",
+      "distance": "",
+      "duration": "60",
+      "notes": "Pull day",
+      "calEventId": "rsbcg3w",
+      "pace": "",
+      "gymType": "Pull day"
+    },
+    {
+      "id": "6oh3o60",
+      "sportId": "sp1",
+      "date": "2026-02-26",
+      "startTime": "07:00",
+      "endTime": "08:00",
+      "distance": "",
+      "duration": "60",
+      "notes": "10km tempo run",
+      "calEventId": "9sr5ghm"
+    },
+    {
+      "id": "n4axyev",
+      "sportId": "sp1",
+      "date": "2026-02-24",
+      "startTime": "18:00",
+      "endTime": "18:53",
+      "distance": "8",
+      "pace": "6:40",
+      "gymType": "",
+      "duration": "53",
+      "notes": "8km easy run",
+      "calEventId": "98fz8zl"
+    }
+  ],
+  "pl3_races": [
+    {
+      "id": "rsye7j1",
+      "name": "Rome Marathon",
+      "sportId": "sp1",
+      "date": "2026-03-22",
+      "distance": "42.2",
+      "target": "sub-4H",
+      "notes": ""
+    }
+  ],
+  "pl3_seeded": true,
+  "pl3_sport_seeded": true,
+  "exportedAt": "2026-02-24T08:40:30.506Z"
+}

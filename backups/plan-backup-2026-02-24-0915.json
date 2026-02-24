@@ -1,0 +1,305 @@
+{
+  "pl3_events": [
+    {
+      "id": "e1",
+      "title": "Internship",
+      "cat": "work",
+      "date": "2026-02-24",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": ""
+    },
+    {
+      "id": "e4",
+      "title": "Internship",
+      "cat": "work",
+      "date": "2026-02-25",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": ""
+    },
+    {
+      "id": "e5",
+      "title": "Gym",
+      "cat": "sports",
+      "date": "2026-02-25",
+      "start": "07:00",
+      "end": "08:00",
+      "notes": ""
+    },
+    {
+      "id": "e6",
+      "title": "Internship",
+      "cat": "work",
+      "date": "2026-02-26",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": ""
+    },
+    {
+      "id": "e7",
+      "title": "Internship",
+      "cat": "work",
+      "date": "2026-02-27",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": ""
+    },
+    {
+      "id": "e8",
+      "title": "Internship",
+      "cat": "work",
+      "date": "2026-02-28",
+      "start": "09:00",
+      "end": "17:00",
+      "notes": ""
+    },
+    {
+      "id": "e9",
+      "title": "Friends hangout",
+      "cat": "social",
+      "date": "2026-03-01",
+      "start": "15:00",
+      "end": "20:00",
+      "notes": ""
+    },
+    {
+      "id": "qno97u3",
+      "title": "drinking",
+      "cat": "social",
+      "date": "2026-02-24",
+      "start": "20:00",
+      "end": "21:00",
+      "notes": ""
+    },
+    {
+      "id": "kb799lw",
+      "title": "Legday",
+      "cat": "sports",
+      "date": "2026-02-25",
+      "start": "07:00",
+      "end": "08:00",
+      "notes": "",
+      "sportId": "sp2"
+    },
+    {
+      "id": "rsbcg3w",
+      "title": "Pull day",
+      "cat": "sports",
+      "date": "2026-02-27",
+      "start": "07:00",
+      "end": "08:00",
+      "notes": "",
+      "sportId": "sp2"
+    },
+    {
+      "id": "63nlc5o",
+      "title": "8km easy run\n",
+      "cat": "sports",
+      "date": "2026-02-24",
+      "start": "18:00",
+      "end": "19:00",
+      "notes": "",
+      "sportId": "sp1"
+    },
+    {
+      "id": "9sr5ghm",
+      "title": "10km tempo run",
+      "cat": "sports",
+      "date": "2026-02-26",
+      "start": "07:00",
+      "end": "08:00",
+      "notes": "",
+      "sportId": "sp1"
+    }
+  ],
+  "pl3_phases": [
+    {
+      "id": "ph1",
+      "name": "Planning",
+      "start": "2026-02-02",
+      "end": "2026-02-06",
+      "color": "#4e9af1"
+    },
+    {
+      "id": "ph2",
+      "name": "Research",
+      "start": "2026-02-09",
+      "end": "2026-02-20",
+      "color": "#a78bfa"
+    },
+    {
+      "id": "ph3",
+      "name": "Testing & Delivery",
+      "start": "2026-03-25",
+      "end": "2026-04-10",
+      "color": "#a78bfa"
+    }
+  ],
+  "pl3_tasks": [
+    {
+      "id": "t4",
+      "name": "PMP",
+      "phaseId": "ph2",
+      "priority": "high",
+      "startDate": "2026-02-09",
+      "deadline": "2026-02-13",
+      "status": "done",
+      "notes": ""
+    },
+    {
+      "id": "t5",
+      "name": "Torque sensing research",
+      "phaseId": "ph2",
+      "priority": "high",
+      "startDate": "2026-02-09",
+      "deadline": "2026-02-20",
+      "status": "in-progress",
+      "notes": ""
+    },
+    {
+      "id": "t6",
+      "name": "NX training",
+      "phaseId": "ph2",
+      "priority": "medium",
+      "startDate": "2026-02-09",
+      "deadline": "2026-02-20",
+      "status": "done",
+      "notes": ""
+    },
+    {
+      "id": "t7",
+      "name": "Write unit tests",
+      "phaseId": "ph3",
+      "priority": "medium",
+      "startDate": "2026-03-24",
+      "deadline": "2026-03-29",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "t8",
+      "name": "Final presentation",
+      "phaseId": "ph3",
+      "priority": "high",
+      "startDate": "2026-04-03",
+      "deadline": "2026-04-08",
+      "status": "todo",
+      "notes": "Prepare slides"
+    },
+    {
+      "id": "snigwyd",
+      "name": "Onboarding",
+      "phaseId": "ph1",
+      "priority": "medium",
+      "startDate": "2026-02-02",
+      "deadline": "2026-02-06",
+      "status": "done",
+      "notes": ""
+    },
+    {
+      "id": "wrj3eub",
+      "name": "Planning",
+      "phaseId": "ph1",
+      "priority": "medium",
+      "startDate": "2026-02-04",
+      "deadline": "2026-02-06",
+      "status": "done",
+      "notes": ""
+    }
+  ],
+  "pl3_sessions": [],
+  "pl3_subtasks": [],
+  "pl3_sports": [
+    {
+      "id": "sp1",
+      "name": "Running",
+      "icon": "🏃",
+      "color": "#3ecf8e"
+    },
+    {
+      "id": "sp2",
+      "name": "Gym",
+      "icon": "💪",
+      "color": "#4e9af1"
+    }
+  ],
+  "pl3_goals": [
+    {
+      "id": "g1",
+      "sportId": "sp1",
+      "sessions": 3,
+      "duration": 50,
+      "distance": 8,
+      "notes": "Marathon training — easy/medium pace"
+    },
+    {
+      "id": "g2",
+      "sportId": "sp2",
+      "sessions": 2,
+      "duration": 60,
+      "distance": 0,
+      "notes": "Strength + conditioning"
+    }
+  ],
+  "pl3_workouts": [
+    {
+      "id": "meazaq4",
+      "sportId": "sp2",
+      "date": "2026-02-25",
+      "startTime": "07:00",
+      "endTime": "08:00",
+      "distance": "",
+      "duration": "60",
+      "notes": "Legday",
+      "calEventId": "kb799lw"
+    },
+    {
+      "id": "mu2eqq0",
+      "sportId": "sp2",
+      "date": "2026-02-27",
+      "startTime": "07:00",
+      "endTime": "08:00",
+      "distance": "",
+      "duration": "60",
+      "notes": "Pull day",
+      "calEventId": "rsbcg3w"
+    },
+    {
+      "id": "e91jwg4",
+      "sportId": "sp1",
+      "date": "2026-02-24",
+      "startTime": "18:00",
+      "endTime": "19:00",
+      "distance": "",
+      "duration": "60",
+      "notes": "8km easy run\n",
+      "calEventId": "63nlc5o"
+    },
+    {
+      "id": "6oh3o60",
+      "sportId": "sp1",
+      "date": "2026-02-26",
+      "startTime": "07:00",
+      "endTime": "08:00",
+      "distance": "",
+      "duration": "60",
+      "notes": "10km tempo run",
+      "calEventId": "9sr5ghm"
+    }
+  ],
+  "pl3_races": [
+    {
+      "id": "rsye7j1",
+      "name": "Rome Marathon",
+      "sportId": "sp1",
+      "date": "2026-03-22",
+      "distance": "42.2",
+      "target": "sub-4H",
+      "notes": ""
+    }
+  ],
+  "pl3_seeded": true,
+  "pl3_sport_seeded": true,
+  "exportedAt": "2026-02-24T08:14:55.147Z"
+}
