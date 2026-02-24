@@ -634,7 +634,7 @@ let __autoSyncTimer = null;
 function scheduleAutoSync(){
   // cancel previous
   if(__autoSyncTimer) clearTimeout(__autoSyncTimer);
-  __autoSyncTimer = setTimeout(()=>{ __autoSyncTimer = null; try{ syncSave(); }catch(e){console.error('auto sync failed',e);} }, 1500);
+  __autoSyncTimer = setTimeout(()=>{ __autoSyncTimer = null; try{ syncSave(true).catch(e=>console.error('auto sync failed',e)); }catch(e){console.error('auto sync failed',e);} }, 1500);
 }
 function uid(){return Math.random().toString(36).slice(2,9);}
 function today0(){const d=new Date();d.setHours(0,0,0,0);return d;}
@@ -2085,7 +2085,7 @@ function importData(e){
 }
 
 // ── SYNC WITH SERVER (Flask + Supabase)
-async function syncSave(){
+async function syncSave(silent=false){
   try{
     const data={
       pl3_events:events,pl3_phases:phases,pl3_tasks:tasks,pl3_sessions:sessions,pl3_subtasks:subtasks,
@@ -2094,9 +2094,13 @@ async function syncSave(){
     const res=await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'plan-backup',data})});
     const j=await res.json();
     if(!res.ok)throw new Error(j.error||'save failed');
-    alert('Synced to server successfully.');
+    if(!silent) alert('Synced to server successfully.');
     return j.data;
-  }catch(err){console.error(err);alert('Sync save failed: '+err.message);}  
+  }catch(err){
+    console.error(err);
+    if(!silent) alert('Sync save failed: '+err.message);
+    throw err;
+  }
 }
 
 async function syncLoad(){
