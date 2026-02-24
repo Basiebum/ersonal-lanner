@@ -53,6 +53,19 @@ def api_plans():
     return jsonify({"data": res.data}), 200
 
 
+@app.route("/health", methods=["GET"])
+def health():
+    """Simple health endpoint that reports whether Supabase env vars were read.
+    Use this to verify the deployed service can see `SUPABASE_URL` and a key.
+    """
+    configured = bool(SUPABASE_URL and SUPABASE_KEY)
+    # don't return keys — only indicate presence
+    return jsonify({
+        "supabase_configured": configured,
+        "supabase_url": SUPABASE_URL or None
+    }), 200
+
+
 if __name__ == "__main__":
     # during local development you can set these env vars or use a .env loader
     app.run(debug=True)
