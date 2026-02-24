@@ -258,7 +258,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
       <button class="btn-secondary" onclick="syncSave()" title="Push local plan to server">⤴ Push</button>
       <div id="auth-controls" style="display:flex;align-items:center;gap:8px;margin-left:10px;">
         <div id="user-email" style="color:var(--muted);font-size:.86rem;display:none;"></div>
-        <button class="btn-secondary" id="login-btn" onclick="openModal('auth-modal')">Log in</button>
+        <button class="btn-secondary" id="login-btn" onclick="showAuthModal(false)">Log in</button>
         <button class="btn-secondary" id="logout-btn" onclick="logout()" style="display:none;">Log out</button>
       </div>
   </div>
@@ -648,6 +648,8 @@ function persist(k,v){localStorage.setItem(k,JSON.stringify(v));
   // schedule auto-push for planner data keys
   if(k && k.startsWith && k.startsWith('pl3_')) scheduleAutoSync();
 }
+// write to localStorage without triggering autosync
+function persistSilent(k,v){localStorage.setItem(k,JSON.stringify(v));}
 // Auto-sync: debounce push to server when local data changes
 let __autoSyncTimer = null;
 function scheduleAutoSync(){
@@ -705,6 +707,8 @@ async function register(){
     const res=await fetch('/api/register',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
     const j=await res.json();
     if(!res.ok)throw new Error(j.error||'register failed');
+    // clear any demo/local data so new account starts empty (use silent persist to avoid autosync)
+    clearLocalPlanData();
     closeModal('auth-modal');
     const user=await fetchCurrentUser(); updateAuthUI(user);
     alert('Registered and logged in.');
@@ -719,6 +723,16 @@ async function login(){
     const res=await fetch('/api/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
     const j=await res.json();
     if(!res.ok)throw new Error(j.error||'login failed');
+    // after login, check server for existing plans; if none, clear local demo data
+    const plansRes = await fetch('/api/plans',{credentials:'same-origin'}).catch(()=>null);
+    if(!plansRes || !plansRes.ok){
+      // no server plans or cannot fetch — clear local
+      clearLocalPlanData();
+    }else{
+      const pj = await plansRes.json();
+      const rows = (pj && pj.data)||[];
+      if(!rows.length) clearLocalPlanData();
+    }
     closeModal('auth-modal');
     const user=await fetchCurrentUser(); updateAuthUI(user);
     alert('Logged in.');
@@ -730,8 +744,46 @@ async function logout(){
   updateAuthUI(null);
 }
 
-// initialize auth UI on load
-fetchCurrentUser().then(u=>updateAuthUI(u));
+// helper to show auth modal; when `required` is true, hide cancel so user must register/login
+function showAuthModal(required=false){
+  const cancelBtn = document.querySelector('#auth-modal .btn-cancel');
+  if(cancelBtn) cancelBtn.style.display = required ? 'none' : 'inline-flex';
+  openModal('auth-modal');
+}
+
+function clearLocalPlanData(){
+  events = [];
+  phases = [];
+  tasks = [];
+  sessions = [];
+  subtasks = [];
+  sports = [];
+  goals = [];
+  workouts = [];
+  races = [];
+  // persist silently to avoid autosync
+  persistSilent('pl3_events',events);
+  persistSilent('pl3_phases',phases);
+  persistSilent('pl3_tasks',tasks);
+  persistSilent('pl3_sessions',sessions);
+  persistSilent('pl3_subtasks',subtasks);
+  persistSilent('pl3_sports',sports);
+  persistSilent('pl3_goals',goals);
+  persistSilent('pl3_workouts',workouts);
+  persistSilent('pl3_races',races);
+  persistSilent('pl3_seeded',true);
+  render();
+}
+
+// initialize auth UI on load — require login if not authenticated
+fetchCurrentUser().then(u=>{
+  if(!u){
+    showAuthModal(true);
+    updateAuthUI(null);
+  }else{
+    updateAuthUI(u);
+  }
+});
 
 // ══════════════════════════════════════════════════
 // DATA
@@ -786,11 +838,12 @@ if(!_seeded){
     {id:'s2',taskId:'t3',date:a(1),startTime:'09:00',endTime:'12:00'},
     {id:'s3',taskId:'t3',date:a(2),startTime:'14:00',endTime:'17:00'},
   ];
-  persist('pl3_events',events);
-  persist('pl3_phases',phases);
-  persist('pl3_tasks',tasks);
-  persist('pl3_sessions',sessions);
-  persist('pl3_seeded',true);
+  // store demo data locally WITHOUT triggering autosync
+  persistSilent('pl3_events',events);
+  persistSilent('pl3_phases',phases);
+  persistSilent('pl3_tasks',tasks);
+  persistSilent('pl3_sessions',sessions);
+  persistSilent('pl3_seeded',true);
 }
 
 // ══════════════════════════════════════════════════
