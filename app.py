@@ -5,9 +5,10 @@ from supabase import create_client
 app = Flask(__name__, template_folder="templates")
 
 # Configure Supabase client using environment variables
-# Set `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` (service_role) in your host environment
+# Set SUPABASE_URL and SUPABASE_SERVICE_KEY (service_role) in your host environment
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
+# prefer the secure service role key on the server; fall back to SUPABASE_KEY if set
+SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY") or os.environ.get("SUPABASE_KEY")
 if SUPABASE_URL and SUPABASE_KEY:
     supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 else:
