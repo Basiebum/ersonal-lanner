@@ -58,7 +58,8 @@ def api_plans():
         query = supabase.table("plans").select("*")
         if user_id:
             query = query.eq("user_id", user_id)
-        res = query.order("created_at", {"ascending": False}).execute()
+        # supabase-py order() expects a column and a desc flag (desc=True for newest first)
+        res = query.order("created_at", desc=True).execute()
         if hasattr(res, 'error') and res.error:
             logging.error("Supabase select error: %s", res.error)
             return jsonify({"error": str(res.error)}), 500
