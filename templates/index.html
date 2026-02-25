@@ -21,7 +21,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .logo span{color:var(--accent);}
 .page-tabs{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:10px;}
 .page-tab{padding:6px 15px;border:none;background:none;color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;font-size:.76rem;cursor:pointer;border-radius:7px;transition:all .2s;letter-spacing:.5px;}
-.page-tab.active{background:var(--surface3);color:var(--text);}
+.page-tab.active{background:var(--accent);color:#fff;}
 .view-tabs{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:10px;}
 .view-tab{padding:6px 13px;border:none;background:none;color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;font-size:.74rem;cursor:pointer;border-radius:7px;transition:all .2s;letter-spacing:.5px;}
 .view-tab.active{background:var(--accent);color:#fff;}
@@ -241,79 +241,39 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .stat-lbl{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
 .no-sports-empty{color:var(--muted);text-align:center;padding:60px 20px;font-size:.9rem;}
 
-/* ── WEEKLY REVIEW ── */
-.review-layout{display:grid;grid-template-columns:260px 1fr;gap:18px;height:100%;}
-@media(max-width:760px){.review-layout{grid-template-columns:1fr;}}
-.review-sidebar{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px;}
-.review-entry{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:border-color .15s;}
-.review-entry:hover{border-color:var(--muted);}
-.review-entry.rv-active{border-color:var(--accent);background:var(--surface2);}
-.rv-entry-top{display:flex;align-items:center;gap:8px;}
-.rv-entry-mood{font-size:1.3rem;line-height:1;flex-shrink:0;}
-.rv-entry-week{font-family:'Syne',sans-serif;font-weight:800;font-size:.78rem;}
-.rv-entry-preview{font-size:.7rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.rv-entry-chips{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap;}
-.rv-chip{font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:5px;letter-spacing:.2px;}
-.review-main{overflow-y:auto;display:flex;flex-direction:column;gap:0;}
-.rv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;}
-.rv-card-title{font-family:'Syne',sans-serif;font-weight:800;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;}
-.rv-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;}
-.rv-stat{background:var(--surface2);border-radius:9px;padding:11px 12px;text-align:center;}
-.rv-stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;line-height:1.1;}
-.rv-stat-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-top:2px;}
-.rv-sport-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
-.rv-bar-wrap{flex:1;height:7px;background:var(--surface3);border-radius:10px;overflow:hidden;}
-.rv-bar{height:100%;border-radius:10px;transition:width .5s;}
-.rv-task-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:.82rem;}
-.rv-task-row:last-child{border-bottom:none;}
-.rv-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.rv-notes-block{background:var(--surface2);border-radius:9px;padding:12px 14px;font-size:.83rem;line-height:1.75;white-space:pre-wrap;color:var(--text);}
-.rv-write-cta{background:var(--surface2);border:1px dashed var(--border);border-radius:10px;padding:22px;text-align:center;color:var(--muted);font-size:.84rem;}
-.rv-week-heading{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;}
-.rv-mood-big{font-size:1.8rem;margin-bottom:14px;}
-.mood-row{display:flex;gap:7px;margin-top:5px;}
-.mood-opt{font-size:1.3rem;background:var(--surface2);border:2px solid transparent;border-radius:8px;padding:5px 8px;cursor:pointer;transition:all .15s;line-height:1;}
-.mood-opt:hover,.mood-opt.rv-sel{border-color:var(--accent);background:rgba(255,107,53,.12);}
-.rv-highlight-pill{display:inline-block;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2);color:var(--accent);font-size:.8rem;font-weight:600;padding:4px 12px;border-radius:20px;}
+/* ── SYNC STATUS DOT ── */
+#sync-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block;margin-left:7px;transition:background .3s,opacity .4s;opacity:.45;vertical-align:middle;flex-shrink:0;}
+#sync-dot.syncing{background:var(--warn);opacity:1;animation:pulse .8s infinite;}
+#sync-dot.saved{background:var(--ok);opacity:1;}
+#sync-dot.error{background:var(--danger);opacity:1;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* ── DATA MENU DROPDOWN ── */
-#data-menu button, #data-menu label{
-  background:none;border:none;color:var(--text);padding:7px 10px;border-radius:7px;
-  font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;transition:background .15s;
-  text-align:left;width:100%;box-sizing:border-box;margin-bottom:2px;
-}
-#data-menu button:hover, #data-menu label:hover{background:var(--surface2);}
+/* ── SETTINGS DROPDOWN ── */
+#settings-menu{display:none;position:absolute;right:0;top:calc(100% + 8px);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:8px;z-index:300;min-width:190px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+#settings-menu.open{display:block;}
+.settings-section{font-size:.63rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;padding:6px 8px 3px;}
+.settings-item{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;color:var(--text);padding:8px 10px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.82rem;transition:background .15s;text-align:left;box-sizing:border-box;}
+.settings-item:hover{background:var(--surface2);}
+.settings-item label{cursor:pointer;display:flex;align-items:center;gap:9px;width:100%;}
+.settings-sep{border:none;border-top:1px solid var(--border);margin:5px 0;}
+#settings-user{font-size:.75rem;color:var(--muted);padding:6px 10px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">wigbo</div>
+  <div style="display:flex;align-items:center;gap:0;flex-shrink:0;">
+    <div class="logo">wigbo</div>
+    <span id="sync-dot" title="Sync status"></span>
+  </div>
   <div class="page-tabs">
-    <button class="page-tab active" onclick="showPage('calendar')">📅 Calendar</button>
-    <button class="page-tab" onclick="showPage('project')">📊 Project</button>
-    <button class="page-tab" onclick="showPage('sports')">🏃 Sports</button>
-    <button class="page-tab" onclick="showPage('review')">📝 Report</button>
+    <button class="page-tab active" onclick="showPage('calendar')">Calendar</button>
+    <button class="page-tab" onclick="showPage('project')">Project</button>
+    <button class="page-tab" onclick="showPage('sports')">Sports</button>
+    <button class="page-tab" onclick="showPage('review')">Report</button>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;margin-left:auto;position:relative;">
-    <!-- Compact data menu -->
-    <div style="position:relative;">
-      <button class="btn-secondary" onclick="toggleDataMenu()" id="data-menu-btn" title="Data & sync">⚙ Data</button>
-      <div id="data-menu" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:6px;z-index:300;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.4);">
-        <button class="btn-secondary" onclick="syncSave();toggleDataMenu()" style="width:100%;margin-bottom:4px;justify-content:flex-start;display:flex;gap:8px;">⬆ Push to server</button>
-        <button class="btn-secondary" onclick="syncLoad();toggleDataMenu()" style="width:100%;margin-bottom:4px;justify-content:flex-start;display:flex;gap:8px;">⬇ Pull from server</button>
-        <hr style="border:none;border-top:1px solid var(--border);margin:4px 0;">
-        <button class="btn-secondary" onclick="exportData();toggleDataMenu()" style="width:100%;margin-bottom:4px;justify-content:flex-start;display:flex;gap:8px;">💾 Export backup</button>
-        <label class="btn-secondary" style="cursor:pointer;width:100%;display:flex;gap:8px;margin:0;box-sizing:border-box;">📂 Import backup<input type="file" accept=".json" onchange="importData(event);toggleDataMenu()" style="display:none"></label>
-      </div>
-    </div>
-    <div id="auth-controls" style="display:flex;align-items:center;gap:8px;">
-      <div id="user-email" style="color:var(--muted);font-size:.82rem;display:none;"></div>
-      <button class="btn-secondary" id="login-btn" onclick="showAuthModal(false)">Log in</button>
-      <button class="btn-secondary" id="logout-btn" onclick="logout()" style="display:none;">Log out</button>
-    </div>
-  </div>
-  <div id="cal-controls" style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
+  <!-- Page-specific controls -->
+  <div id="cal-controls" style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-left:auto;">
     <div class="view-tabs">
       <button class="view-tab active" onclick="switchView('daily')">Day</button>
       <button class="view-tab" onclick="switchView('weekly')">Week</button>
@@ -324,21 +284,40 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
       <div class="period-label" id="period-label"></div>
       <button class="nav-arrow" onclick="navigate(1)">→</button>
     </div>
-    <button class="btn-primary" onclick="openEventModal()">+ Add Event</button>
+    <button class="btn-primary" onclick="openEventModal()">+ Event</button>
   </div>
-  <div id="proj-controls" style="display:none;align-items:center;gap:9px;">
-    <button class="btn-primary" onclick="openTaskModal()">+ Add Task</button>
-    <button class="btn-secondary" onclick="openPhaseModal()">+ Add Phase</button>
+  <div id="proj-controls" style="display:none;align-items:center;gap:9px;margin-left:auto;">
+    <button class="btn-primary" onclick="openTaskModal()">+ Task</button>
+    <button class="btn-secondary" onclick="openPhaseModal()">+ Phase</button>
   </div>
-  <div id="review-controls" style="display:none;align-items:center;gap:9px;">
-    <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:.86rem;">Weekly Report</span>
+  <div id="sports-controls" style="display:none;align-items:center;gap:9px;margin-left:auto;">
+    <button class="btn-primary" onclick="openSportModal()">+ Sport</button>
+    <button class="btn-secondary" onclick="openRaceModal()">+ Race</button>
+    <button class="btn-secondary" onclick="openGoalModal()">+ Goal</button>
   </div>
-  <div id="sports-controls" style="display:none;align-items:center;gap:9px;">
-    <button class="btn-primary" onclick="openSportModal()">+ Add Sport</button>
-    <button class="btn-secondary" onclick="openRaceModal()">+ Add Race</button>
-    <button class="btn-secondary" onclick="openGoalModal()">+ Weekly Goal</button>
+  <div id="review-controls" style="display:none;align-items:center;gap:9px;margin-left:auto;">
+    <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:.86rem;color:var(--muted);">Weekly Report</span>
+  </div>
+  <!-- Settings cog -->
+  <div style="position:relative;margin-left:12px;flex-shrink:0;">
+    <button class="btn-secondary" id="settings-btn" onclick="toggleSettings()" style="padding:7px 10px;font-size:.9rem;" title="Settings & account">⚙</button>
+    <div id="settings-menu">
+      <div id="settings-user" style="display:none;"></div>
+      <div class="settings-section">Account</div>
+      <button class="settings-item" id="s-login-btn" onclick="showAuthModal(false);toggleSettings()">🔑 Log in / Register</button>
+      <button class="settings-item" id="s-logout-btn" style="display:none;" onclick="logout();toggleSettings()">↩ Log out</button>
+      <hr class="settings-sep">
+      <div class="settings-section">Data</div>
+      <button class="settings-item" onclick="syncSave(true);toggleSettings()">⬆ Push to server</button>
+      <button class="settings-item" onclick="syncLoad(true);toggleSettings()">⬇ Pull from server</button>
+      <hr class="settings-sep">
+      <button class="settings-item" onclick="exportData();toggleSettings()">💾 Export backup</button>
+      <label class="settings-item">📂 Import backup<input type="file" accept=".json" onchange="importData(event);toggleSettings()" style="display:none"></label>
+    </div>
   </div>
 </header>
+
+<div id="toast" style="position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 18px;font-size:.82rem;font-family:'Syne',sans-serif;font-weight:600;z-index:500;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4);"></div>
 
 <div class="app-body">
   <div id="calendar-page" style="display:flex;flex:1;overflow:hidden;">
@@ -361,21 +340,13 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <div style="flex:1;overflow-y:auto;padding:20px 24px;" id="sports-content"></div>
   </div>
 
-  <!-- REVIEW PAGE -->
+  <!-- WEEKLY REPORT PAGE -->
   <div id="review-page" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
     <div style="flex:1;overflow-y:auto;padding:20px 24px;" id="review-content"></div>
   </div>
 </div>
 
-<div class="legend" id="legend-bar">
-  <div class="legend-item"><div class="legend-dot" style="background:var(--work)"></div>Internship</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--sports)"></div>Sports</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--social)"></div>Social</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--personal)"></div>Personal</div>
-  <div style="flex:1"></div>
-  <div class="legend-item" style="color:var(--danger);">● Overdue task</div>
-  <div class="legend-item" style="color:var(--warn);">● Due soon</div>
-</div>
+
 
 <!-- ── EVENT MODAL ── -->
 <div class="modal-overlay" id="ev-modal">
@@ -695,62 +666,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     </div>
   </div>
 
-<!-- ── WEEKLY REVIEW MODAL ── -->
-<div class="modal-overlay" id="review-modal">
-  <div class="modal wide">
-    <h2 id="review-modal-title">Weekly Report</h2>
-    <div id="review-modal-wklabel" style="font-size:.78rem;color:var(--muted);margin:-8px 0 16px;"></div>
-
-    <div class="form-group">
-      <label>How was your week overall?</label>
-      <div class="mood-row">
-        <button class="mood-opt" data-mood="😫" onclick="rvSelectMood(this)" title="Rough">😫</button>
-        <button class="mood-opt" data-mood="😕" onclick="rvSelectMood(this)" title="Below average">😕</button>
-        <button class="mood-opt" data-mood="😐" onclick="rvSelectMood(this)" title="Okay">😐</button>
-        <button class="mood-opt" data-mood="🙂" onclick="rvSelectMood(this)" title="Good">🙂</button>
-        <button class="mood-opt" data-mood="🔥" onclick="rvSelectMood(this)" title="Fired up">🔥</button>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Energy level this week</label>
-      <input type="range" id="rv-energy" min="1" max="10" value="7"
-        oninput="document.getElementById('rv-energy-lbl').textContent=this.value"
-        style="width:100%;accent-color:var(--accent);">
-      <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-top:2px;">
-        <span>Drained</span><span id="rv-energy-lbl" style="font-weight:700;color:var(--text);">7</span><span>Peak</span>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Highlight of the week</label>
-      <input type="text" id="rv-highlight" placeholder="Best thing that happened…">
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>What went well?</label>
-        <textarea id="rv-went-well" rows="3" placeholder="Wins, progress, good moments…"></textarea>
-      </div>
-      <div class="form-group">
-        <label>What to improve next week?</label>
-        <textarea id="rv-improve" rows="3" placeholder="What slipped? What can be better?"></textarea>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Free notes</label>
-      <textarea id="rv-notes" rows="3" placeholder="Anything else on your mind…"></textarea>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-delete" id="rv-del-btn" style="display:none" onclick="deleteReview()">Delete</button>
-      <button class="btn-cancel" onclick="closeModal('review-modal')">Cancel</button>
-      <button class="btn-save" onclick="saveReview()">Save Review</button>
-    </div>
-  </div>
-</div>
-
 <script>
 // ══════════════════════════════════════════════════
 // CONSTANTS & UTILS
@@ -767,11 +682,7 @@ function persist(k,v){localStorage.setItem(k,JSON.stringify(v));
 function persistSilent(k,v){localStorage.setItem(k,JSON.stringify(v));}
 // Auto-sync: debounce push to server when local data changes
 let __autoSyncTimer = null;
-function scheduleAutoSync(){
-  // cancel previous
-  if(__autoSyncTimer) clearTimeout(__autoSyncTimer);
-  __autoSyncTimer = setTimeout(()=>{ __autoSyncTimer = null; try{ syncSave(true).catch(e=>console.error('auto sync failed',e)); }catch(e){console.error('auto sync failed',e);} }, 1500);
-}
+// scheduleAutoSync defined later after syncSave
 function uid(){return Math.random().toString(36).slice(2,9);}
 function today0(){const d=new Date();d.setHours(0,0,0,0);return d;}
 function parseD(s){
@@ -802,15 +713,25 @@ async function fetchCurrentUser(){
 }
 
 function updateAuthUI(user){
+  // legacy elements (may not exist if header was cleaned up)
   const emailEl=document.getElementById('user-email');
   const loginBtn=document.getElementById('login-btn');
   const logoutBtn=document.getElementById('logout-btn');
+  if(emailEl) emailEl.style.display='none';
+  if(loginBtn) loginBtn.style.display='none';
+  if(logoutBtn) logoutBtn.style.display='none';
+  // settings menu elements
+  const sUser=document.getElementById('settings-user');
+  const sLogin=document.getElementById('s-login-btn');
+  const sLogout=document.getElementById('s-logout-btn');
   if(user && user.email){
-    emailEl.textContent = user.email; emailEl.style.display='block';
-    loginBtn.style.display='none'; logoutBtn.style.display='inline-flex';
+    if(sUser){sUser.textContent='Signed in as '+user.email;sUser.style.display='block';}
+    if(sLogin) sLogin.style.display='none';
+    if(sLogout) sLogout.style.display='flex';
   }else{
-    emailEl.textContent=''; emailEl.style.display='none';
-    loginBtn.style.display='inline-flex'; logoutBtn.style.display='none';
+    if(sUser) sUser.style.display='none';
+    if(sLogin) sLogin.style.display='flex';
+    if(sLogout) sLogout.style.display='none';
   }
 }
 
@@ -826,7 +747,8 @@ async function register(){
     clearLocalPlanData();
     closeModal('auth-modal');
     const user=await fetchCurrentUser(); updateAuthUI(user);
-    alert('Registered and logged in.');
+    showToast('Welcome to wigbo ✓');
+    try{ await syncLoad(false); }catch(e){}
   }catch(err){console.error(err);alert('Register failed: '+err.message);}  
 }
 
@@ -840,9 +762,8 @@ async function login(){
     if(!res.ok)throw new Error(j.error||'login failed');
     closeModal('auth-modal');
     const user=await fetchCurrentUser(); updateAuthUI(user);
-    // automatically pull server plan for this user
-    try{ await syncLoad(); }catch(e){ console.warn('syncLoad after login failed',e); }
-    alert('Logged in.');
+    // silently pull server plan — no confirm, no alert
+    try{ await syncLoad(false); }catch(e){ console.warn('syncLoad after login failed',e); }
   }catch(err){console.error(err);alert('Login failed: '+err.message);}  
 }
 
@@ -942,8 +863,8 @@ fetchCurrentUser().then(u=>{
     return;
   }
   updateAuthUI(u);
-  // automatically pull user's latest plan
-  syncLoad().catch(e=>console.warn('initial syncLoad failed',e));
+  // silently pull user's latest plan on startup
+  syncLoad(false).catch(e=>console.warn('initial syncLoad failed',e));
 });
 
 // ══════════════════════════════════════════════════
@@ -1028,22 +949,23 @@ let editPhaseId=null;
 // ══════════════════════════════════════════════════
 function showPage(p){
   currentPage=p;
+  const pages=['calendar','project','sports','review'];
   document.getElementById('calendar-page').style.display=p==='calendar'?'flex':'none';
   document.getElementById('project-page').style.display=p==='project'?'flex':'none';
   document.getElementById('project-page').style.flexDirection='column';
   document.getElementById('sports-page').style.display=p==='sports'?'flex':'none';
   document.getElementById('sports-page').style.flexDirection='column';
-  document.getElementById('review-page').style.display=p==='review'?'flex':'none';
-  document.getElementById('review-page').style.flexDirection='column';
+  const rpEl=document.getElementById('review-page');
+  if(rpEl){rpEl.style.display=p==='review'?'flex':'none';rpEl.style.flexDirection='column';}
   document.getElementById('cal-controls').style.display=p==='calendar'?'flex':'none';
   document.getElementById('proj-controls').style.display=p==='project'?'flex':'none';
   document.getElementById('sports-controls').style.display=p==='sports'?'flex':'none';
-  document.getElementById('review-controls').style.display=p==='review'?'flex':'none';
-  document.getElementById('legend-bar').style.display=p==='calendar'?'flex':'none';
-  document.querySelectorAll('.page-tab').forEach((t,i)=>t.classList.toggle('active',['calendar','project','sports','review'][i]===p));
+  const rcEl=document.getElementById('review-controls');
+  if(rcEl)rcEl.style.display=p==='review'?'flex':'none';
+  document.querySelectorAll('.page-tab').forEach((t,i)=>t.classList.toggle('active',pages[i]===p));
   if(p==='project')renderGantt();
   else if(p==='sports')renderSports();
-  else if(p==='review')renderReview();
+  else if(p==='review'&&typeof renderReview==='function')renderReview();
   else render();
 }
 
@@ -1428,7 +1350,6 @@ function renderGantt(){
         <div style="width:8px;height:8px;border-radius:2px;background:${ph.color};flex-shrink:0"></div>
         <h3 style="cursor:pointer;flex:1;" onclick="openPhaseModal('${ph.id}')" title="Edit phase">${ph.name}</h3>
         <div class="phase-progress">${phDone}/${phTasks.length}</div>
-        <button class="btn-add-task" onclick="openPhaseModal('${ph.id}')" style="border-color:transparent;" title="Edit">✎</button>
         <button class="btn-add-task" onclick="openTaskModal(null,'${ph.id}')">+ Task</button>
         <button class="btn-add-task" onclick="openPhaseModal('${ph.id}')" style="margin-left:4px;">✎ Edit</button>
       </div>`;
@@ -1861,12 +1782,12 @@ function deletePhase(){
 }
 
 // ── CLOSE HANDLERS ──
-['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','review-modal'].forEach(id=>{
+['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal'].forEach(id=>{
   document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape')
-    ['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','review-modal'].forEach(id=>closeModal(id));
+    ['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal'].forEach(id=>closeModal(id));
 });
 
 
@@ -1953,12 +1874,15 @@ function renderSports(){
 
   // ── WEEKLY CARDS ──
   const weekLabel = sportsWeekOffset===0 ? 'This week' : (sportsWeekOffset>0 ? `Week +${sportsWeekOffset}` : `Week ${sportsWeekOffset}`);
-  html += `<div style="display:flex;align-items:center;justify-content:space-between;"><div class="sports-section-title">📅 ${weekLabel}</div>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <button class="btn-secondary" onclick="changeSportsWeek(-1)">◀ Prev</button>
-      <button class="btn-secondary" onclick="gotoSportsThisWeek()">This week</button>
-      <button class="btn-secondary" onclick="changeSportsWeek(1)">Next ▶</button>
-    </div></div>`;
+  html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+    <div class="sports-section-title" style="margin-bottom:0;">📅 Training</div>
+    <div class="header-nav" style="gap:6px;">
+      <button class="nav-arrow" onclick="changeSportsWeek(-1)">←</button>
+      <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;min-width:90px;text-align:center;">${weekLabel}</span>
+      <button class="nav-arrow" onclick="changeSportsWeek(1)">→</button>
+      ${sportsWeekOffset!==0?`<button class="nav-arrow" onclick="gotoSportsThisWeek()" title="Jump to this week" style="font-size:.62rem;padding:0 6px;width:auto;">now</button>`:''}
+    </div>
+  </div>`;
   html += '<div class="sports-grid">';
 
   sports.forEach(sp=>{
@@ -2358,7 +2282,6 @@ function exportData(){
     pl3_goals:goals,
     pl3_workouts:workouts,
     pl3_races:races,
-    pl3_reviews:weeklyReviews,
     pl3_seeded:true,
     pl3_sport_seeded:true,
     exportedAt:new Date().toISOString()
@@ -2385,7 +2308,6 @@ function importData(e){
       if(data.pl3_goals)   {goals=data.pl3_goals;     persist('pl3_goals',goals);}
       if(data.pl3_workouts){workouts=data.pl3_workouts;persist('pl3_workouts',workouts);}
       if(data.pl3_races)   {races=data.pl3_races;     persist('pl3_races',races);}
-      if(data.pl3_reviews) {weeklyReviews=data.pl3_reviews; persist('pl3_reviews',weeklyReviews);}
       persist('pl3_seeded',true);
       persist('pl3_sport_seeded',true);
       render();
@@ -2401,389 +2323,127 @@ function importData(e){
 }
 
 // ── SYNC WITH SERVER (Flask + Supabase)
-async function syncSave(silent=false){
+async function syncSave(manual=false){
+  setSyncDot('syncing');
   try{
     const data={
       pl3_events:events,pl3_phases:phases,pl3_tasks:tasks,pl3_sessions:sessions,pl3_subtasks:subtasks,
-      pl3_sports:sports,pl3_goals:goals,pl3_workouts:workouts,pl3_races:races,pl3_reviews:weeklyReviews,exportedAt:new Date().toISOString()
+      pl3_sports:sports,pl3_goals:goals,pl3_workouts:workouts,pl3_races:races,
+      pl3_meetings:meetings,pl3_reviews:weeklyReviews,exportedAt:new Date().toISOString()
     };
     const res=await fetch('/api/save',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'plan-backup',data})});
     const j=await res.json();
     if(!res.ok)throw new Error(j.error||'save failed');
-    if(!silent) alert('Synced to server successfully.');
+    setSyncDot('saved');
+    if(manual) showToast('Pushed to server ✓');
     return j.data;
   }catch(err){
     console.error(err);
-    if(!silent) alert('Sync save failed: '+err.message);
+    setSyncDot('error');
+    if(manual) showToast('Push failed: '+err.message, true);
     throw err;
   }
 }
 
-async function syncLoad(){
+async function syncLoad(manual=false){
+  setSyncDot('syncing');
   try{
-    const res = await fetch('/api/plans',{credentials:'same-origin'});
-    const ctype = res.headers.get('content-type') || '';
-    let j;
-    if (ctype.includes('application/json')) {
-      j = await res.json();
-    } else {
-      const txt = await res.text();
-      throw new Error('Server returned non-JSON response: ' + txt.slice(0,200));
+    const res=await fetch('/api/plans',{credentials:'same-origin'});
+    const ctype=res.headers.get('content-type')||'';
+    if(!ctype.includes('application/json')){
+      const txt=await res.text();
+      throw new Error('Server returned non-JSON: '+txt.slice(0,100));
     }
-    if (!res.ok) throw new Error(j.error||'load failed');
+    const j=await res.json();
+    if(!res.ok) throw new Error(j.error||'load failed');
     const rows=j.data||[];
-    if(!rows.length){alert('No plans found on server.');return;}
-    // pick the latest row
+    if(!rows.length){
+      setSyncDot('saved');
+      if(manual) showToast('No plans on server yet');
+      return;
+    }
     const latest=rows[0];
-    if(!latest.data){alert('Latest plan has no data.');return;}
-    if(!confirm('This will overwrite local data with the latest server plan. Continue?'))return;
+    if(!latest.data){ setSyncDot('saved'); return; }
+    // Manual pull: confirm before overwriting
+    if(manual && !confirm('Replace local data with latest server plan?')){ setSyncDot('saved'); return; }
     const d=latest.data;
-    // apply server plan
-    if(d.pl3_events)  {events=d.pl3_events;   persist('pl3_events',events);}    
-    if(d.pl3_phases)  {phases=d.pl3_phases;   persist('pl3_phases',phases);}    
-    if(d.pl3_tasks)   {tasks=d.pl3_tasks;     persist('pl3_tasks',tasks);}    
-    if(d.pl3_sessions){sessions=d.pl3_sessions;persist('pl3_sessions',sessions);}    
-    if(d.pl3_subtasks){subtasks=d.pl3_subtasks;persist('pl3_subtasks',subtasks);}    
-    if(d.pl3_sports)  {sports=d.pl3_sports;   persist('pl3_sports',sports);}    
-    if(d.pl3_goals)   {goals=d.pl3_goals;     persist('pl3_goals',goals);}    
-    if(d.pl3_workouts){workouts=d.pl3_workouts;persist('pl3_workouts',workouts);}    
-    if(d.pl3_races)   {races=d.pl3_races;     persist('pl3_races',races);}    
+    if(d.pl3_events)  {events=d.pl3_events;}    else events=[];
+    if(d.pl3_phases)  {phases=d.pl3_phases;}    else phases=[];
+    if(d.pl3_tasks)   {tasks=d.pl3_tasks;}      else tasks=[];
+    if(d.pl3_sessions){sessions=d.pl3_sessions;} else sessions=[];
+    if(d.pl3_subtasks){subtasks=d.pl3_subtasks;} else subtasks=[];
+    if(d.pl3_sports)  {sports=d.pl3_sports;}    else sports=[];
+    if(d.pl3_goals)   {goals=d.pl3_goals;}      else goals=[];
+    if(d.pl3_workouts){workouts=d.pl3_workouts;} else workouts=[];
+    if(d.pl3_races)   {races=d.pl3_races;}      else races=[];
+    if(d.pl3_meetings){meetings=d.pl3_meetings;} else meetings=[];
+    if(d.pl3_reviews) {weeklyReviews=d.pl3_reviews;} else weeklyReviews=[];
+    // persist all silently
+    ['events','phases','tasks','sessions','subtasks','sports','goals','workouts','races','meetings'].forEach(k=>{
+      persistSilent('pl3_'+k, eval(k));
+    });
+    persistSilent('pl3_reviews', weeklyReviews);
+    setSyncDot('saved');
+    if(manual) showToast('Pulled from server ✓');
     render();
     if(currentPage==='project')renderGantt();
     if(currentPage==='sports')renderSports();
-    if(d.pl3_events)  {events=d.pl3_events;   persist('pl3_events',events);} else events=[];
-    if(d.pl3_phases)  {phases=d.pl3_phases;   persist('pl3_phases',phases);} else phases=[];
-    if(d.pl3_tasks)   {tasks=d.pl3_tasks;     persist('pl3_tasks',tasks);} else tasks=[];
-    if(d.pl3_sessions){sessions=d.pl3_sessions;persist('pl3_sessions',sessions);} else sessions=[];
-    if(d.pl3_subtasks){subtasks=d.pl3_subtasks;persist('pl3_subtasks',subtasks);} else subtasks=[];
-    if(d.pl3_sports)  {sports=d.pl3_sports;   persist('pl3_sports',sports);} else sports=[];
-    if(d.pl3_goals)   {goals=d.pl3_goals;     persist('pl3_goals',goals);} else goals=[];
-    if(d.pl3_workouts){workouts=d.pl3_workouts;persist('pl3_workouts',workouts);} else workouts=[];
-    if(d.pl3_races)   {races=d.pl3_races;     persist('pl3_races',races);} else races=[];
-    if(d.pl3_reviews) {weeklyReviews=d.pl3_reviews; persist('pl3_reviews',weeklyReviews);} else weeklyReviews=[];
-    render();if(currentPage==='project')renderGantt();if(currentPage==='sports')renderSports();if(currentPage==='review')renderReview();
-    alert('Local data replaced with server plan.');
-  }catch(err){console.error(err);alert('Sync load failed: '+err.message);}  
-}
-
-// ══════════════════════════════════════════════════
-// WEEKLY REVIEW
-//   weeklyReviews = [{id, weekKey, mood, energy,
-//                     highlight, wentWell, improve,
-//                     notes, createdAt}]
-//   weekKey = "YYYY-Www"  e.g. "2026-W08"
-// ══════════════════════════════════════════════════
-let weeklyReviews = load('pl3_reviews',[]);
-let rvWeekOffset  = 0;   // 0 = this week
-let rvEditId      = null;
-let rvMood        = '';
-
-// ── week key helpers ──
-function rvWeekKey(d){
-  // Key = "YYYY-MM-DD" of that week's Monday — simple, no ISO quirks
-  const dt=new Date(d); dt.setHours(0,0,0,0);
-  const dow=dt.getDay();
-  const mon=new Date(dt);
-  mon.setDate(dt.getDate()-(dow===0?6:dow-1));
-  return fmtD(mon);
-}
-function rvMonday(wkKey){
-  // wkKey is already the Monday date string
-  return parseD(wkKey);
-}
-function rvLabel(wkKey){
-  const mon=rvMonday(wkKey);
-  const sun=addDays(mon,6);
-  const sameYear=mon.getFullYear()===sun.getFullYear();
-  return `${mon.getDate()} ${MN[mon.getMonth()].slice(0,3)}${sameYear?'':' '+mon.getFullYear()} – ${sun.getDate()} ${MN[sun.getMonth()].slice(0,3)} ${sun.getFullYear()}`;
-}
-function rvCurrentKey(){
-  const ref=addDays(today0(),rvWeekOffset*7);
-  return rvWeekKey(ref); // rvWeekKey now returns Monday's fmtD
-}
-function rvOffsetOf(wkKey){
-  const thisMon=rvMonday(rvWeekKey(today0()));
-  const thatMon=rvMonday(wkKey);
-  return Math.round((thatMon-thisMon)/(7*86400000));
-}
-function reviewNav(dir){ rvWeekOffset+=dir; renderReview(); }
-
-// ── compute stats for any week ──
-function rvStats(wkKey){
-  const mon=rvMonday(wkKey);
-  const sun=addDays(mon,6);
-  const inWk=d=>{const dt=parseD(d);return dt&&dt>=mon&&dt<=sun;};
-
-  // Work hours from calendar work events
-  const workHrs=events.filter(e=>e.cat==='work'&&inWk(e.date)).reduce((a,e)=>{
-    const m=(toMin(e.end||'17:00')-toMin(e.start||'09:00'));
-    return a+(m>0?m/60:0);
-  },0);
-
-  // Task session hours
-  const wkSess=sessions.filter(s=>inWk(s.date));
-  const sessHrs=wkSess.reduce((a,s)=>{
-    const m=toMin(s.endTime||'11:00')-toMin(s.startTime||'09:00');
-    return a+(m>0?m/60:0);
-  },0);
-
-  // Tasks active/completed this week
-  const activeTasks=tasks.filter(t=>{
-    const s=parseD(t.startDate),e=parseD(t.deadline);
-    return s&&e&&!(e<mon||s>sun);
-  });
-  const doneCount=activeTasks.filter(t=>t.status==='done').length;
-
-  // Events by category
-  const socialEvs=events.filter(e=>e.cat==='social'&&inWk(e.date)).length;
-  const personalEvs=events.filter(e=>e.cat==='personal'&&inWk(e.date)).length;
-
-  // Sports per sport
-  const calIds=new Set(workouts.map(w=>w.calEventId).filter(Boolean));
-  const sportRows=sports.map(sp=>{
-    const goal=goals.find(g=>g.sportId===sp.id);
-    const wks=workouts.filter(w=>w.sportId===sp.id&&inWk(w.date));
-    const calWks=events.filter(e=>e.cat==='sports'&&inWk(e.date)&&!calIds.has(e.id)&&
-      (e.sportId===sp.id||e.title.toLowerCase().includes(sp.name.toLowerCase())));
-    const done=wks.length+calWks.length;
-    const target=goal?goal.sessions:0;
-    const km=wks.reduce((a,w)=>a+(+w.distance||0),0);
-    const min=wks.reduce((a,w)=>a+(+w.duration||0),0);
-    return {sp,done,target,km,min};
-  }).filter(r=>r.done>0||r.target>0);
-
-  return {workHrs,sessHrs,activeTasks,doneCount,socialEvs,personalEvs,sportRows};
-}
-
-// ══════════════════════════════════════════════════
-// RENDER REVIEW PAGE
-// ══════════════════════════════════════════════════
-function renderReview(){
-  const cont=document.getElementById('review-content');
-  if(!cont) return;
-
-  const curKey=rvCurrentKey();
-
-  const curReview=weeklyReviews.find(r=>r.weekKey===curKey);
-  const stats=rvStats(curKey);
-  const sorted=[...weeklyReviews].sort((a,b)=>b.weekKey.localeCompare(a.weekKey));
-
-  let html=`<div class="review-layout">`;
-
-  // ─── SIDEBAR ───
-  html+=`<div class="review-sidebar">
-    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;">Past reviews</div>`;
-
-  if(!sorted.length){
-    html+=`<div style="color:var(--muted);font-size:.8rem;padding:10px 0;">No reviews yet. Write your first one!</div>`;
-  } else {
-    sorted.forEach(r=>{
-      const isActive=r.weekKey===curKey;
-      const off=rvOffsetOf(r.weekKey);
-      const rStats=rvStats(r.weekKey);
-      html+=`<div class="review-entry${isActive?' rv-active':''}" onclick="rvJump(${off})">
-        <div class="rv-entry-top">
-          <div class="rv-entry-mood">${r.mood||'📝'}</div>
-          <div style="flex:1;min-width:0;">
-            <div class="rv-entry-week">${rvLabel(r.weekKey)}</div>
-            ${r.highlight?`<div class="rv-entry-preview">"${r.highlight}"</div>`:''}
-          </div>
-        </div>
-        <div class="rv-entry-chips">
-          ${r.energy?`<span class="rv-chip" style="background:rgba(245,158,11,.15);color:var(--warn);">⚡${r.energy}/10</span>`:''}
-          ${rStats.sportRows.map(s=>`<span class="rv-chip" style="background:rgba(62,207,142,.12);color:var(--ok);">${s.sp.icon}${s.done}${s.target?'/'+s.target:''}</span>`).join('')}
-          ${r.wentWell?`<span class="rv-chip" style="background:rgba(78,154,241,.12);color:var(--work);">✓ notes</span>`:''}
-        </div>
-      </div>`;
-    });
+    if(currentPage==='review'&&typeof renderReview==='function')renderReview();
+  }catch(err){
+    console.error(err);
+    setSyncDot('error');
+    if(manual) showToast('Pull failed: '+err.message, true);
   }
-  html+=`</div>`; // end sidebar
+}
 
-  // ─── MAIN PANEL ───
-  html+=`<div class="review-main">`;
-
-  // Week title + nav + edit btn (nav lives here, not in header)
-  html+=`<div class="rv-card">
-    <div class="rv-week-heading">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <button class="nav-arrow" onclick="reviewNav(-1)">←</button>
-        <span style="min-width:200px;text-align:center;">${rvLabel(curKey)}${curReview&&curReview.mood?' '+curReview.mood:''}</span>
-        <button class="nav-arrow" onclick="reviewNav(1)">→</button>
-      </div>
-      <button class="${curReview?'btn-secondary':'btn-primary'}" style="font-size:.73rem;padding:5px 12px;" onclick="openReviewModal()">
-        ${curReview?'✎ Edit':'✎ Write report'}
-      </button>
-    </div>`;
-
-  if(curReview&&curReview.energy){
-    html+=`<div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Energy: <strong style="color:var(--text)">${curReview.energy}/10</strong></div>`;
+// ── SYNC DOT ──
+function setSyncDot(state){
+  const dot=document.getElementById('sync-dot');
+  if(!dot)return;
+  dot.className='';
+  if(state==='syncing'){dot.classList.add('syncing');}
+  else if(state==='saved'){
+    dot.classList.add('saved');
+    setTimeout(()=>{if(dot.classList.contains('saved'))dot.className='';},2500);
   }
-
-  // Auto stats
-  html+=`<div class="rv-stats" style="margin-top:14px;">
-    <div class="rv-stat">
-      <div class="rv-stat-num" style="color:var(--work)">${stats.workHrs.toFixed(1)}</div>
-      <div class="rv-stat-lbl">work hrs</div>
-    </div>
-    <div class="rv-stat">
-      <div class="rv-stat-num" style="color:var(--accent)">${stats.sessHrs.toFixed(1)}</div>
-      <div class="rv-stat-lbl">task hrs</div>
-    </div>
-    <div class="rv-stat">
-      <div class="rv-stat-num" style="color:var(--ok)">${stats.doneCount}<span style="font-size:.85rem;color:var(--muted)">/${stats.activeTasks.length}</span></div>
-      <div class="rv-stat-lbl">tasks done</div>
-    </div>
-    <div class="rv-stat">
-      <div class="rv-stat-num" style="color:var(--social)">${stats.socialEvs}</div>
-      <div class="rv-stat-lbl">social</div>
-    </div>
-  </div>
-  </div>`; // end top card
-
-  // Sports card
-  if(stats.sportRows.length){
-    html+=`<div class="rv-card">
-      <div class="rv-card-title">🏃 Training</div>`;
-    stats.sportRows.forEach(({sp,done,target,km,min})=>{
-      const pct=target?Math.min(100,Math.round(done/target*100)):100;
-      const over=target&&done>target;
-      html+=`<div class="rv-sport-row">
-        <div style="font-size:1rem;width:22px;text-align:center">${sp.icon}</div>
-        <div style="width:80px;font-size:.78rem;font-weight:600;color:${sp.color}">${sp.name}</div>
-        <div class="rv-bar-wrap"><div class="rv-bar" style="width:${pct}%;background:${sp.color}${over?';box-shadow:0 0 0 2px '+sp.color:''};"></div></div>
-        <div style="font-size:.72rem;color:var(--muted);margin-left:8px;min-width:90px;">
-          <strong style="color:${done>=target&&target?'var(--ok)':'var(--text)'}">${done}</strong>${target?`/${target}`:''} sessions
-          ${km?`· ${km.toFixed(1)} km`:''}${min?`· ${min} min`:''}
-        </div>
-      </div>`;
-    });
-    html+=`</div>`;
+  else if(state==='error'){
+    dot.classList.add('error');
+    setTimeout(()=>{if(dot.classList.contains('error'))dot.className='';},4000);
   }
-
-  // Tasks card
-  if(stats.activeTasks.length){
-    html+=`<div class="rv-card">
-      <div class="rv-card-title">📋 Tasks this week</div>`;
-    stats.activeTasks.forEach(t=>{
-      const col=t.status==='done'?'var(--ok)':t.status==='in-progress'?'var(--warn)':'var(--border)';
-      const ph=phases.find(p=>p.id===t.phaseId);
-      html+=`<div class="rv-task-row">
-        <div class="rv-dot" style="background:${col}"></div>
-        <div style="flex:1;${t.status==='done'?'text-decoration:line-through;color:var(--muted)':''}">${t.name}</div>
-        ${ph?`<div style="font-size:.65rem;color:${ph.color};font-weight:600;">${ph.name}</div>`:''}
-        <div style="font-size:.65rem;color:var(--muted);margin-left:6px;">${t.status.replace('-',' ')}</div>
-      </div>`;
-    });
-    html+=`</div>`;
-  }
-
-  // Written notes card (only if review exists)
-  if(curReview){
-    html+=`<div class="rv-card">
-      <div class="rv-card-title">✍️ Your review</div>`;
-    if(curReview.highlight){
-      html+=`<div style="margin-bottom:12px;"><span class="rv-highlight-pill">✨ ${curReview.highlight}</span></div>`;
-    }
-    if(curReview.wentWell){
-      html+=`<div style="font-size:.72rem;font-weight:700;color:var(--ok);margin-bottom:4px;">✅ WHAT WENT WELL</div>
-        <div class="rv-notes-block" style="margin-bottom:12px;">${curReview.wentWell}</div>`;
-    }
-    if(curReview.improve){
-      html+=`<div style="font-size:.72rem;font-weight:700;color:var(--warn);margin-bottom:4px;">🎯 TO IMPROVE</div>
-        <div class="rv-notes-block" style="margin-bottom:12px;">${curReview.improve}</div>`;
-    }
-    if(curReview.notes){
-      html+=`<div style="font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:4px;">📓 NOTES</div>
-        <div class="rv-notes-block">${curReview.notes}</div>`;
-    }
-    html+=`</div>`;
-  } else {
-    html+=`<div class="rv-write-cta">
-      No written report for this week yet — click <strong>✎ Write report</strong> above to add one.
-    </div>`;
-  }
-
-  html+=`</div>`; // end review-main
-  html+=`</div>`; // end review-layout
-  cont.innerHTML=html;
 }
 
-function rvJump(offset){ rvWeekOffset=offset; renderReview(); }
-
-// ══════════════════════════════════════════════════
-// REVIEW MODAL
-// ══════════════════════════════════════════════════
-function rvSelectMood(btn){
-  document.querySelectorAll('.mood-opt').forEach(b=>b.classList.remove('rv-sel'));
-  btn.classList.add('rv-sel');
-  rvMood=btn.dataset.mood;
+// ── TOAST ──
+let _toastTimer=null;
+function showToast(msg, isError=false){
+  const t=document.getElementById('toast');
+  if(!t)return;
+  t.textContent=msg;
+  t.style.color=isError?'var(--danger)':'var(--text)';
+  t.style.opacity='1';
+  if(_toastTimer)clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>{t.style.opacity='0';},2800);
 }
 
-function openReviewModal(){
-  const wkKey=rvCurrentKey();
-  const existing=weeklyReviews.find(r=>r.weekKey===wkKey);
-  rvEditId=existing?existing.id:null;
-  rvMood=existing?.mood||'';
-
-  document.getElementById('review-modal-title').textContent=existing?'Edit Weekly Report':'Write Weekly Report';
-  document.getElementById('review-modal-wklabel').textContent=rvLabel(wkKey);
-  document.getElementById('rv-highlight').value=existing?.highlight||'';
-  document.getElementById('rv-went-well').value=existing?.wentWell||'';
-  document.getElementById('rv-improve').value=existing?.improve||'';
-  document.getElementById('rv-notes').value=existing?.notes||'';
-  const energy=existing?.energy??7;
-  document.getElementById('rv-energy').value=energy;
-  document.getElementById('rv-energy-lbl').textContent=energy;
-  document.getElementById('rv-del-btn').style.display=existing?'block':'none';
-
-  document.querySelectorAll('.mood-opt').forEach(b=>b.classList.toggle('rv-sel',b.dataset.mood===rvMood));
-  openModal('review-modal');
+// ── SETTINGS DROPDOWN ──
+function toggleSettings(){
+  document.getElementById('settings-menu').classList.toggle('open');
 }
-
-function saveReview(){
-  const wkKey=rvCurrentKey();
-  const rev={
-    id:rvEditId||uid(),
-    weekKey:wkKey,
-    mood:rvMood,
-    energy:parseInt(document.getElementById('rv-energy').value),
-    highlight:document.getElementById('rv-highlight').value.trim(),
-    wentWell:document.getElementById('rv-went-well').value.trim(),
-    improve:document.getElementById('rv-improve').value.trim(),
-    notes:document.getElementById('rv-notes').value.trim(),
-    createdAt:new Date().toISOString()
-  };
-  if(rvEditId){
-    const i=weeklyReviews.findIndex(r=>r.id===rvEditId);
-    if(i!==-1) weeklyReviews[i]=rev; else weeklyReviews.push(rev);
-  } else {
-    weeklyReviews.push(rev);
-  }
-  persist('pl3_reviews',weeklyReviews);
-  closeModal('review-modal');
-  renderReview();
-}
-
-function deleteReview(){
-  if(!rvEditId||!confirm('Delete this review?'))return;
-  weeklyReviews=weeklyReviews.filter(r=>r.id!==rvEditId);
-  persist('pl3_reviews',weeklyReviews);
-  closeModal('review-modal');
-  renderReview();
-}
-
-function toggleDataMenu(){
-  const m=document.getElementById('data-menu');
-  m.style.display=m.style.display==='none'?'block':'none';
-}
-// Close data menu when clicking outside
 document.addEventListener('click',function(e){
-  const btn=document.getElementById('data-menu-btn');
-  const menu=document.getElementById('data-menu');
+  const btn=document.getElementById('settings-btn');
+  const menu=document.getElementById('settings-menu');
   if(menu&&btn&&!btn.contains(e.target)&&!menu.contains(e.target)){
-    menu.style.display='none';
+    menu.classList.remove('open');
   }
 });
+
+// ── AUTO-SYNC: use setSyncDot ──
+function scheduleAutoSync(){
+  if(__autoSyncTimer)clearTimeout(__autoSyncTimer);
+  __autoSyncTimer=setTimeout(()=>{
+    __autoSyncTimer=null;
+    syncSave(false).catch(e=>console.error('auto sync failed',e));
+  },1500);
+}
 
 // INIT
 render();
