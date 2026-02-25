@@ -2792,7 +2792,79 @@ document.addEventListener('click',function(e){
 });
 
 // INIT
-showPage('calendar');
+window.addEventListener('DOMContentLoaded', function(){
+  initApp();
+});
+
+function initApp(){
+  // Load data from localStorage
+  loadFromStorage();
+  
+  // Seed data if first time
+  if(!get('pl3_seeded')){
+    seedData();
+  }
+  
+  // Attach all event listeners
+  attachEventListeners();
+  
+  // Initial render
+  render();
+  showPage('calendar');
+  renderCalendar();
+}
+
+function attachEventListeners(){
+  // Page tabs
+  document.querySelectorAll('.page-tab').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const page=this.dataset.page;
+      if(page)showPage(page);
+    });
+  });
+  
+  // View tabs
+  document.querySelectorAll('.view-tab').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const view=this.dataset.view;
+      if(view)setView(view);
+    });
+  });
+  
+  // Nav arrows
+  const prevBtn=document.getElementById('nav-prev');
+  const nextBtn=document.getElementById('nav-next');
+  if(prevBtn)prevBtn.addEventListener('click',()=>changeMonth(-1));
+  if(nextBtn)nextBtn.addEventListener('click',()=>changeMonth(1));
+  
+  // Settings
+  const settingsBtn=document.getElementById('settings-btn');
+  if(settingsBtn)settingsBtn.addEventListener('click',()=>toggleSettings());
+  
+  // Buttons
+  document.getElementById('btn-new-event')?.addEventListener('click',()=>showNewEventModal());
+  document.getElementById('btn-sync-push')?.addEventListener('click',()=>syncSave(true));
+  document.getElementById('btn-sync-pull')?.addEventListener('click',()=>syncLoad(true));
+  document.getElementById('btn-export')?.addEventListener('click',exportData);
+  document.getElementById('import-file')?.addEventListener('change',importData);
+  
+  // Gantt buttons
+  document.getElementById('btn-add-phase')?.addEventListener('click',()=>showNewPhaseModal());
+}
+
+function loadFromStorage(){
+  events=get('pl3_events')||[];
+  phases=get('pl3_phases')||[];
+  tasks=get('pl3_tasks')||[];
+  sessions=get('pl3_sessions')||[];
+  subtasks=get('pl3_subtasks')||[];
+  sports=get('pl3_sports')||[];
+  goals=get('pl3_goals')||[];
+  workouts=get('pl3_workouts')||[];
+  races=get('pl3_races')||[];
+  meetings=get('pl3_meetings')||[];
+  weeklyReviews=get('pl3_reviews')||[];
+}
 </script>
 </body>
 </html>
