@@ -16,22 +16,22 @@
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
 /* ─── HEADER ─── */
-header{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;gap:10px;flex-wrap:wrap;}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;letter-spacing:-.5px;white-space:nowrap;}
+header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;gap:8px;flex-wrap:wrap;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-.5px;white-space:nowrap;}
 .logo span{color:var(--accent);}
-.page-tabs{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:10px;}
-.page-tab{padding:6px 15px;border:none;background:none;color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;font-size:.76rem;cursor:pointer;border-radius:7px;transition:all .2s;letter-spacing:.5px;}
+.page-tabs{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:8px;}
+.page-tab{padding:5px 10px;border:none;background:none;color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;font-size:.7rem;cursor:pointer;border-radius:6px;transition:all .2s;letter-spacing:.3px;}
 .page-tab.active{background:var(--surface3);color:var(--text);}
-.view-tabs{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:10px;}
-.view-tab{padding:6px 13px;border:none;background:none;color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;font-size:.74rem;cursor:pointer;border-radius:7px;transition:all .2s;letter-spacing:.5px;}
+.view-tabs{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:8px;}
+.view-tab{padding:5px 10px;border:none;background:none;color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;font-size:.66rem;cursor:pointer;border-radius:6px;transition:all .2s;letter-spacing:.2px;}
 .view-tab.active{background:var(--accent);color:#fff;}
-.header-nav{display:flex;align-items:center;gap:7px;}
-.nav-arrow{background:var(--surface2);border:none;color:var(--text);width:31px;height:31px;border-radius:8px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.header-nav{display:flex;align-items:center;gap:5px;}
+.nav-arrow{background:var(--surface2);border:none;color:var(--text);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:background .2s;}
 .nav-arrow:hover{background:var(--border);}
-.period-label{font-family:'Syne',sans-serif;font-weight:700;font-size:.86rem;min-width:136px;text-align:center;}
-.btn-primary{background:var(--accent);color:#fff;border:none;padding:7px 15px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:.76rem;cursor:pointer;transition:opacity .2s;white-space:nowrap;}
+.period-label{font-family:'Syne',sans-serif;font-weight:700;font-size:.75rem;min-width:100px;text-align:center;}
+.btn-primary{background:var(--accent);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:.7rem;cursor:pointer;transition:opacity .2s;white-space:nowrap;}
 .btn-primary:hover{opacity:.85;}
-.btn-secondary{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 15px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:.76rem;cursor:pointer;transition:background .2s;white-space:nowrap;}
+.btn-secondary{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:.7rem;cursor:pointer;transition:background .2s;white-space:nowrap;}
 .btn-secondary:hover{background:var(--surface3);}
 
 /* ─── LAYOUT ─── */
@@ -340,15 +340,15 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <div id="settings-menu">
       <div id="settings-user-email" style="display:none;"></div>
       <div class="set-section">Account</div>
-      <button class="set-item" id="s-login-btn" onclick="showAuthModal(false);toggleSettings()">🔑 Log in / Register</button>
-      <button class="set-item" id="s-logout-btn" style="display:none;" onclick="logout();toggleSettings()">↩ Log out</button>
+      <button class="set-item" id="s-login-btn" onclick="event.stopPropagation();showAuthModal(false);toggleSettings()">🔑 Log in / Register</button>
+      <button class="set-item" id="s-logout-btn" style="display:none;" onclick="event.stopPropagation();logout();toggleSettings()">↩ Log out</button>
       <hr class="set-sep">
       <div class="set-section">Data</div>
-      <button class="set-item" onclick="syncSave(true);toggleSettings()">⬆ Push to server</button>
-      <button class="set-item" onclick="syncLoad(true);toggleSettings()">⬇ Pull from server</button>
+      <button class="set-item" onclick="event.stopPropagation();syncSave(true);toggleSettings()">⬆ Push to server</button>
+      <button class="set-item" onclick="event.stopPropagation();syncLoad(true);toggleSettings()">⬇ Pull from server</button>
       <hr class="set-sep">
-      <button class="set-item" onclick="exportData();toggleSettings()">💾 Export backup</button>
-      <label class="set-item">📂 Import backup<input type="file" accept=".json" onchange="importData(event);toggleSettings()" style="display:none"></label>
+      <button class="set-item" onclick="event.stopPropagation();exportData();toggleSettings()">💾 Export backup</button>
+      <label class="set-item" onclick="event.stopPropagation();">📂 Import backup<input type="file" accept=".json" onchange="event.stopPropagation();importData(event);toggleSettings()" style="display:none"></label>
     </div>
   </div>
 </header>
@@ -1169,7 +1169,24 @@ function layoutEvents(evs){
 function renderDaily(main){
   const ds=fmtD(currentDate);
   const dayEvs=events.filter(e=>e.date===ds&&e.start).map(ev=>({...ev,sm:toMin(ev.start),em:ev.end?toMin(ev.end):toMin(ev.start)+60}));
-  let h='<div class="daily-view"><div class="time-col-sticky">';
+  
+  // Sleep info for daily view
+  const daySleep=sleep.find(s=>s.date===ds);
+  let sleepHtml='';
+  if(daySleep){
+    const h=Math.floor(daySleep.hoursBefore||8.5);
+    const m=Math.round(((daySleep.hoursBefore||8.5)%1)*60);
+    sleepHtml=`<div style="background:rgba(167,139,250,.07);border-bottom:1px solid rgba(167,139,250,.2);padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="openSleepModal('${ds}')">
+      <div style="font-size:.8rem;"><span style="color:var(--personal);font-weight:700;">🔔 Wake:</span> ${daySleep.wakeTime} (${h}h ${m}m before)</div>
+      <span style="font-size:.7rem;color:var(--muted);">tap to edit</span>
+    </div>`;
+  }else{
+    sleepHtml=`<div style="background:rgba(167,139,250,.07);border-bottom:1px solid rgba(167,139,250,.2);padding:10px 12px;margin-bottom:8px;">
+      <button class="btn-secondary" onclick="openSleepModal('${ds}')" style="width:100%;font-size:.8rem;padding:6px 10px;">+ Set wake time</button>
+    </div>`;
+  }
+  
+  let h='<div class="daily-view">'+sleepHtml+'<div class="time-col-sticky">';
   for(let i=0;i<24;i++)h+=`<div class="time-slot-label">${i===0?'':(i<10?'0'+i:i)+':00'}</div>`;
   h+='</div><div class="events-col" id="evcol">';
   for(let i=0;i<24;i++)h+=`<div class="time-row" ondragover="event.preventDefault()" ondrop="dropD(event,'${ds}',${i})"></div>`;
@@ -1242,7 +1259,26 @@ function clickEvent(ev,ds){
 function renderWeekly(main){
   const ws=wkStart(new Date(currentDate));
   const td=today0();
-  let h='<div class="week-grid"><div class="week-time-label"></div>';
+  let h='<div class="week-grid"><div class="week-time-label" style="background:rgba(167,139,250,.07);border-bottom:1px solid rgba(167,139,250,.2);"></div>';
+  
+  // Sleep row for the week
+  for(let d=0;d<7;d++){
+    const day=new Date(ws);day.setDate(ws.getDate()+d);
+    const ds=fmtD(day);
+    const daySleep=sleep.find(s=>s.date===ds);
+    const isTd=day.getTime()===td.getTime();
+    let sleepCell='';
+    if(daySleep){
+      const hr=Math.floor(daySleep.hoursBefore||8.5);
+      const mn=Math.round(((daySleep.hoursBefore||8.5)%1)*60);
+      sleepCell=`<span style="font-size:.65rem;font-weight:700;">⏰ ${daySleep.wakeTime}</span><br><span style="font-size:.6rem;color:var(--muted);">${hr}h${mn>0?mn+'m':''}</span>`;
+    }else{
+      sleepCell=`<span style="font-size:.65rem;color:var(--muted);">—</span>`;
+    }
+    h+=`<div class="week-header-cell${isTd?' today-col':''}" style="background:rgba(167,139,250,.07);border-bottom:1px solid rgba(167,139,250,.2);cursor:pointer;padding:6px 2px;" onclick="openSleepModal('${ds}')">${sleepCell}</div>`;
+  }
+  h+='</div><div class="week-grid" style="margin-top:0;"><div class="week-time-label"></div>';
+  
   for(let d=0;d<7;d++){
     const day=new Date(ws);day.setDate(ws.getDate()+d);
     const isTd=day.getTime()===td.getTime();
@@ -2984,8 +3020,14 @@ function showToast(msg,isError=false){
 }
 // ── SETTINGS DROPDOWN ──
 function toggleSettings(e){
-  if(e)e.stopPropagation();
-  document.getElementById('settings-menu').classList.toggle('open');
+  if(e){
+    e.stopPropagation();
+    e.preventDefault();
+  }
+  const menu=document.getElementById('settings-menu');
+  if(menu){
+    menu.classList.toggle('open');
+  }
 }
 function attachEventListeners(){
   // Page tabs
