@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>plan.</title>
+<title>wigbo</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -240,23 +240,77 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text);}
 .stat-lbl{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
 .no-sports-empty{color:var(--muted);text-align:center;padding:60px 20px;font-size:.9rem;}
+
+/* ── SYNC DOT ── */
+#sync-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block;margin-left:7px;transition:background .3s,opacity .4s;opacity:.35;vertical-align:middle;flex-shrink:0;}
+#sync-dot.syncing{background:var(--warn);opacity:1;animation:sdpulse .8s infinite;}
+#sync-dot.saved{background:var(--ok);opacity:1;}
+#sync-dot.error{background:var(--danger);opacity:1;}
+@keyframes sdpulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── SETTINGS DROPDOWN ── */
+#settings-menu{display:none;position:absolute;right:0;top:calc(100% + 8px);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:8px;z-index:400;min-width:190px;box-shadow:0 8px 32px rgba(0,0,0,.55);}
+#settings-menu.open{display:block;}
+.set-section{font-size:.63rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;padding:6px 8px 3px;}
+.set-item{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;color:var(--text);padding:8px 10px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.82rem;transition:background .15s;text-align:left;box-sizing:border-box;}
+.set-item:hover{background:var(--surface2);}
+.set-item label{cursor:pointer;display:flex;align-items:center;gap:9px;width:100%;}
+.set-sep{border:none;border-top:1px solid var(--border);margin:5px 0;}
+#settings-user-email{font-size:.74rem;color:var(--muted);padding:5px 10px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 18px;font-size:.82rem;font-family:'Syne',sans-serif;font-weight:600;z-index:500;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4);}
+
+/* ── ACTIVE PAGE TAB ── */
+.page-tab.active{background:var(--accent)!important;color:#fff!important;}
+
+/* ── MEETING CHIPS ── */
+.meeting-chip{position:absolute;border-radius:5px;padding:2px 6px;font-size:.62rem;font-weight:700;cursor:pointer;z-index:3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.92;background:rgba(245,158,11,.2);border-left:2px solid var(--warn);color:#fcd34d;}
+.meeting-chip:hover{opacity:1;filter:brightness(1.15);}
+
+/* ── REPORT PAGE ── */
+.review-layout{display:grid;grid-template-columns:240px 1fr;gap:16px;height:100%;}
+.review-sidebar{overflow-y:auto;display:flex;flex-direction:column;gap:6px;}
+.review-entry{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;transition:border-color .15s;}
+.review-entry:hover,.review-entry.active{border-color:var(--accent);}
+.review-entry-head{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;margin-bottom:4px;}
+.review-entry-preview{font-size:.7rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rv-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:12px;}
+.rv-week-heading{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.rv-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-top:8px;}
+.rv-stat{background:var(--surface2);border-radius:9px;padding:10px 12px;text-align:center;}
+.rv-stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;}
+.rv-stat-lbl{font-size:.65rem;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.4px;}
+.rv-sport-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}
+.rv-sport-row:last-child{border-bottom:none;}
+.rv-bar-wrap{flex:1;height:6px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.rv-bar{height:100%;border-radius:4px;transition:width .4s;}
+.rv-task-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:.8rem;border-bottom:1px solid var(--border);}
+.rv-task-row:last-child{border-bottom:none;}
+.rv-task-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.rv-highlight-pill{display:inline-block;background:var(--accent);color:#fff;border-radius:20px;padding:3px 12px;font-size:.75rem;font-weight:700;margin-bottom:10px;}
+.rv-notes-block{background:var(--surface2);border-radius:9px;padding:12px 14px;font-size:.83rem;line-height:1.75;white-space:pre-wrap;color:var(--text);}
+.rv-write-cta{background:var(--surface2);border:1px dashed var(--border);border-radius:10px;padding:22px;text-align:center;color:var(--muted);font-size:.84rem;}
+.mood-row{display:flex;gap:7px;margin-top:5px;}
+.mood-opt{font-size:1.3rem;background:var(--surface2);border:2px solid transparent;border-radius:8px;padding:5px 8px;cursor:pointer;transition:border-color .15s;}
+.mood-opt.selected{border-color:var(--accent);}
+@media(max-width:640px){.review-layout{grid-template-columns:1fr;}.review-sidebar{display:none;}}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">plan<span>.</span></div>
+  <div style="display:flex;align-items:center;gap:0;flex-shrink:0;">
+    <div class="logo">wigbo</div>
+    <span id="sync-dot" title="Sync status"></span>
+  </div>
   <div class="page-tabs">
-    <button class="page-tab active" onclick="showPage('calendar')">📅 Calendar</button>
-    <button class="page-tab" onclick="showPage('project')">📊 Project</button>
-    <button class="page-tab" onclick="showPage('sports')">🏃 Sports</button>
+    <button class="page-tab active" onclick="showPage('calendar')">Calendar</button>
+    <button class="page-tab" onclick="showPage('project')">Project</button>
+    <button class="page-tab" onclick="showPage('sports')">Sports</button>
+    <button class="page-tab" onclick="showPage('review')">Report</button>
   </div>
-  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
-    <button class="btn-secondary" onclick="exportData()" title="Export all data as JSON backup">⬇ Export</button>
-    <label class="btn-secondary" style="cursor:pointer;margin:0;" title="Import data from JSON backup">⬆ Import<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
-    <button class="btn-secondary" onclick="syncLoad()" title="Load latest plan from server">⤾ Sync</button>
-  </div>
-  <div id="cal-controls" style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
+  <div id="cal-controls" style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-left:auto;">
     <div class="view-tabs">
       <button class="view-tab active" onclick="switchView('daily')">Day</button>
       <button class="view-tab" onclick="switchView('weekly')">Week</button>
@@ -267,18 +321,39 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
       <div class="period-label" id="period-label"></div>
       <button class="nav-arrow" onclick="navigate(1)">→</button>
     </div>
-    <button class="btn-primary" onclick="openEventModal()">+ Add Event</button>
+    <button class="btn-primary" onclick="openEventModal()">+ Event</button>
   </div>
-  <div id="proj-controls" style="display:none;align-items:center;gap:9px;">
-    <button class="btn-primary" onclick="openTaskModal()">+ Add Task</button>
-    <button class="btn-secondary" onclick="openPhaseModal()">+ Add Phase</button>
+  <div id="proj-controls" style="display:none;align-items:center;gap:9px;margin-left:auto;">
+    <button class="btn-primary" onclick="openTaskModal()">+ Task</button>
+    <button class="btn-secondary" onclick="openPhaseModal()">+ Phase</button>
   </div>
-  <div id="sports-controls" style="display:none;align-items:center;gap:9px;">
-    <button class="btn-primary" onclick="openSportModal()">+ Add Sport</button>
-    <button class="btn-secondary" onclick="openRaceModal()">+ Add Race</button>
-    <button class="btn-secondary" onclick="openGoalModal()">+ Weekly Goal</button>
+  <div id="sports-controls" style="display:none;align-items:center;gap:9px;margin-left:auto;">
+    <button class="btn-primary" onclick="openSportModal()">+ Sport</button>
+    <button class="btn-secondary" onclick="openRaceModal()">+ Race</button>
+    <button class="btn-secondary" onclick="openGoalModal()">+ Goal</button>
+  </div>
+  <div id="review-controls" style="display:none;align-items:center;gap:9px;margin-left:auto;">
+    <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:.86rem;color:var(--muted);">Weekly Report</span>
+  </div>
+  <div style="position:relative;margin-left:12px;flex-shrink:0;">
+    <button class="btn-secondary" id="settings-btn" onclick="toggleSettings()" style="padding:7px 11px;font-size:.92rem;" title="Settings & account">⚙</button>
+    <div id="settings-menu">
+      <div id="settings-user-email" style="display:none;"></div>
+      <div class="set-section">Account</div>
+      <button class="set-item" id="s-login-btn" onclick="showAuthModal(false);toggleSettings()">🔑 Log in / Register</button>
+      <button class="set-item" id="s-logout-btn" style="display:none;" onclick="logout();toggleSettings()">↩ Log out</button>
+      <hr class="set-sep">
+      <div class="set-section">Data</div>
+      <button class="set-item" onclick="syncSave(true);toggleSettings()">⬆ Push to server</button>
+      <button class="set-item" onclick="syncLoad(true);toggleSettings()">⬇ Pull from server</button>
+      <hr class="set-sep">
+      <button class="set-item" onclick="exportData();toggleSettings()">💾 Export backup</button>
+      <label class="set-item">📂 Import backup<input type="file" accept=".json" onchange="importData(event);toggleSettings()" style="display:none"></label>
+    </div>
   </div>
 </header>
+
+<div id="toast"></div>
 
 <div class="app-body">
   <div id="calendar-page" style="display:flex;flex:1;overflow:hidden;">
@@ -300,17 +375,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   <div id="sports-page" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
     <div style="flex:1;overflow-y:auto;padding:20px 24px;" id="sports-content"></div>
   </div>
+
+  <!-- WEEKLY REPORT PAGE -->
+  <div id="review-page" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+    <div style="flex:1;overflow-y:auto;padding:20px 24px;" id="review-content"></div>
+  </div>
 </div>
 
-<div class="legend" id="legend-bar">
-  <div class="legend-item"><div class="legend-dot" style="background:var(--work)"></div>Internship</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--sports)"></div>Sports</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--social)"></div>Social</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--personal)"></div>Personal</div>
-  <div style="flex:1"></div>
-  <div class="legend-item" style="color:var(--danger);">● Overdue task</div>
-  <div class="legend-item" style="color:var(--warn);">● Due soon</div>
-</div>
+
 
 <!-- ── EVENT MODAL ── -->
 <div class="modal-overlay" id="ev-modal">
@@ -447,16 +519,17 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
       <button onclick="closeModal('task-popup-modal')" style="background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:4px;flex-shrink:0;">✕</button>
     </div>
     <div id="popup-tasks-list"></div>
-    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
+    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;display:flex;flex-direction:column;gap:8px;">
+      <button class="btn-secondary" onclick="openMeetingModal(null,currentPopupDate)" style="width:100%;">+ Add meeting to this day</button>
       <button class="btn-primary" onclick="closeModal('task-popup-modal');showPage('project');" style="width:100%;">→ Manage tasks in Project view</button>
     </div>
   </div>
 </div>
 
-<!-- ── ADD SESSION MODAL ── -->
+<!-- ── SESSION MODAL (create + edit) ── -->
 <div class="modal-overlay" id="session-modal">
   <div class="modal">
-    <h2>Schedule work session</h2>
+    <h2 id="sess-modal-title">Schedule work session</h2>
     <div id="session-task-label" style="font-size:.82rem;color:var(--muted);margin-bottom:14px;"></div>
     <div class="form-group"><label>Date</label><input type="date" id="sess-date"></div>
     <div class="form-row">
@@ -464,8 +537,62 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
       <div class="form-group"><label>End time</label><input type="time" id="sess-end" value="11:00"></div>
     </div>
     <div class="modal-actions">
+      <button class="btn-delete" id="sess-del-btn" style="display:none" onclick="deleteSessionFromModal()">Delete</button>
       <button class="btn-cancel" onclick="closeModal('session-modal')">Cancel</button>
-      <button class="btn-save" onclick="saveSession()">Add session</button>
+      <button class="btn-save" onclick="saveSession()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MEETING MODAL ── -->
+<div class="modal-overlay" id="meeting-modal">
+  <div class="modal">
+    <h2 id="mtg-modal-title">Add Meeting</h2>
+    <div id="mtg-day-label" style="font-size:.82rem;color:var(--muted);margin-bottom:14px;"></div>
+    <div class="form-group"><label>Meeting title</label><input type="text" id="mtg-title" placeholder="e.g. Sprint review, 1:1 with manager…"></div>
+    <div class="form-group"><label>Date</label><input type="date" id="mtg-date"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Start time</label><input type="time" id="mtg-start" value="10:00"></div>
+      <div class="form-group"><label>End time</label><input type="time" id="mtg-end" value="11:00"></div>
+    </div>
+    <div class="form-group"><label>Notes (optional)</label><textarea id="mtg-notes" rows="2" placeholder="Agenda, link, attendees…"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-delete" id="mtg-del-btn" style="display:none" onclick="deleteMeeting()">Delete</button>
+      <button class="btn-cancel" onclick="closeModal('meeting-modal')">Cancel</button>
+      <button class="btn-save" onclick="saveMeeting()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── WEEKLY REPORT MODAL ── -->
+<div class="modal-overlay" id="review-modal">
+  <div class="modal wide">
+    <h2 id="review-modal-title">Write Weekly Report</h2>
+    <div id="review-modal-week" style="font-size:.78rem;color:var(--muted);margin-bottom:16px;"></div>
+    <div class="form-group">
+      <label>Overall mood</label>
+      <div class="mood-row" id="mood-row">
+        <button class="mood-opt" data-mood="😫" onclick="selectMood('😫')">😫</button>
+        <button class="mood-opt" data-mood="😕" onclick="selectMood('😕')">😕</button>
+        <button class="mood-opt" data-mood="😐" onclick="selectMood('😐')">😐</button>
+        <button class="mood-opt" data-mood="🙂" onclick="selectMood('🙂')">🙂</button>
+        <button class="mood-opt" data-mood="🔥" onclick="selectMood('🔥')">🔥</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Energy level: <span id="energy-lbl">5</span>/10</label>
+      <input type="range" id="rv-energy" min="1" max="10" value="5" oninput="document.getElementById('energy-lbl').textContent=this.value" style="width:100%;accent-color:var(--accent);">
+    </div>
+    <div class="form-group"><label>Highlight of the week</label><input type="text" id="rv-highlight" placeholder="Best moment or achievement…"></div>
+    <div class="form-row">
+      <div class="form-group"><label>What went well</label><textarea id="rv-well" rows="3" placeholder="Wins, progress, good habits…"></textarea></div>
+      <div class="form-group"><label>To improve</label><textarea id="rv-improve" rows="3" placeholder="Friction, blockers, next steps…"></textarea></div>
+    </div>
+    <div class="form-group"><label>Notes</label><textarea id="rv-notes" rows="3" placeholder="Anything else…"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-delete" id="rv-del-btn" style="display:none" onclick="deleteReview()">Delete</button>
+      <button class="btn-cancel" onclick="closeModal('review-modal')">Cancel</button>
+      <button class="btn-save" onclick="saveReview()">Save</button>
     </div>
   </div>
 </div>
@@ -616,6 +743,20 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   </div>
 </div>
 
+  <!-- ── AUTH MODAL ── -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal">
+      <h2>Account</h2>
+      <div class="form-group"><label>Email</label><input type="email" id="auth-email" placeholder="you@domain.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="auth-password" placeholder="choose a password"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal('auth-modal')">Cancel</button>
+        <button class="btn-secondary" onclick="register()">Register</button>
+        <button class="btn-primary" onclick="login()">Log in</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 // ══════════════════════════════════════════════════
 // CONSTANTS & UTILS
@@ -624,7 +765,18 @@ const DS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function load(k,d){try{return JSON.parse(localStorage.getItem(k)||'null')||d;}catch{return d;}}
-function persist(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function persist(k,v){localStorage.setItem(k,JSON.stringify(v));
+  // schedule auto-push for planner data keys
+  if(k && k.startsWith && k.startsWith('pl3_')) scheduleAutoSync();
+}
+// write to localStorage without triggering autosync
+function persistSilent(k,v){localStorage.setItem(k,JSON.stringify(v));}
+// Auto-sync: debounce push to server when local data changes
+let __autoSyncTimer = null;
+function scheduleAutoSync(){
+  if(__autoSyncTimer) clearTimeout(__autoSyncTimer);
+  __autoSyncTimer = setTimeout(()=>{ __autoSyncTimer=null; syncSave(false).catch(e=>console.error('auto sync failed',e)); }, 1500);
+}
 function uid(){return Math.random().toString(36).slice(2,9);}
 function today0(){const d=new Date();d.setHours(0,0,0,0);return d;}
 function parseD(s){
@@ -644,6 +796,161 @@ function toMin(t){if(!t)return 0;const[h,m]=t.split(':').map(Number);return h*60
 function minToTime(m){return`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;}
 function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x;}
 
+// ── AUTH HELPERS
+async function fetchCurrentUser(){
+  try{
+    const res = await fetch('/api/me',{credentials:'same-origin'});
+    if(!res.ok) return null;
+    const j=await res.json();
+    return j.data||null;
+  }catch(e){console.error('fetchCurrentUser',e);return null;}
+}
+
+function updateAuthUI(user){
+  const sEmail=document.getElementById('settings-user-email');
+  const sLogin=document.getElementById('s-login-btn');
+  const sLogout=document.getElementById('s-logout-btn');
+  if(user&&user.email){
+    if(sEmail){sEmail.textContent='Signed in as '+user.email;sEmail.style.display='block';}
+    if(sLogin)sLogin.style.display='none';
+    if(sLogout)sLogout.style.display='flex';
+  }else{
+    if(sEmail)sEmail.style.display='none';
+    if(sLogin)sLogin.style.display='flex';
+    if(sLogout)sLogout.style.display='none';
+  }
+}
+
+async function register(){
+  const email=document.getElementById('auth-email').value.trim();
+  const password=document.getElementById('auth-password').value;
+  if(!email||!password){alert('Email and password required');return}
+  try{
+    const res=await fetch('/api/register',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const j=await res.json();
+    if(!res.ok)throw new Error(j.error||'register failed');
+    // clear any demo/local data so new account starts empty (use silent persist to avoid autosync)
+    clearLocalPlanData();
+    closeModal('auth-modal');
+    const user=await fetchCurrentUser(); updateAuthUI(user);
+    alert('Registered and logged in.');
+  }catch(err){console.error(err);alert('Register failed: '+err.message);}  
+}
+
+async function login(){
+  const email=document.getElementById('auth-email').value.trim();
+  const password=document.getElementById('auth-password').value;
+  if(!email||!password){alert('Email and password required');return}
+  try{
+    const res=await fetch('/api/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const j=await res.json();
+    if(!res.ok)throw new Error(j.error||'login failed');
+    closeModal('auth-modal');
+    const user=await fetchCurrentUser(); updateAuthUI(user);
+    try{ await syncLoad(false); }catch(e){ console.warn('syncLoad after login failed',e); }
+  }catch(err){console.error(err);alert('Login failed: '+err.message);}  
+}
+
+async function logout(){
+  try{await fetch('/api/logout',{method:'POST',credentials:'same-origin'});}catch(e){}
+  updateAuthUI(null);
+  // reseed demo data for anonymous view and go to landing
+  seedDemoData();
+  window.location = '/';
+}
+
+// helper to show auth modal; when `required` is true, hide cancel so user must register/login
+function showAuthModal(required=false){
+  const cancelBtn = document.querySelector('#auth-modal .btn-cancel');
+  if(cancelBtn) cancelBtn.style.display = required ? 'none' : 'inline-flex';
+  openModal('auth-modal');
+}
+
+function clearLocalPlanData(){
+  events = [];
+  phases = [];
+  tasks = [];
+  sessions = [];
+  subtasks = [];
+  sports = [];
+  goals = [];
+  workouts = [];
+  races = [];
+  // persist silently to avoid autosync
+  persistSilent('pl3_events',events);
+  persistSilent('pl3_phases',phases);
+  persistSilent('pl3_tasks',tasks);
+  persistSilent('pl3_sessions',sessions);
+  persistSilent('pl3_subtasks',subtasks);
+  persistSilent('pl3_sports',sports);
+  persistSilent('pl3_goals',goals);
+  persistSilent('pl3_workouts',workouts);
+  persistSilent('pl3_races',races);
+  persistSilent('pl3_seeded',true);
+  render();
+}
+
+function seedDemoData(){
+  const td=today0();
+  const a=(n)=>fmtD(addDays(td,n));
+  const _events=[
+    {id:'e1',title:'Internship',cat:'work',date:a(0),start:'09:00',end:'17:00',notes:''},
+    {id:'e2',title:'Football training',cat:'sports',date:a(0),start:'18:30',end:'20:00',notes:''},
+    {id:'e3',title:'Dinner w/ girlfriend',cat:'social',date:a(0),start:'20:30',end:'22:00',notes:''},
+    {id:'e4',title:'Internship',cat:'work',date:a(1),start:'09:00',end:'17:00',notes:''},
+    {id:'e5',title:'Gym',cat:'sports',date:a(1),start:'07:00',end:'08:00',notes:''},
+    {id:'e6',title:'Internship',cat:'work',date:a(2),start:'09:00',end:'17:00',notes:''},
+    {id:'e7',title:'Internship',cat:'work',date:a(3),start:'09:00',end:'17:00',notes:''},
+    {id:'e8',title:'Internship',cat:'work',date:a(4),start:'09:00',end:'17:00',notes:''},
+    {id:'e9',title:'Friends hangout',cat:'social',date:a(5),start:'15:00',end:'20:00',notes:''},
+  ];
+  const _phases=[
+    {id:'ph1',name:'Research',start:a(-7),end:a(5),color:'#4e9af1'},
+    {id:'ph2',name:'Development',start:a(6),end:a(28),color:'#3ecf8e'},
+    {id:'ph3',name:'Testing & Delivery',start:a(29),end:a(45),color:'#a78bfa'},
+  ];
+  const _tasks=[
+    {id:'t1',name:'Stakeholder interviews',phaseId:'ph1',priority:'high',startDate:a(-8),deadline:a(1),status:'done',notes:''},
+    {id:'t2',name:'Literature review',phaseId:'ph1',priority:'medium',startDate:a(-4),deadline:a(3),status:'done',notes:''},
+    {id:'t3',name:'Write requirements doc',phaseId:'ph1',priority:'high',startDate:a(0),deadline:a(5),status:'in-progress',notes:'Draft in progress'},
+    {id:'t4',name:'Design architecture',phaseId:'ph2',priority:'high',startDate:a(6),deadline:a(12),status:'todo',notes:''},
+    {id:'t5',name:'Build core module',phaseId:'ph2',priority:'high',startDate:a(9),deadline:a(20),status:'todo',notes:''},
+    {id:'t6',name:'API integration',phaseId:'ph2',priority:'medium',startDate:a(16),deadline:a(24),status:'todo',notes:''},
+    {id:'t7',name:'Write unit tests',phaseId:'ph3',priority:'medium',startDate:a(28),deadline:a(33),status:'todo',notes:''},
+    {id:'t8',name:'Final presentation',phaseId:'ph3',priority:'high',startDate:a(38),deadline:a(43),status:'todo',notes:'Prepare slides'},
+  ];
+  const _sessions=[
+    {id:'s1',taskId:'t3',date:a(0),startTime:'09:00',endTime:'11:00'},
+    {id:'s2',taskId:'t3',date:a(1),startTime:'09:00',endTime:'12:00'},
+    {id:'s3',taskId:'t3',date:a(2),startTime:'14:00',endTime:'17:00'},
+  ];
+  // write silently
+  events=_events; phases=_phases; tasks=_tasks; sessions=_sessions; subtasks=[]; sports=[]; goals=[]; workouts=[]; races=[];
+  persistSilent('pl3_events',events);
+  persistSilent('pl3_phases',phases);
+  persistSilent('pl3_tasks',tasks);
+  persistSilent('pl3_sessions',sessions);
+  persistSilent('pl3_subtasks',subtasks);
+  persistSilent('pl3_sports',sports);
+  persistSilent('pl3_goals',goals);
+  persistSilent('pl3_workouts',workouts);
+  persistSilent('pl3_races',races);
+  persistSilent('pl3_seeded',true);
+  render();
+}
+
+// initialize auth UI on load — require login if not authenticated
+fetchCurrentUser().then(u=>{
+  if(!u){
+    // not authenticated — return to landing page
+    window.location = '/';
+    return;
+  }
+  updateAuthUI(u);
+  // automatically pull user's latest plan
+  syncLoad(false).catch(e=>console.warn('initial syncLoad failed',e));
+});
+
 // ══════════════════════════════════════════════════
 // DATA
 // DATA MODEL:
@@ -660,6 +967,8 @@ let phases  = load('pl3_phases',[]);
 let tasks   = load('pl3_tasks',[]);
 let sessions= load('pl3_sessions',[]);
 let subtasks= load('pl3_subtasks',[]);
+let meetings= load('pl3_meetings',[]);
+let weeklyReviews= load('pl3_reviews',[]);
 
 // ── SEED (runs only once; data persists via localStorage after that) ──
 const _seeded=load('pl3_seeded',false);
@@ -697,11 +1006,12 @@ if(!_seeded){
     {id:'s2',taskId:'t3',date:a(1),startTime:'09:00',endTime:'12:00'},
     {id:'s3',taskId:'t3',date:a(2),startTime:'14:00',endTime:'17:00'},
   ];
-  persist('pl3_events',events);
-  persist('pl3_phases',phases);
-  persist('pl3_tasks',tasks);
-  persist('pl3_sessions',sessions);
-  persist('pl3_seeded',true);
+  // store demo data locally WITHOUT triggering autosync
+  persistSilent('pl3_events',events);
+  persistSilent('pl3_phases',phases);
+  persistSilent('pl3_tasks',tasks);
+  persistSilent('pl3_sessions',sessions);
+  persistSilent('pl3_seeded',true);
 }
 
 // ══════════════════════════════════════════════════
@@ -717,26 +1027,225 @@ let editTaskId=null;
 let editSubtaskId=null;
 let editSubtaskTaskId=null;
 let editSessionTaskId=null;
+let editSessionId=null;
 let editSessionPrefillDate=null;
 let editPhaseId=null;
+let editMeetingId=null;
+let editReviewWeekKey=null;
+let selectedMood=null;
+let rvWeekOffset=0;
+
+// ══════════════════════════════════════════════════
+// WEEKLY REPORT
+// ══════════════════════════════════════════════════
+function rvWeekKey(d){
+  // key = "YYYY-MM-DD" of that Monday (simple, no ISO quirks)
+  const dt=new Date(d); dt.setHours(0,0,0,0);
+  const dow=dt.getDay();
+  const mon=new Date(dt); mon.setDate(dt.getDate()-(dow===0?6:dow-1));
+  return fmtD(mon);
+}
+function rvMonday(wkKey){ return parseD(wkKey); }
+function rvLabel(wkKey){
+  const mon=rvMonday(wkKey); if(!mon) return wkKey;
+  const sun=addDays(mon,6);
+  return `${mon.getDate()} ${MN[mon.getMonth()].slice(0,3)} – ${sun.getDate()} ${MN[sun.getMonth()].slice(0,3)} ${sun.getFullYear()}`;
+}
+function rvCurrentKey(){ return rvWeekKey(addDays(today0(),rvWeekOffset*7)); }
+
+function rvStats(wkKey){
+  const mon=rvMonday(wkKey), sun=addDays(mon,6);
+  const inRange=d=>{const dt=parseD(d);return dt&&dt>=mon&&dt<=sun;};
+  // work hours from calendar work events
+  const workEvs=events.filter(e=>e.cat==='work'&&inRange(e.date));
+  const workHrs=workEvs.reduce((a,e)=>{
+    if(e.start&&e.end)return a+(toMin(e.end)-toMin(e.start))/60;
+    return a+8;
+  },0);
+  // task session hours
+  const sessHrs=sessions.filter(s=>inRange(s.date)).reduce((a,s)=>a+(toMin(s.endTime)-toMin(s.startTime))/60,0);
+  // tasks done vs active
+  const activeTasks=tasks.filter(t=>{
+    if(t.status==='done')return false;
+    const s=parseD(t.startDate),e=parseD(t.deadline);
+    if(s&&e)return(s<=sun&&e>=mon);
+    if(s)return s<=sun;
+    if(e)return e>=mon;
+    return false;
+  });
+  const doneTasks=tasks.filter(t=>t.status==='done'&&t.deadline&&inRange(t.deadline));
+  // meetings
+  const mtgCount=meetings.filter(m=>inRange(m.date)).length;
+  // sports sessions
+  const sportStats=sports.map(sp=>{
+    const wks=workouts.filter(w=>w.sportId===sp.id&&inRange(w.date));
+    const calEvs=events.filter(e=>e.cat==='sports'&&inRange(e.date)&&(e.sportId===sp.id||e.title.toLowerCase().includes(sp.name.toLowerCase())));
+    const calIds=new Set(workouts.map(w=>w.calEventId).filter(Boolean));
+    const extra=calEvs.filter(e=>!calIds.has(e.id));
+    const done=wks.length+extra.length;
+    const goal=goals.find(g=>g.sportId===sp.id);
+    const target=goal?goal.sessions:0;
+    const km=wks.reduce((a,w)=>a+(+w.distance||0),0);
+    const min=wks.reduce((a,w)=>a+(+w.duration||0),0);
+    return{sp,done,target,km,min};
+  }).filter(s=>s.done>0||s.target>0);
+  return{workHrs:Math.round(workHrs*10)/10,sessHrs:Math.round(sessHrs*10)/10,activeTasks:activeTasks.length,doneTasks:doneTasks.length,mtgCount,sportStats};
+}
+
+function renderReview(){
+  const cont=document.getElementById('review-content');
+  if(!cont) return;
+  const curKey=rvCurrentKey();
+  const curReview=weeklyReviews.find(r=>r.weekKey===curKey);
+  const stats=rvStats(curKey);
+
+  // sidebar
+  const sorted=[...weeklyReviews].sort((a,b)=>b.weekKey.localeCompare(a.weekKey));
+  let sidebar='';
+  sorted.forEach(r=>{
+    const isActive=r.weekKey===curKey;
+    const offset=Math.round((rvMonday(r.weekKey)-rvMonday(rvWeekKey(today0())))/(7*86400000));
+    const offsetLabel=offset===0?'This week':offset===-1?'Last week':offset<0?`${Math.abs(offset)} weeks ago`:`In ${offset} weeks`;
+    sidebar+=`<div class="review-entry${isActive?' active':''}" onclick="rvJump('${r.weekKey}')">
+      <div class="review-entry-head">
+        ${r.mood||''}
+        <span style="flex:1;">${offsetLabel}</span>
+        ${r.energy?`<span style="font-size:.68rem;color:var(--muted);">${r.energy}/10</span>`:''}
+      </div>
+      <div class="review-entry-preview">${r.highlight||rvLabel(r.weekKey)}</div>
+    </div>`;
+  });
+  if(!sorted.length) sidebar='<div style="color:var(--muted);font-size:.8rem;padding:12px;">No reports yet.</div>';
+
+  // main panel
+  let main=`<div class="rv-card">
+    <div class="rv-week-heading">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="nav-arrow" onclick="rvWeekOffset--;renderReview()">←</button>
+        <span style="min-width:200px;text-align:center;">${rvLabel(curKey)}${curReview&&curReview.mood?' '+curReview.mood:''}</span>
+        <button class="nav-arrow" onclick="rvWeekOffset++;renderReview()">→</button>
+      </div>
+      <button class="${curReview?'btn-secondary':'btn-primary'}" style="font-size:.73rem;padding:5px 12px;" onclick="openReviewModal('${curKey}')">
+        ${curReview?'✎ Edit':'✎ Write report'}
+      </button>
+    </div>
+    <div class="rv-stats">
+      <div class="rv-stat"><div class="rv-stat-num">${stats.workHrs}h</div><div class="rv-stat-lbl">Work</div></div>
+      <div class="rv-stat"><div class="rv-stat-num">${stats.sessHrs}h</div><div class="rv-stat-lbl">Planned</div></div>
+      <div class="rv-stat"><div class="rv-stat-num">${stats.doneTasks}/${stats.activeTasks}</div><div class="rv-stat-lbl">Tasks</div></div>
+      <div class="rv-stat"><div class="rv-stat-num">${stats.mtgCount}</div><div class="rv-stat-lbl">Meetings</div></div>
+    </div>
+  </div>`;
+
+  // sports card
+  if(stats.sportStats.length){
+    main+=`<div class="rv-card"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;margin-bottom:10px;">Training</div>`;
+    stats.sportStats.forEach(({sp,done,target,km,min})=>{
+      const pct=target?Math.min(100,Math.round(done/target*100)):100;
+      main+=`<div class="rv-sport-row">
+        <span style="font-size:1rem;width:22px;">${sp.icon}</span>
+        <span style="font-size:.78rem;font-weight:600;flex:1;color:${sp.color};">${sp.name}</span>
+        <span style="font-size:.72rem;color:var(--muted);margin-right:8px;">${done}${target?'/'+target:''} sessions</span>
+        ${km?`<span style="font-size:.72rem;color:var(--muted);margin-right:8px;">${km.toFixed(1)} km</span>`:''}
+        <div class="rv-bar-wrap" style="max-width:80px;"><div class="rv-bar" style="width:${pct}%;background:${sp.color};"></div></div>
+      </div>`;
+    });
+    main+=`</div>`;
+  }
+
+  // written review
+  if(curReview){
+    main+=`<div class="rv-card">`;
+    if(curReview.highlight) main+=`<div class="rv-highlight-pill">✨ ${curReview.highlight}</div>`;
+    if(curReview.well||curReview.improve){
+      main+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">`;
+      if(curReview.well) main+=`<div><div style="font-size:.68rem;font-weight:700;color:var(--ok);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;">✓ Went well</div><div class="rv-notes-block">${curReview.well}</div></div>`;
+      if(curReview.improve) main+=`<div><div style="font-size:.68rem;font-weight:700;color:var(--warn);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;">→ To improve</div><div class="rv-notes-block">${curReview.improve}</div></div>`;
+      main+=`</div>`;
+    }
+    if(curReview.notes) main+=`<div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;">Notes</div><div class="rv-notes-block">${curReview.notes}</div>`;
+    main+=`</div>`;
+  }else{
+    main+=`<div class="rv-write-cta">No written report yet — click <strong>✎ Write report</strong> above.</div>`;
+  }
+
+  cont.innerHTML=`<div class="review-layout">
+    <div class="review-sidebar">${sidebar}</div>
+    <div>${main}</div>
+  </div>`;
+}
+
+function rvJump(wkKey){
+  rvWeekOffset=Math.round((rvMonday(wkKey)-rvMonday(rvWeekKey(today0())))/(7*86400000));
+  renderReview();
+}
+
+function openReviewModal(wkKey){
+  editReviewWeekKey=wkKey;
+  const r=weeklyReviews.find(x=>x.weekKey===wkKey);
+  document.getElementById('review-modal-title').textContent=r?'Edit Weekly Report':'Write Weekly Report';
+  document.getElementById('review-modal-week').textContent=rvLabel(wkKey);
+  document.getElementById('rv-del-btn').style.display=r?'block':'none';
+  selectedMood=r?r.mood:null;
+  document.getElementById('rv-energy').value=r?r.energy:5;
+  document.getElementById('energy-lbl').textContent=r?r.energy:5;
+  document.getElementById('rv-highlight').value=r?r.highlight||'':'';
+  document.getElementById('rv-well').value=r?r.well||'':'';
+  document.getElementById('rv-improve').value=r?r.improve||'':'';
+  document.getElementById('rv-notes').value=r?r.notes||'':'';
+  document.querySelectorAll('.mood-opt').forEach(b=>b.classList.toggle('selected',b.dataset.mood===selectedMood));
+  openModal('review-modal');
+  setTimeout(()=>document.getElementById('rv-highlight').focus(),80);
+}
+function selectMood(m){
+  selectedMood=m;
+  document.querySelectorAll('.mood-opt').forEach(b=>b.classList.toggle('selected',b.dataset.mood===m));
+}
+function saveReview(){
+  const r={
+    id:uid(), weekKey:editReviewWeekKey,
+    mood:selectedMood,
+    energy:+document.getElementById('rv-energy').value,
+    highlight:document.getElementById('rv-highlight').value.trim(),
+    well:document.getElementById('rv-well').value.trim(),
+    improve:document.getElementById('rv-improve').value.trim(),
+    notes:document.getElementById('rv-notes').value.trim(),
+    createdAt:new Date().toISOString()
+  };
+  const i=weeklyReviews.findIndex(x=>x.weekKey===editReviewWeekKey);
+  if(i!==-1){r.id=weeklyReviews[i].id;weeklyReviews[i]=r;}else weeklyReviews.push(r);
+  persist('pl3_reviews',weeklyReviews);
+  closeModal('review-modal');
+  renderReview();
+}
+function deleteReview(){
+  weeklyReviews=weeklyReviews.filter(r=>r.weekKey!==editReviewWeekKey);
+  persist('pl3_reviews',weeklyReviews);
+  closeModal('review-modal');
+  renderReview();
+}
 
 // ══════════════════════════════════════════════════
 // PAGE SWITCH
 // ══════════════════════════════════════════════════
 function showPage(p){
   currentPage=p;
+  const pages=['calendar','project','sports','review'];
   document.getElementById('calendar-page').style.display=p==='calendar'?'flex':'none';
   document.getElementById('project-page').style.display=p==='project'?'flex':'none';
   document.getElementById('project-page').style.flexDirection='column';
   document.getElementById('sports-page').style.display=p==='sports'?'flex':'none';
   document.getElementById('sports-page').style.flexDirection='column';
+  document.getElementById('review-page').style.display=p==='review'?'flex':'none';
+  document.getElementById('review-page').style.flexDirection='column';
   document.getElementById('cal-controls').style.display=p==='calendar'?'flex':'none';
   document.getElementById('proj-controls').style.display=p==='project'?'flex':'none';
   document.getElementById('sports-controls').style.display=p==='sports'?'flex':'none';
-  document.getElementById('legend-bar').style.display=p==='calendar'?'flex':'none';
-  document.querySelectorAll('.page-tab').forEach((t,i)=>t.classList.toggle('active',['calendar','project','sports'][i]===p));
+  document.getElementById('review-controls').style.display=p==='review'?'flex':'none';
+  document.querySelectorAll('.page-tab').forEach((t,i)=>t.classList.toggle('active',pages[i]===p));
   if(p==='project')renderGantt();
   else if(p==='sports')renderSports();
+  else if(p==='review')renderReview();
   else render();
 }
 
@@ -846,6 +1355,19 @@ function renderDaily(main){
         chip.textContent=t.name;
         chip.title=`${t.name} · ${s.startTime}–${s.endTime}`;
         chip.addEventListener('click',e=>{e.stopPropagation();openTaskPanel(ds,ev);});
+        el.appendChild(chip);
+      });
+      // Meeting chips on the LEFT of the internship block
+      meetings.filter(m=>m.date===ds).forEach(m=>{
+        const sm2=toMin(m.startTime),em2=toMin(m.endTime);
+        const cSm=Math.max(sm2,ev.sm),cEm=Math.min(em2,ev.em);
+        if(cEm<=cSm)return;
+        const chip=document.createElement('div');
+        chip.className='meeting-chip';
+        chip.style.cssText=`top:${((cSm-ev.sm)/60)*60+2}px;height:${Math.max(((cEm-cSm)/60)*60-4,16)}px;left:2px;width:48%;`;
+        chip.textContent='☎ '+m.title;
+        chip.title = `${m.title} · ${m.startTime}–${m.endTime}${m.notes ? '\n' + m.notes : ''}`;
+        chip.addEventListener('click',e=>{e.stopPropagation();openMeetingModal(m.id,ds);});
         el.appendChild(chip);
       });
     }
@@ -1020,7 +1542,21 @@ function renderPopupTasks(ds){
     cont.innerHTML='<div style="color:var(--muted);font-size:.84rem;text-align:center;padding:22px 0;">No tasks span this day.<br>Go to Project view to create tasks.</div>';
     return;
   }
+  // meetings on this day
+  const dayMtgs=meetings.filter(m=>m.date===ds).sort((a,b)=>a.startTime.localeCompare(b.startTime));
   let h='';
+  if(dayMtgs.length){
+    h+=`<div style="margin-bottom:12px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px 12px;">
+      <div style="font-size:.68rem;font-weight:700;color:var(--warn);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;">📅 Meetings today</div>`;
+    dayMtgs.forEach(m=>{
+      h+=`<div class="session-row" style="cursor:pointer;margin-bottom:5px;" onclick="openMeetingModal('${m.id}','${ds}')">
+        <div class="session-time" style="color:#fcd34d;">☎ ${m.startTime}–${m.endTime} · ${m.title}</div>
+        <span style="font-size:.62rem;color:var(--muted);margin-left:auto;margin-right:6px;">tap to edit</span>
+        <button class="session-del" onclick="event.stopPropagation();meetings=meetings.filter(x=>x.id!=='${m.id}');persist('pl3_meetings',meetings);renderPopupTasks('${ds}');render();" title="Delete">✕</button>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
   active.forEach(t=>{
     const ph=phases.find(p=>p.id===t.phaseId);
     const ov=isOverdue(t),soon=isDueSoon(t);
@@ -1032,9 +1568,10 @@ function renderPopupTasks(ds){
     // sessions on THIS day for this task
     const daySessions=sessions.filter(s=>s.taskId===t.id&&s.date===ds);
     const sessHtml=daySessions.map(s=>`
-      <div class="session-row">
-        <div class="session-time">⏱ ${s.startTime} – ${s.endTime}</div>
-        <button class="session-del" onclick="deleteSession('${s.id}')" title="Remove session">✕</button>
+      <div class="session-row" style="cursor:pointer;" onclick="openSessionModal('${t.id}','${ds}','${s.id}')">
+        <div class="session-time">⏱ ${s.startTime}–${s.endTime}</div>
+        <span style="font-size:.62rem;color:var(--muted);margin-left:auto;margin-right:6px;">tap to edit</span>
+        <button class="session-del" onclick="event.stopPropagation();deleteSession('${s.id}')" title="Remove">✕</button>
       </div>`).join('');
     const subsHtml=subs.map(s=>`
       <div class="subtask-row">
@@ -1121,7 +1658,6 @@ function renderGantt(){
         <div style="width:8px;height:8px;border-radius:2px;background:${ph.color};flex-shrink:0"></div>
         <h3 style="cursor:pointer;flex:1;" onclick="openPhaseModal('${ph.id}')" title="Edit phase">${ph.name}</h3>
         <div class="phase-progress">${phDone}/${phTasks.length}</div>
-        <button class="btn-add-task" onclick="openPhaseModal('${ph.id}')" style="border-color:transparent;" title="Edit">✎</button>
         <button class="btn-add-task" onclick="openTaskModal(null,'${ph.id}')">+ Task</button>
         <button class="btn-add-task" onclick="openPhaseModal('${ph.id}')" style="margin-left:4px;">✎ Edit</button>
       </div>`;
@@ -1422,19 +1958,30 @@ function deleteTask(){
 }
 
 // ── SESSION ──
-function openSessionModal(taskId,prefillDate){
+function openSessionModal(taskId, prefillDate, sessionId){
   editSessionTaskId=taskId;
+  editSessionId=sessionId||null;
   editSessionPrefillDate=prefillDate||fmtD(currentDate);
   const t=tasks.find(x=>x.id===taskId);
   document.getElementById('session-task-label').textContent=t?`Task: "${t.name}"`:'';
-  document.getElementById('sess-date').value=editSessionPrefillDate;
-  document.getElementById('sess-start').value='09:00';
-  document.getElementById('sess-end').value='11:00';
-  // Pre-fill with internship block times if one exists
-  const workEv=events.find(e=>e.cat==='work'&&e.date===editSessionPrefillDate);
-  if(workEv){
-    document.getElementById('sess-start').value=workEv.start||'09:00';
-    document.getElementById('sess-end').value=workEv.end||'17:00';
+  document.getElementById('sess-modal-title').textContent=sessionId?'Edit work session':'Schedule work session';
+  document.getElementById('sess-del-btn').style.display=sessionId?'block':'none';
+  if(sessionId){
+    const s=sessions.find(x=>x.id===sessionId);
+    if(s){
+      document.getElementById('sess-date').value=s.date;
+      document.getElementById('sess-start').value=s.startTime;
+      document.getElementById('sess-end').value=s.endTime;
+    }
+  }else{
+    document.getElementById('sess-date').value=editSessionPrefillDate;
+    document.getElementById('sess-start').value='09:00';
+    document.getElementById('sess-end').value='11:00';
+    const workEv=events.find(e=>e.cat==='work'&&e.date===editSessionPrefillDate);
+    if(workEv){
+      document.getElementById('sess-start').value=workEv.start||'09:00';
+      document.getElementById('sess-end').value=workEv.end||'17:00';
+    }
   }
   openModal('session-modal');
 }
@@ -1442,8 +1989,22 @@ function saveSession(){
   const date=document.getElementById('sess-date').value;
   const startTime=document.getElementById('sess-start').value;
   const endTime=document.getElementById('sess-end').value;
-  if(!date||!startTime||!endTime){return;}
-  sessions.push({id:uid(),taskId:editSessionTaskId,date,startTime,endTime});
+  if(!date||!startTime||!endTime)return;
+  if(editSessionId){
+    const i=sessions.findIndex(s=>s.id===editSessionId);
+    if(i!==-1)sessions[i]={...sessions[i],date,startTime,endTime};
+  }else{
+    sessions.push({id:uid(),taskId:editSessionTaskId,date,startTime,endTime});
+  }
+  persist('pl3_sessions',sessions);
+  closeModal('session-modal');
+  if(currentPopupDate)renderPopupTasks(currentPopupDate);
+  if(currentPage==='project')renderGantt();
+  render();
+}
+function deleteSessionFromModal(){
+  if(!editSessionId)return;
+  sessions=sessions.filter(s=>s.id!==editSessionId);
   persist('pl3_sessions',sessions);
   closeModal('session-modal');
   if(currentPopupDate)renderPopupTasks(currentPopupDate);
@@ -1455,6 +2016,60 @@ function deleteSession(id){
   persist('pl3_sessions',sessions);
   if(currentPopupDate)renderPopupTasks(currentPopupDate);
   if(currentPage==='project')renderGantt();
+  render();
+}
+
+// ── MEETINGS ──
+function openMeetingModal(id, prefillDate){
+  editMeetingId=id||null;
+  const date=prefillDate||fmtD(currentDate);
+  document.getElementById('mtg-modal-title').textContent=id?'Edit Meeting':'Add Meeting';
+  document.getElementById('mtg-del-btn').style.display=id?'block':'none';
+  const workEv=events.find(e=>e.cat==='work'&&e.date===date);
+  document.getElementById('mtg-day-label').textContent=workEv?`${workEv.title} · ${date}`:`Date: ${date}`;
+  if(id){
+    const m=meetings.find(x=>x.id===id);
+    if(m){
+      document.getElementById('mtg-title').value=m.title;
+      document.getElementById('mtg-date').value=m.date;
+      document.getElementById('mtg-start').value=m.startTime;
+      document.getElementById('mtg-end').value=m.endTime;
+      document.getElementById('mtg-notes').value=m.notes||'';
+    }
+  }else{
+    document.getElementById('mtg-title').value='';
+    document.getElementById('mtg-date').value=date;
+    document.getElementById('mtg-start').value='10:00';
+    document.getElementById('mtg-end').value='11:00';
+    document.getElementById('mtg-notes').value='';
+  }
+  openModal('meeting-modal');
+  setTimeout(()=>document.getElementById('mtg-title').focus(),80);
+}
+function saveMeeting(){
+  const title=document.getElementById('mtg-title').value.trim();
+  if(!title){document.getElementById('mtg-title').focus();return;}
+  const m={
+    id:editMeetingId||uid(),
+    title,
+    date:document.getElementById('mtg-date').value,
+    startTime:document.getElementById('mtg-start').value,
+    endTime:document.getElementById('mtg-end').value,
+    notes:document.getElementById('mtg-notes').value.trim()
+  };
+  if(editMeetingId){const i=meetings.findIndex(x=>x.id===editMeetingId);if(i!==-1)meetings[i]=m;}
+  else meetings.push(m);
+  persist('pl3_meetings',meetings);
+  closeModal('meeting-modal');
+  if(currentPopupDate)renderPopupTasks(currentPopupDate);
+  render();
+}
+function deleteMeeting(){
+  if(!editMeetingId)return;
+  meetings=meetings.filter(m=>m.id!==editMeetingId);
+  persist('pl3_meetings',meetings);
+  closeModal('meeting-modal');
+  if(currentPopupDate)renderPopupTasks(currentPopupDate);
   render();
 }
 
@@ -1554,12 +2169,12 @@ function deletePhase(){
 }
 
 // ── CLOSE HANDLERS ──
-['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal'].forEach(id=>{
+['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','meeting-modal','review-modal'].forEach(id=>{
   document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape')
-    ['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal'].forEach(id=>closeModal(id));
+    ['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','meeting-modal','review-modal'].forEach(id=>closeModal(id));
 });
 
 
@@ -1587,6 +2202,7 @@ if(!_sportSeeded){
 }
 
 let editSportId=null, editGoalId=null, editRaceId=null, editWorkoutId=null;
+let sportsWeekOffset = 0; // 0 = this week, 1 = next week, -1 = prev week
 
 // ══════════════════════════════════════════════════
 // SPORTS PAGE RENDER
@@ -1601,8 +2217,9 @@ function renderSports(){
   }
 
   const now = today0();
-  const dow  = now.getDay();
-  const wMon = addDays(now, dow===0?-6:1-dow);
+  const displayRef = addDays(now, sportsWeekOffset * 7);
+  const dow  = displayRef.getDay();
+  const wMon = addDays(displayRef, dow===0?-6:1-dow);
   const wSun = addDays(wMon, 6);
   const weekDays = Array.from({length:7},(_,i)=>addDays(wMon,i));
 
@@ -1643,7 +2260,16 @@ function renderSports(){
   }
 
   // ── WEEKLY CARDS ──
-  html += '<div class="sports-section-title">📅 This week</div>';
+  const weekLabel = sportsWeekOffset===0 ? 'This week' : (sportsWeekOffset>0 ? `Week +${sportsWeekOffset}` : `Week ${sportsWeekOffset}`);
+  html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+    <div class="sports-section-title" style="margin-bottom:0;">📅 Training</div>
+    <div class="header-nav" style="gap:6px;">
+      <button class="nav-arrow" onclick="changeSportsWeek(-1)">←</button>
+      <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;min-width:90px;text-align:center;">${weekLabel}</span>
+      <button class="nav-arrow" onclick="changeSportsWeek(1)">→</button>
+      ${sportsWeekOffset!==0?`<button class="nav-arrow" onclick="gotoSportsThisWeek()" title="Jump to this week" style="font-size:.62rem;padding:0 6px;width:auto;">now</button>`:''}
+    </div>
+  </div>`;
   html += '<div class="sports-grid">';
 
   sports.forEach(sp=>{
@@ -1762,6 +2388,16 @@ function renderSports(){
   }
 
   cont.innerHTML=html;
+}
+
+function changeSportsWeek(delta){
+  sportsWeekOffset += delta;
+  renderSports();
+}
+
+function gotoSportsThisWeek(){
+  sportsWeekOffset = 0;
+  renderSports();
 }
 
 // ── SPORT MODAL ──
@@ -2033,6 +2669,8 @@ function exportData(){
     pl3_goals:goals,
     pl3_workouts:workouts,
     pl3_races:races,
+    pl3_meetings:meetings,
+    pl3_reviews:weeklyReviews,
     pl3_seeded:true,
     pl3_sport_seeded:true,
     exportedAt:new Date().toISOString()
@@ -2059,12 +2697,15 @@ function importData(e){
       if(data.pl3_goals)   {goals=data.pl3_goals;     persist('pl3_goals',goals);}
       if(data.pl3_workouts){workouts=data.pl3_workouts;persist('pl3_workouts',workouts);}
       if(data.pl3_races)   {races=data.pl3_races;     persist('pl3_races',races);}
+      if(data.pl3_meetings){meetings=data.pl3_meetings;persist('pl3_meetings',meetings);}
+      if(data.pl3_reviews){weeklyReviews=data.pl3_reviews;persist('pl3_reviews',weeklyReviews);}
       persist('pl3_seeded',true);
       persist('pl3_sport_seeded',true);
       render();
       if(currentPage==='project')renderGantt();
       if(currentPage==='sports')renderSports();
-      alert('Data imported successfully!');
+      if(currentPage==='review')renderReview();
+      showToast('Data imported ✓');
     }catch(err){
       alert('Import failed — make sure you select a valid plan. backup JSON file.');
     }
@@ -2074,48 +2715,84 @@ function importData(e){
 }
 
 // ── SYNC WITH SERVER (Flask + Supabase)
-async function syncSave(){
+async function syncSave(manual=false){
+  setSyncDot('syncing');
   try{
     const data={
       pl3_events:events,pl3_phases:phases,pl3_tasks:tasks,pl3_sessions:sessions,pl3_subtasks:subtasks,
-      pl3_sports:sports,pl3_goals:goals,pl3_workouts:workouts,pl3_races:races,exportedAt:new Date().toISOString()
+      pl3_sports:sports,pl3_goals:goals,pl3_workouts:workouts,pl3_races:races,
+      pl3_meetings:meetings,pl3_reviews:weeklyReviews,exportedAt:new Date().toISOString()
     };
-    const res=await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'plan-backup',data})});
+    const res=await fetch('/api/save',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'plan-backup',data})});
     const j=await res.json();
     if(!res.ok)throw new Error(j.error||'save failed');
-    alert('Synced to server successfully.');
+    setSyncDot('saved');
+    if(manual)showToast('Pushed to server ✓');
     return j.data;
-  }catch(err){console.error(err);alert('Sync save failed: '+err.message);}  
+  }catch(err){
+    console.error(err);
+    setSyncDot('error');
+    if(manual)showToast('Push failed: '+err.message,true);
+    throw err;
+  }
 }
 
-async function syncLoad(){
+async function syncLoad(manual=false){
+  setSyncDot('syncing');
   try{
-    const res=await fetch('/api/plans');
+    const res=await fetch('/api/plans',{credentials:'same-origin'});
+    const ctype=res.headers.get('content-type')||'';
+    if(!ctype.includes('application/json')){const txt=await res.text();throw new Error('Non-JSON response: '+txt.slice(0,100));}
     const j=await res.json();
     if(!res.ok)throw new Error(j.error||'load failed');
     const rows=j.data||[];
-    if(!rows.length){alert('No plans found on server.');return;}
-    // pick the latest row
+    if(!rows.length){setSyncDot('saved');if(manual)showToast('No plans on server yet');return;}
     const latest=rows[0];
-    if(!latest.data){alert('Latest plan has no data.');return;}
-    if(!confirm('This will overwrite local data with the latest server plan. Continue?'))return;
+    if(!latest.data){setSyncDot('saved');return;}
+    if(manual&&!confirm('Replace local data with latest server plan?')){setSyncDot('saved');return;}
     const d=latest.data;
-    if(d.pl3_events)  {events=d.pl3_events;   persist('pl3_events',events);} else events=[];
-    if(d.pl3_phases)  {phases=d.pl3_phases;   persist('pl3_phases',phases);} else phases=[];
-    if(d.pl3_tasks)   {tasks=d.pl3_tasks;     persist('pl3_tasks',tasks);} else tasks=[];
-    if(d.pl3_sessions){sessions=d.pl3_sessions;persist('pl3_sessions',sessions);} else sessions=[];
-    if(d.pl3_subtasks){subtasks=d.pl3_subtasks;persist('pl3_subtasks',subtasks);} else subtasks=[];
-    if(d.pl3_sports)  {sports=d.pl3_sports;   persist('pl3_sports',sports);} else sports=[];
-    if(d.pl3_goals)   {goals=d.pl3_goals;     persist('pl3_goals',goals);} else goals=[];
-    if(d.pl3_workouts){workouts=d.pl3_workouts;persist('pl3_workouts',workouts);} else workouts=[];
-    if(d.pl3_races)   {races=d.pl3_races;     persist('pl3_races',races);} else races=[];
-    render();if(currentPage==='project')renderGantt();if(currentPage==='sports')renderSports();
-    alert('Local data replaced with server plan.');
-  }catch(err){console.error(err);alert('Sync load failed: '+err.message);}  
+    events  =d.pl3_events  ||[]; phases  =d.pl3_phases  ||[];
+    tasks   =d.pl3_tasks   ||[]; sessions=d.pl3_sessions||[];
+    subtasks=d.pl3_subtasks||[]; sports  =d.pl3_sports  ||[];
+    goals   =d.pl3_goals   ||[]; workouts=d.pl3_workouts||[];
+    races   =d.pl3_races   ||[]; meetings=d.pl3_meetings||[];
+    weeklyReviews=d.pl3_reviews||[];
+    ['events','phases','tasks','sessions','subtasks','sports','goals','workouts','races','meetings'].forEach(k=>persistSilent('pl3_'+k,eval(k)));
+    persistSilent('pl3_reviews',weeklyReviews);
+    setSyncDot('saved');
+    if(manual)showToast('Pulled from server ✓');
+    render();
+    if(currentPage==='project')renderGantt();
+    if(currentPage==='sports')renderSports();
+    if(currentPage==='review')renderReview();
+  }catch(err){console.error(err);setSyncDot('error');if(manual)showToast('Pull failed: '+err.message,true);}
 }
 
+// ── SYNC DOT ──
+function setSyncDot(state){
+  const dot=document.getElementById('sync-dot');if(!dot)return;
+  dot.className='';
+  if(state==='syncing')dot.classList.add('syncing');
+  else if(state==='saved'){dot.classList.add('saved');setTimeout(()=>{if(dot.classList.contains('saved'))dot.className='';},2500);}
+  else if(state==='error'){dot.classList.add('error');setTimeout(()=>{if(dot.classList.contains('error'))dot.className='';},4000);}
+}
+// ── TOAST ──
+let _toastTimer=null;
+function showToast(msg,isError=false){
+  const t=document.getElementById('toast');if(!t)return;
+  t.textContent=msg;t.style.color=isError?'var(--danger)':'var(--text)';t.style.opacity='1';
+  if(_toastTimer)clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>{t.style.opacity='0';},2800);
+}
+// ── SETTINGS DROPDOWN ──
+function toggleSettings(){document.getElementById('settings-menu').classList.toggle('open');}
+document.addEventListener('click',function(e){
+  const btn=document.getElementById('settings-btn'),menu=document.getElementById('settings-menu');
+  if(menu&&btn&&!btn.contains(e.target)&&!menu.contains(e.target))menu.classList.remove('open');
+});
+
 // INIT
-render();
+showPage('calendar');
 </script>
 </body>
 </html>
