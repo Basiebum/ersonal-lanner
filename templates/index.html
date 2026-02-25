@@ -1036,196 +1036,6 @@ let selectedMood=null;
 let rvWeekOffset=0;
 
 // ══════════════════════════════════════════════════
-// WEEKLY REPORT
-// ══════════════════════════════════════════════════
-function rvWeekKey(d){
-  // key = "YYYY-MM-DD" of that Monday (simple, no ISO quirks)
-  const dt=new Date(d); dt.setHours(0,0,0,0);
-  const dow=dt.getDay();
-  const mon=new Date(dt); mon.setDate(dt.getDate()-(dow===0?6:dow-1));
-  return fmtD(mon);
-}
-function rvMonday(wkKey){ return parseD(wkKey); }
-function rvLabel(wkKey){
-  const mon=rvMonday(wkKey); if(!mon) return wkKey;
-  const sun=addDays(mon,6);
-  return `${mon.getDate()} ${MN[mon.getMonth()].slice(0,3)} – ${sun.getDate()} ${MN[sun.getMonth()].slice(0,3)} ${sun.getFullYear()}`;
-}
-function rvCurrentKey(){ return rvWeekKey(addDays(today0(),rvWeekOffset*7)); }
-
-function rvStats(wkKey){
-  const mon=rvMonday(wkKey), sun=addDays(mon,6);
-  const inRange=d=>{const dt=parseD(d);return dt&&dt>=mon&&dt<=sun;};
-  // work hours from calendar work events
-  const workEvs=events.filter(e=>e.cat==='work'&&inRange(e.date));
-  const workHrs=workEvs.reduce((a,e)=>{
-    if(e.start&&e.end)return a+(toMin(e.end)-toMin(e.start))/60;
-    return a+8;
-  },0);
-  // task session hours
-  const sessHrs=sessions.filter(s=>inRange(s.date)).reduce((a,s)=>a+(toMin(s.endTime)-toMin(s.startTime))/60,0);
-  // tasks done vs active
-  const activeTasks=tasks.filter(t=>{
-    if(t.status==='done')return false;
-    const s=parseD(t.startDate),e=parseD(t.deadline);
-    if(s&&e)return(s<=sun&&e>=mon);
-    if(s)return s<=sun;
-    if(e)return e>=mon;
-    return false;
-  });
-  const doneTasks=tasks.filter(t=>t.status==='done'&&t.deadline&&inRange(t.deadline));
-  // meetings
-  const mtgCount=meetings.filter(m=>inRange(m.date)).length;
-  // sports sessions
-  const sportStats=sports.map(sp=>{
-    const wks=workouts.filter(w=>w.sportId===sp.id&&inRange(w.date));
-    const calEvs=events.filter(e=>e.cat==='sports'&&inRange(e.date)&&(e.sportId===sp.id||e.title.toLowerCase().includes(sp.name.toLowerCase())));
-    const calIds=new Set(workouts.map(w=>w.calEventId).filter(Boolean));
-    const extra=calEvs.filter(e=>!calIds.has(e.id));
-    const done=wks.length+extra.length;
-    const goal=goals.find(g=>g.sportId===sp.id);
-    const target=goal?goal.sessions:0;
-    const km=wks.reduce((a,w)=>a+(+w.distance||0),0);
-    const min=wks.reduce((a,w)=>a+(+w.duration||0),0);
-    return{sp,done,target,km,min};
-  }).filter(s=>s.done>0||s.target>0);
-  return{workHrs:Math.round(workHrs*10)/10,sessHrs:Math.round(sessHrs*10)/10,activeTasks:activeTasks.length,doneTasks:doneTasks.length,mtgCount,sportStats};
-}
-
-function renderReview(){
-  const cont=document.getElementById('review-content');
-  if(!cont) return;
-  const curKey=rvCurrentKey();
-  const curReview=weeklyReviews.find(r=>r.weekKey===curKey);
-  const stats=rvStats(curKey);
-
-  // sidebar
-  const sorted=[...weeklyReviews].sort((a,b)=>b.weekKey.localeCompare(a.weekKey));
-  let sidebar='';
-  sorted.forEach(r=>{
-    const isActive=r.weekKey===curKey;
-    const offset=Math.round((rvMonday(r.weekKey)-rvMonday(rvWeekKey(today0())))/(7*86400000));
-    const offsetLabel=offset===0?'This week':offset===-1?'Last week':offset<0?`${Math.abs(offset)} weeks ago`:`In ${offset} weeks`;
-    sidebar+=`<div class="review-entry${isActive?' active':''}" onclick="rvJump('${r.weekKey}')">
-      <div class="review-entry-head">
-        ${r.mood||''}
-        <span style="flex:1;">${offsetLabel}</span>
-        ${r.energy?`<span style="font-size:.68rem;color:var(--muted);">${r.energy}/10</span>`:''}
-      </div>
-      <div class="review-entry-preview">${r.highlight||rvLabel(r.weekKey)}</div>
-    </div>`;
-  });
-  if(!sorted.length) sidebar='<div style="color:var(--muted);font-size:.8rem;padding:12px;">No reports yet.</div>';
-
-  // main panel
-  let main=`<div class="rv-card">
-    <div class="rv-week-heading">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <button class="nav-arrow" onclick="rvWeekOffset--;renderReview()">←</button>
-        <span style="min-width:200px;text-align:center;">${rvLabel(curKey)}${curReview&&curReview.mood?' '+curReview.mood:''}</span>
-        <button class="nav-arrow" onclick="rvWeekOffset++;renderReview()">→</button>
-      </div>
-      <button class="${curReview?'btn-secondary':'btn-primary'}" style="font-size:.73rem;padding:5px 12px;" onclick="openReviewModal('${curKey}')">
-        ${curReview?'✎ Edit':'✎ Write report'}
-      </button>
-    </div>
-    <div class="rv-stats">
-      <div class="rv-stat"><div class="rv-stat-num">${stats.workHrs}h</div><div class="rv-stat-lbl">Work</div></div>
-      <div class="rv-stat"><div class="rv-stat-num">${stats.sessHrs}h</div><div class="rv-stat-lbl">Planned</div></div>
-      <div class="rv-stat"><div class="rv-stat-num">${stats.doneTasks}/${stats.activeTasks}</div><div class="rv-stat-lbl">Tasks</div></div>
-      <div class="rv-stat"><div class="rv-stat-num">${stats.mtgCount}</div><div class="rv-stat-lbl">Meetings</div></div>
-    </div>
-  </div>`;
-
-  // sports card
-  if(stats.sportStats.length){
-    main+=`<div class="rv-card"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;margin-bottom:10px;">Training</div>`;
-    stats.sportStats.forEach(({sp,done,target,km,min})=>{
-      const pct=target?Math.min(100,Math.round(done/target*100)):100;
-      main+=`<div class="rv-sport-row">
-        <span style="font-size:1rem;width:22px;">${sp.icon}</span>
-        <span style="font-size:.78rem;font-weight:600;flex:1;color:${sp.color};">${sp.name}</span>
-        <span style="font-size:.72rem;color:var(--muted);margin-right:8px;">${done}${target?'/'+target:''} sessions</span>
-        ${km?`<span style="font-size:.72rem;color:var(--muted);margin-right:8px;">${km.toFixed(1)} km</span>`:''}
-        <div class="rv-bar-wrap" style="max-width:80px;"><div class="rv-bar" style="width:${pct}%;background:${sp.color};"></div></div>
-      </div>`;
-    });
-    main+=`</div>`;
-  }
-
-  // written review
-  if(curReview){
-    main+=`<div class="rv-card">`;
-    if(curReview.highlight) main+=`<div class="rv-highlight-pill">✨ ${curReview.highlight}</div>`;
-    if(curReview.well||curReview.improve){
-      main+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">`;
-      if(curReview.well) main+=`<div><div style="font-size:.68rem;font-weight:700;color:var(--ok);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;">✓ Went well</div><div class="rv-notes-block">${curReview.well}</div></div>`;
-      if(curReview.improve) main+=`<div><div style="font-size:.68rem;font-weight:700;color:var(--warn);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;">→ To improve</div><div class="rv-notes-block">${curReview.improve}</div></div>`;
-      main+=`</div>`;
-    }
-    if(curReview.notes) main+=`<div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;">Notes</div><div class="rv-notes-block">${curReview.notes}</div>`;
-    main+=`</div>`;
-  }else{
-    main+=`<div class="rv-write-cta">No written report yet — click <strong>✎ Write report</strong> above.</div>`;
-  }
-
-  cont.innerHTML=`<div class="review-layout">
-    <div class="review-sidebar">${sidebar}</div>
-    <div>${main}</div>
-  </div>`;
-}
-
-function rvJump(wkKey){
-  rvWeekOffset=Math.round((rvMonday(wkKey)-rvMonday(rvWeekKey(today0())))/(7*86400000));
-  renderReview();
-}
-
-function openReviewModal(wkKey){
-  editReviewWeekKey=wkKey;
-  const r=weeklyReviews.find(x=>x.weekKey===wkKey);
-  document.getElementById('review-modal-title').textContent=r?'Edit Weekly Report':'Write Weekly Report';
-  document.getElementById('review-modal-week').textContent=rvLabel(wkKey);
-  document.getElementById('rv-del-btn').style.display=r?'block':'none';
-  selectedMood=r?r.mood:null;
-  document.getElementById('rv-energy').value=r?r.energy:5;
-  document.getElementById('energy-lbl').textContent=r?r.energy:5;
-  document.getElementById('rv-highlight').value=r?r.highlight||'':'';
-  document.getElementById('rv-well').value=r?r.well||'':'';
-  document.getElementById('rv-improve').value=r?r.improve||'':'';
-  document.getElementById('rv-notes').value=r?r.notes||'':'';
-  document.querySelectorAll('.mood-opt').forEach(b=>b.classList.toggle('selected',b.dataset.mood===selectedMood));
-  openModal('review-modal');
-  setTimeout(()=>document.getElementById('rv-highlight').focus(),80);
-}
-function selectMood(m){
-  selectedMood=m;
-  document.querySelectorAll('.mood-opt').forEach(b=>b.classList.toggle('selected',b.dataset.mood===m));
-}
-function saveReview(){
-  const r={
-    id:uid(), weekKey:editReviewWeekKey,
-    mood:selectedMood,
-    energy:+document.getElementById('rv-energy').value,
-    highlight:document.getElementById('rv-highlight').value.trim(),
-    well:document.getElementById('rv-well').value.trim(),
-    improve:document.getElementById('rv-improve').value.trim(),
-    notes:document.getElementById('rv-notes').value.trim(),
-    createdAt:new Date().toISOString()
-  };
-  const i=weeklyReviews.findIndex(x=>x.weekKey===editReviewWeekKey);
-  if(i!==-1){r.id=weeklyReviews[i].id;weeklyReviews[i]=r;}else weeklyReviews.push(r);
-  persist('pl3_reviews',weeklyReviews);
-  closeModal('review-modal');
-  renderReview();
-}
-function deleteReview(){
-  weeklyReviews=weeklyReviews.filter(r=>r.weekKey!==editReviewWeekKey);
-  persist('pl3_reviews',weeklyReviews);
-  closeModal('review-modal');
-  renderReview();
-}
-
-// ══════════════════════════════════════════════════
 // PAGE SWITCH
 // ══════════════════════════════════════════════════
 function showPage(p){
@@ -2205,6 +2015,196 @@ let editSportId=null, editGoalId=null, editRaceId=null, editWorkoutId=null;
 let sportsWeekOffset = 0; // 0 = this week, 1 = next week, -1 = prev week
 
 // ══════════════════════════════════════════════════
+// WEEKLY REPORT
+// ══════════════════════════════════════════════════
+function rvWeekKey(d){
+  // key = "YYYY-MM-DD" of that Monday (simple, no ISO quirks)
+  const dt=new Date(d); dt.setHours(0,0,0,0);
+  const dow=dt.getDay();
+  const mon=new Date(dt); mon.setDate(dt.getDate()-(dow===0?6:dow-1));
+  return fmtD(mon);
+}
+function rvMonday(wkKey){ return parseD(wkKey); }
+function rvLabel(wkKey){
+  const mon=rvMonday(wkKey); if(!mon) return wkKey;
+  const sun=addDays(mon,6);
+  return `${mon.getDate()} ${MN[mon.getMonth()].slice(0,3)} – ${sun.getDate()} ${MN[sun.getMonth()].slice(0,3)} ${sun.getFullYear()}`;
+}
+function rvCurrentKey(){ return rvWeekKey(addDays(today0(),rvWeekOffset*7)); }
+
+function rvStats(wkKey){
+  const mon=rvMonday(wkKey), sun=addDays(mon,6);
+  const inRange=d=>{const dt=parseD(d);return dt&&dt>=mon&&dt<=sun;};
+  // work hours from calendar work events
+  const workEvs=events.filter(e=>e.cat==='work'&&inRange(e.date));
+  const workHrs=workEvs.reduce((a,e)=>{
+    if(e.start&&e.end)return a+(toMin(e.end)-toMin(e.start))/60;
+    return a+8;
+  },0);
+  // task session hours
+  const sessHrs=sessions.filter(s=>inRange(s.date)).reduce((a,s)=>a+(toMin(s.endTime)-toMin(s.startTime))/60,0);
+  // tasks done vs active
+  const activeTasks=tasks.filter(t=>{
+    if(t.status==='done')return false;
+    const s=parseD(t.startDate),e=parseD(t.deadline);
+    if(s&&e)return(s<=sun&&e>=mon);
+    if(s)return s<=sun;
+    if(e)return e>=mon;
+    return false;
+  });
+  const doneTasks=tasks.filter(t=>t.status==='done'&&t.deadline&&inRange(t.deadline));
+  // meetings
+  const mtgCount=meetings.filter(m=>inRange(m.date)).length;
+  // sports sessions
+  const sportStats=sports.map(sp=>{
+    const wks=workouts.filter(w=>w.sportId===sp.id&&inRange(w.date));
+    const calEvs=events.filter(e=>e.cat==='sports'&&inRange(e.date)&&(e.sportId===sp.id||e.title.toLowerCase().includes(sp.name.toLowerCase())));
+    const calIds=new Set(workouts.map(w=>w.calEventId).filter(Boolean));
+    const extra=calEvs.filter(e=>!calIds.has(e.id));
+    const done=wks.length+extra.length;
+    const goal=goals.find(g=>g.sportId===sp.id);
+    const target=goal?goal.sessions:0;
+    const km=wks.reduce((a,w)=>a+(+w.distance||0),0);
+    const min=wks.reduce((a,w)=>a+(+w.duration||0),0);
+    return{sp,done,target,km,min};
+  }).filter(s=>s.done>0||s.target>0);
+  return{workHrs:Math.round(workHrs*10)/10,sessHrs:Math.round(sessHrs*10)/10,activeTasks:activeTasks.length,doneTasks:doneTasks.length,mtgCount,sportStats};
+}
+
+function renderReview(){
+  const cont=document.getElementById('review-content');
+  if(!cont) return;
+  const curKey=rvCurrentKey();
+  const curReview=weeklyReviews.find(r=>r.weekKey===curKey);
+  const stats=rvStats(curKey);
+
+  // sidebar
+  const sorted=[...weeklyReviews].sort((a,b)=>b.weekKey.localeCompare(a.weekKey));
+  let sidebar='';
+  sorted.forEach(r=>{
+    const isActive=r.weekKey===curKey;
+    const offset=Math.round((rvMonday(r.weekKey)-rvMonday(rvWeekKey(today0())))/(7*86400000));
+    const offsetLabel=offset===0?'This week':offset===-1?'Last week':offset<0?`${Math.abs(offset)} weeks ago`:`In ${offset} weeks`;
+    sidebar+=`<div class="review-entry${isActive?' active':''}" onclick="rvJump('${r.weekKey}')">
+      <div class="review-entry-head">
+        ${r.mood||''}
+        <span style="flex:1;">${offsetLabel}</span>
+        ${r.energy?`<span style="font-size:.68rem;color:var(--muted);">${r.energy}/10</span>`:''}
+      </div>
+      <div class="review-entry-preview">${r.highlight||rvLabel(r.weekKey)}</div>
+    </div>`;
+  });
+  if(!sorted.length) sidebar='<div style="color:var(--muted);font-size:.8rem;padding:12px;">No reports yet.</div>';
+
+  // main panel
+  let main=`<div class="rv-card">
+    <div class="rv-week-heading">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="nav-arrow" onclick="rvWeekOffset--;renderReview()">←</button>
+        <span style="min-width:200px;text-align:center;">${rvLabel(curKey)}${curReview&&curReview.mood?' '+curReview.mood:''}</span>
+        <button class="nav-arrow" onclick="rvWeekOffset++;renderReview()">→</button>
+      </div>
+      <button class="${curReview?'btn-secondary':'btn-primary'}" style="font-size:.73rem;padding:5px 12px;" onclick="openReviewModal('${curKey}')">
+        ${curReview?'✎ Edit':'✎ Write report'}
+      </button>
+    </div>
+    <div class="rv-stats">
+      <div class="rv-stat"><div class="rv-stat-num">${stats.workHrs}h</div><div class="rv-stat-lbl">Work</div></div>
+      <div class="rv-stat"><div class="rv-stat-num">${stats.sessHrs}h</div><div class="rv-stat-lbl">Planned</div></div>
+      <div class="rv-stat"><div class="rv-stat-num">${stats.doneTasks}/${stats.activeTasks}</div><div class="rv-stat-lbl">Tasks</div></div>
+      <div class="rv-stat"><div class="rv-stat-num">${stats.mtgCount}</div><div class="rv-stat-lbl">Meetings</div></div>
+    </div>
+  </div>`;
+
+  // sports card
+  if(stats.sportStats.length){
+    main+=`<div class="rv-card"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;margin-bottom:10px;">Training</div>`;
+    stats.sportStats.forEach(({sp,done,target,km,min})=>{
+      const pct=target?Math.min(100,Math.round(done/target*100)):100;
+      main+=`<div class="rv-sport-row">
+        <span style="font-size:1rem;width:22px;">${sp.icon}</span>
+        <span style="font-size:.78rem;font-weight:600;flex:1;color:${sp.color};">${sp.name}</span>
+        <span style="font-size:.72rem;color:var(--muted);margin-right:8px;">${done}${target?'/'+target:''} sessions</span>
+        ${km?`<span style="font-size:.72rem;color:var(--muted);margin-right:8px;">${km.toFixed(1)} km</span>`:''}
+        <div class="rv-bar-wrap" style="max-width:80px;"><div class="rv-bar" style="width:${pct}%;background:${sp.color};"></div></div>
+      </div>`;
+    });
+    main+=`</div>`;
+  }
+
+  // written review
+  if(curReview){
+    main+=`<div class="rv-card">`;
+    if(curReview.highlight) main+=`<div class="rv-highlight-pill">✨ ${curReview.highlight}</div>`;
+    if(curReview.well||curReview.improve){
+      main+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">`;
+      if(curReview.well) main+=`<div><div style="font-size:.68rem;font-weight:700;color:var(--ok);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;">✓ Went well</div><div class="rv-notes-block">${curReview.well}</div></div>`;
+      if(curReview.improve) main+=`<div><div style="font-size:.68rem;font-weight:700;color:var(--warn);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;">→ To improve</div><div class="rv-notes-block">${curReview.improve}</div></div>`;
+      main+=`</div>`;
+    }
+    if(curReview.notes) main+=`<div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;">Notes</div><div class="rv-notes-block">${curReview.notes}</div>`;
+    main+=`</div>`;
+  }else{
+    main+=`<div class="rv-write-cta">No written report yet — click <strong>✎ Write report</strong> above.</div>`;
+  }
+
+  cont.innerHTML=`<div class="review-layout">
+    <div class="review-sidebar">${sidebar}</div>
+    <div>${main}</div>
+  </div>`;
+}
+
+function rvJump(wkKey){
+  rvWeekOffset=Math.round((rvMonday(wkKey)-rvMonday(rvWeekKey(today0())))/(7*86400000));
+  renderReview();
+}
+
+function openReviewModal(wkKey){
+  editReviewWeekKey=wkKey;
+  const r=weeklyReviews.find(x=>x.weekKey===wkKey);
+  document.getElementById('review-modal-title').textContent=r?'Edit Weekly Report':'Write Weekly Report';
+  document.getElementById('review-modal-week').textContent=rvLabel(wkKey);
+  document.getElementById('rv-del-btn').style.display=r?'block':'none';
+  selectedMood=r?r.mood:null;
+  document.getElementById('rv-energy').value=r?r.energy:5;
+  document.getElementById('energy-lbl').textContent=r?r.energy:5;
+  document.getElementById('rv-highlight').value=r?r.highlight||'':'';
+  document.getElementById('rv-well').value=r?r.well||'':'';
+  document.getElementById('rv-improve').value=r?r.improve||'':'';
+  document.getElementById('rv-notes').value=r?r.notes||'':'';
+  document.querySelectorAll('.mood-opt').forEach(b=>b.classList.toggle('selected',b.dataset.mood===selectedMood));
+  openModal('review-modal');
+  setTimeout(()=>document.getElementById('rv-highlight').focus(),80);
+}
+function selectMood(m){
+  selectedMood=m;
+  document.querySelectorAll('.mood-opt').forEach(b=>b.classList.toggle('selected',b.dataset.mood===m));
+}
+function saveReview(){
+  const r={
+    id:uid(), weekKey:editReviewWeekKey,
+    mood:selectedMood,
+    energy:+document.getElementById('rv-energy').value,
+    highlight:document.getElementById('rv-highlight').value.trim(),
+    well:document.getElementById('rv-well').value.trim(),
+    improve:document.getElementById('rv-improve').value.trim(),
+    notes:document.getElementById('rv-notes').value.trim(),
+    createdAt:new Date().toISOString()
+  };
+  const i=weeklyReviews.findIndex(x=>x.weekKey===editReviewWeekKey);
+  if(i!==-1){r.id=weeklyReviews[i].id;weeklyReviews[i]=r;}else weeklyReviews.push(r);
+  persist('pl3_reviews',weeklyReviews);
+  closeModal('review-modal');
+  renderReview();
+}
+function deleteReview(){
+  weeklyReviews=weeklyReviews.filter(r=>r.weekKey!==editReviewWeekKey);
+  persist('pl3_reviews',weeklyReviews);
+  closeModal('review-modal');
+  renderReview();
+}
+
+// ══════════════════════════════════════════════════
 // SPORTS PAGE RENDER
 // ══════════════════════════════════════════════════
 function renderSports(){
@@ -2792,7 +2792,79 @@ document.addEventListener('click',function(e){
 });
 
 // INIT
-showPage('calendar');
+window.addEventListener('DOMContentLoaded', function(){
+  initApp();
+});
+
+function initApp(){
+  // Load data from localStorage
+  loadFromStorage();
+  
+  // Seed data if first time
+  if(!get('pl3_seeded')){
+    seedData();
+  }
+  
+  // Attach all event listeners
+  attachEventListeners();
+  
+  // Initial render
+  render();
+  showPage('calendar');
+  renderCalendar();
+}
+
+function attachEventListeners(){
+  // Page tabs
+  document.querySelectorAll('.page-tab').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const page=this.dataset.page;
+      if(page)showPage(page);
+    });
+  });
+  
+  // View tabs
+  document.querySelectorAll('.view-tab').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const view=this.dataset.view;
+      if(view)setView(view);
+    });
+  });
+  
+  // Nav arrows
+  const prevBtn=document.getElementById('nav-prev');
+  const nextBtn=document.getElementById('nav-next');
+  if(prevBtn)prevBtn.addEventListener('click',()=>changeMonth(-1));
+  if(nextBtn)nextBtn.addEventListener('click',()=>changeMonth(1));
+  
+  // Settings
+  const settingsBtn=document.getElementById('settings-btn');
+  if(settingsBtn)settingsBtn.addEventListener('click',()=>toggleSettings());
+  
+  // Buttons
+  document.getElementById('btn-new-event')?.addEventListener('click',()=>showNewEventModal());
+  document.getElementById('btn-sync-push')?.addEventListener('click',()=>syncSave(true));
+  document.getElementById('btn-sync-pull')?.addEventListener('click',()=>syncLoad(true));
+  document.getElementById('btn-export')?.addEventListener('click',exportData);
+  document.getElementById('import-file')?.addEventListener('change',importData);
+  
+  // Gantt buttons
+  document.getElementById('btn-add-phase')?.addEventListener('click',()=>showNewPhaseModal());
+}
+
+function loadFromStorage(){
+  events=get('pl3_events')||[];
+  phases=get('pl3_phases')||[];
+  tasks=get('pl3_tasks')||[];
+  sessions=get('pl3_sessions')||[];
+  subtasks=get('pl3_subtasks')||[];
+  sports=get('pl3_sports')||[];
+  goals=get('pl3_goals')||[];
+  workouts=get('pl3_workouts')||[];
+  races=get('pl3_races')||[];
+  meetings=get('pl3_meetings')||[];
+  weeklyReviews=get('pl3_reviews')||[];
+}
 </script>
 </body>
 </html>
