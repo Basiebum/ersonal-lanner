@@ -1366,8 +1366,7 @@ function renderDaily(main){
         chip.className='meeting-chip';
         chip.style.cssText=`top:${((cSm-ev.sm)/60)*60+2}px;height:${Math.max(((cEm-cSm)/60)*60-4,16)}px;left:2px;width:48%;`;
         chip.textContent='☎ '+m.title;
-        chip.title=`${m.title} · ${m.startTime}–${m.endTime}${m.notes?'
-'+m.notes:''}`;
+        chip.title = `${m.title} · ${m.startTime}–${m.endTime}${m.notes ? '\n' + m.notes : ''}`;
         chip.addEventListener('click',e=>{e.stopPropagation();openMeetingModal(m.id,ds);});
         el.appendChild(chip);
       });
@@ -2793,7 +2792,7 @@ document.addEventListener('click',function(e){
 });
 
 // INIT
-render();
+showPage('calendar');
 </script>
 </body>
 </html>
