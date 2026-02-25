@@ -564,6 +564,38 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   </div>
 </div>
 
+<!-- ── SLEEP MODAL ── -->
+<div class="modal-overlay" id="sleep-modal">
+  <div class="modal">
+    <h2 id="sleep-modal-title">Sleep Tracking</h2>
+    <div id="sleep-day-label" style="font-size:.82rem;color:var(--muted);margin-bottom:14px;"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Bed time</label><input type="time" id="sleep-bed" value="23:00"></div>
+      <div class="form-group"><label>Wake time</label><input type="time" id="sleep-wake" value="07:00"></div>
+    </div>
+    <div style="background:var(--surface2);padding:12px;border-radius:8px;margin:14px 0;font-size:.75rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span>Sleep duration:</span>
+        <span id="sleep-duration" style="font-weight:700;color:var(--accent);">8h 0m</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Target: 8h</span>
+        <span id="sleep-status" style="font-weight:700;">✓</span>
+      </div>
+    </div>
+    <button class="btn-secondary" onclick="suggestBedtime()" style="width:100%;margin-bottom:10px;">💡 Smart Suggest (based on tomorrow)</button>
+    <div id="sleep-suggestion" style="background:rgba(78,154,241,.1);padding:10px;border-radius:6px;margin-bottom:12px;font-size:.75rem;display:none;border-left:3px solid var(--work);">
+      <div style="font-weight:700;margin-bottom:4px;">Suggested bedtime:</div>
+      <div id="sleep-suggest-time" style="color:var(--work);">23:30</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-delete" id="sleep-del-btn" style="display:none" onclick="deleteSleep()">Delete</button>
+      <button class="btn-cancel" onclick="closeModal('sleep-modal')">Cancel</button>
+      <button class="btn-save" onclick="saveSleep()">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── WEEKLY REPORT MODAL ── -->
 <div class="modal-overlay" id="review-modal">
   <div class="modal wide">
@@ -793,6 +825,10 @@ function fmtD(d){
   if(!x)return'';
   return`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;
 }
+function formatDateLong(dateStr){
+  const d=typeof dateStr==='string'?new Date(dateStr+'T00:00:00'):dateStr;
+  return`${DS[d.getDay()]}, ${d.getDate()} ${MN[d.getMonth()]}`;
+}
 function toMin(t){if(!t)return 0;const[h,m]=t.split(':').map(Number);return h*60+m;}
 function minToTime(m){return`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;}
 function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x;}
@@ -969,6 +1005,7 @@ let tasks   = load('pl3_tasks',[]);
 let sessions= load('pl3_sessions',[]);
 let subtasks= load('pl3_subtasks',[]);
 let meetings= load('pl3_meetings',[]);
+let sleep=load('pl3_sleep',[]);
 let weeklyReviews= load('pl3_reviews',[]);
 
 // ── SEED (runs only once; data persists via localStorage after that) ──
@@ -1349,13 +1386,35 @@ function renderPopupTasks(ds){
   // Show ALL tasks whose span includes this date, with their sessions on this day
   const active=tasksActiveOnDate(ds);
   const cont=document.getElementById('popup-tasks-list');
+  
+  // Sleep info for this day
+  const daySleep=sleep.find(s=>s.date===ds);
+  let sleepHtml='';
+  if(daySleep){
+    const hours=calcSleepHours(daySleep.bedtime,daySleep.wakeTime);
+    const mins=Math.round((hours%1)*60);
+    const h=Math.floor(hours);
+    let sleepColor='var(--ok)';
+    if(hours<7)sleepColor='var(--danger)';
+    else if(hours<8)sleepColor='var(--warn)';
+    sleepHtml=`<div style="margin-bottom:12px;background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:10px 12px;">
+      <div style="font-size:.68rem;font-weight:700;color:var(--personal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;">😴 Sleep</div>
+      <div class="session-row" style="cursor:pointer;" onclick="openSleepModal('${ds}')">
+        <div class="session-time" style="color:var(--personal);">🛏 ${daySleep.bedtime} – ${daySleep.wakeTime} (${h}h ${mins}m)</div>
+        <span style="font-size:.62rem;color:var(--muted);margin-left:auto;">tap to edit</span>
+      </div>
+    </div>`;
+  }else{
+    sleepHtml=`<button class="btn-secondary" onclick="openSleepModal('${ds}')" style="width:100%;margin-bottom:12px;">+ Log sleep</button>`;
+  }
+  
   if(!active.length){
-    cont.innerHTML='<div style="color:var(--muted);font-size:.84rem;text-align:center;padding:22px 0;">No tasks span this day.<br>Go to Project view to create tasks.</div>';
+    cont.innerHTML=sleepHtml+'<div style="color:var(--muted);font-size:.84rem;text-align:center;padding:22px 0;">No tasks span this day.<br>Go to Project view to create tasks.</div>';
     return;
   }
   // meetings on this day
   const dayMtgs=meetings.filter(m=>m.date===ds).sort((a,b)=>a.startTime.localeCompare(b.startTime));
-  let h='';
+  let h=sleepHtml;
   if(dayMtgs.length){
     h+=`<div style="margin-bottom:12px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px 12px;">
       <div style="font-size:.68rem;font-weight:700;color:var(--warn);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;">📅 Meetings today</div>`;
@@ -1884,6 +1943,106 @@ function deleteMeeting(){
   render();
 }
 
+// ── SLEEP ──
+let editSleepDate=null;
+function openSleepModal(date){
+  editSleepDate=date;
+  document.getElementById('sleep-day-label').textContent=formatDateLong(date);
+  const existing=sleep.find(s=>s.date===date);
+  if(existing){
+    document.getElementById('sleep-modal-title').textContent='Edit Sleep';
+    document.getElementById('sleep-bed').value=existing.bedtime||'23:00';
+    document.getElementById('sleep-wake').value=existing.wakeTime||'07:00';
+    document.getElementById('sleep-del-btn').style.display='block';
+  }else{
+    document.getElementById('sleep-modal-title').textContent='Add Sleep';
+    document.getElementById('sleep-bed').value='23:00';
+    document.getElementById('sleep-wake').value='07:00';
+    document.getElementById('sleep-del-btn').style.display='none';
+  }
+  document.getElementById('sleep-suggestion').style.display='none';
+  updateSleepDisplay();
+  openModal('sleep-modal');
+}
+function updateSleepDisplay(){
+  const bed=document.getElementById('sleep-bed').value;
+  const wake=document.getElementById('sleep-wake').value;
+  if(!bed||!wake)return;
+  const hours=calcSleepHours(bed,wake);
+  const mins=Math.round((hours%1)*60);
+  const h=Math.floor(hours);
+  document.getElementById('sleep-duration').textContent=`${h}h ${mins}m`;
+  
+  let status='✓',color='var(--ok)';
+  if(hours<7){status='⚠';color='var(--danger)';}
+  else if(hours<8){status='~';color='var(--warn)';}
+  document.getElementById('sleep-status').textContent=status;
+  document.getElementById('sleep-status').style.color=color;
+}
+function calcSleepHours(bedtime,waketime){
+  const [bh,bm]=bedtime.split(':').map(Number);
+  const [wh,wm]=waketime.split(':').map(Number);
+  let diff=(wh*60+wm)-(bh*60+bm);
+  if(diff<=0)diff+=24*60;
+  return diff/60;
+}
+function suggestBedtime(){
+  if(!editSleepDate)return;
+  const nextDate=new Date(editSleepDate);
+  nextDate.setDate(nextDate.getDate()+1);
+  const nextDateStr=fmtD(nextDate);
+  
+  // Find first task or meeting on next day
+  const nextTasks=tasks.filter(t=>t.startDate===nextDateStr).sort((a,b)=>a.startDate.localeCompare(b.startDate));
+  const nextMeetings=meetings.filter(m=>m.date===nextDateStr).sort((a,b)=>a.startTime.localeCompare(b.startTime));
+  const nextSessions=sessions.filter(s=>s.date===nextDateStr).sort((a,b)=>a.startTime.localeCompare(b.startTime));
+  
+  let firstTime=null;
+  if(nextTasks.length>0&&nextTasks[0].startDate)firstTime=nextTasks[0].startDate.slice(11,16)||'09:00';
+  if(nextMeetings.length>0&&nextMeetings[0].startTime)firstTime=nextMeetings[0].startTime;
+  if(nextSessions.length>0&&nextSessions[0].startTime)firstTime=nextSessions[0].startTime;
+  
+  if(!firstTime)firstTime='08:00';
+  
+  // Calculate bedtime = firstTime - 8 hours
+  const [h,m]=firstTime.split(':').map(Number);
+  let bedH=h-8,bedM=m;
+  if(bedH<0)bedH+=24;
+  const bedtime=String(bedH).padStart(2,'0')+':'+String(bedM).padStart(2,'0');
+  
+  document.getElementById('sleep-bed').value=bedtime;
+  document.getElementById('sleep-wake').value=firstTime;
+  updateSleepDisplay();
+  
+  document.getElementById('sleep-suggest-time').textContent=`${bedtime} to ${firstTime} (8h 0m)`;
+  document.getElementById('sleep-suggestion').style.display='block';
+  showToast('✓ Suggested bedtime set to 8 hours before your first task');
+}
+function saveSleep(){
+  if(!editSleepDate)return;
+  const bedtime=document.getElementById('sleep-bed').value;
+  const wakeTime=document.getElementById('sleep-wake').value;
+  if(!bedtime||!wakeTime){showToast('Please set both bed and wake times',true);return;}
+  
+  const s={id:uid(),date:editSleepDate,bedtime,wakeTime};
+  const idx=sleep.findIndex(x=>x.date===editSleepDate);
+  if(idx!==-1)sleep[idx]=s;
+  else sleep.push(s);
+  persist('pl3_sleep',sleep);
+  closeModal('sleep-modal');
+  if(currentPopupDate)renderPopupTasks(currentPopupDate);
+  render();
+  showToast('Sleep logged ✓');
+}
+function deleteSleep(){
+  if(!editSleepDate)return;
+  sleep=sleep.filter(s=>s.date!==editSleepDate);
+  persist('pl3_sleep',sleep);
+  closeModal('sleep-modal');
+  if(currentPopupDate)renderPopupTasks(currentPopupDate);
+  render();
+}
+
 // ── SUBTASK ──
 function openSubtaskModal(id,taskId){
   editSubtaskId=id||null;
@@ -1980,12 +2139,12 @@ function deletePhase(){
 }
 
 // ── CLOSE HANDLERS ──
-['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','meeting-modal','review-modal'].forEach(id=>{
+['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','meeting-modal','sleep-modal','review-modal'].forEach(id=>{
   document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape')
-    ['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','meeting-modal','review-modal'].forEach(id=>closeModal(id));
+    ['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','meeting-modal','sleep-modal','review-modal'].forEach(id=>closeModal(id));
 });
 
 
@@ -2699,6 +2858,7 @@ function importData(e){
       if(data.pl3_workouts){workouts=data.pl3_workouts;persist('pl3_workouts',workouts);}
       if(data.pl3_races)   {races=data.pl3_races;     persist('pl3_races',races);}
       if(data.pl3_meetings){meetings=data.pl3_meetings;persist('pl3_meetings',meetings);}
+      if(data.pl3_sleep){sleep=data.pl3_sleep;persist('pl3_sleep',sleep);}
       if(data.pl3_reviews){weeklyReviews=data.pl3_reviews;persist('pl3_reviews',weeklyReviews);}
       persist('pl3_seeded',true);
       persist('pl3_sport_seeded',true);
@@ -2722,7 +2882,7 @@ async function syncSave(manual=false){
     const data={
       pl3_events:events,pl3_phases:phases,pl3_tasks:tasks,pl3_sessions:sessions,pl3_subtasks:subtasks,
       pl3_sports:sports,pl3_goals:goals,pl3_workouts:workouts,pl3_races:races,
-      pl3_meetings:meetings,pl3_reviews:weeklyReviews,exportedAt:new Date().toISOString()
+      pl3_meetings:meetings,pl3_sleep:sleep,pl3_reviews:weeklyReviews,exportedAt:new Date().toISOString()
     };
     const res=await fetch('/api/save',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'plan-backup',data})});
     const j=await res.json();
@@ -2757,8 +2917,9 @@ async function syncLoad(manual=false){
     subtasks=d.pl3_subtasks||[]; sports  =d.pl3_sports  ||[];
     goals   =d.pl3_goals   ||[]; workouts=d.pl3_workouts||[];
     races   =d.pl3_races   ||[]; meetings=d.pl3_meetings||[];
+    sleep   =d.pl3_sleep   ||[];
     weeklyReviews=d.pl3_reviews||[];
-    ['events','phases','tasks','sessions','subtasks','sports','goals','workouts','races','meetings'].forEach(k=>persistSilent('pl3_'+k,eval(k)));
+    ['events','phases','tasks','sessions','subtasks','sports','goals','workouts','races','meetings','sleep'].forEach(k=>persistSilent('pl3_'+k,eval(k)));
     persistSilent('pl3_reviews',weeklyReviews);
     setSyncDot('saved');
     if(manual)showToast('Pulled from server ✓');
@@ -2823,6 +2984,12 @@ function attachEventListeners(){
   
   // Gantt buttons
   document.getElementById('btn-add-phase')?.addEventListener('click',()=>openPhaseModal());
+  
+  // Sleep inputs
+  document.getElementById('sleep-bed')?.addEventListener('change',updateSleepDisplay);
+  document.getElementById('sleep-wake')?.addEventListener('change',updateSleepDisplay);
+  document.getElementById('sleep-bed')?.addEventListener('input',updateSleepDisplay);
+  document.getElementById('sleep-wake')?.addEventListener('input',updateSleepDisplay);
 }
 
 function loadFromStorage(){
@@ -2836,6 +3003,7 @@ function loadFromStorage(){
   workouts=get('pl3_workouts')||[];
   races=get('pl3_races')||[];
   meetings=get('pl3_meetings')||[];
+  sleep=get('pl3_sleep')||[];
   weeklyReviews=get('pl3_reviews')||[];
 }
 
