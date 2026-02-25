@@ -2787,32 +2787,6 @@ function showToast(msg,isError=false){
 }
 // ── SETTINGS DROPDOWN ──
 function toggleSettings(){document.getElementById('settings-menu').classList.toggle('open');}
-document.addEventListener('click',function(e){
-  const btn=document.getElementById('settings-btn'),menu=document.getElementById('settings-menu');
-  if(menu&&btn&&!btn.contains(e.target)&&!menu.contains(e.target))menu.classList.remove('open');
-});
-
-// INIT
-document.addEventListener('DOMContentLoaded', function(){
-  try{
-    // Load data from localStorage
-    loadFromStorage();
-    
-    // Seed data if first time
-    if(!get('pl3_seeded')){
-      seedData();
-    }
-    
-    // Attach all event listeners
-    attachEventListeners();
-    
-    // Now show the page (which will render)
-    showPage('calendar');
-  }catch(err){
-    console.error('Init error:', err);
-  }
-});
-
 function attachEventListeners(){
   // Page tabs
   document.querySelectorAll('.page-tab').forEach(btn=>{
@@ -2864,6 +2838,32 @@ function loadFromStorage(){
   meetings=get('pl3_meetings')||[];
   weeklyReviews=get('pl3_reviews')||[];
 }
+
+document.addEventListener('click',function(e){
+  const btn=document.getElementById('settings-btn'),menu=document.getElementById('settings-menu');
+  if(menu&&btn&&!btn.contains(e.target)&&!menu.contains(e.target))menu.classList.remove('open');
+});
+
+// INIT
+document.addEventListener('DOMContentLoaded', function(){
+  try{
+    // Load data from localStorage
+    loadFromStorage();
+    
+    // Seed data if first time
+    if(!get('pl3_seeded')){
+      seedData();
+    }
+    
+    // Attach all event listeners
+    attachEventListeners();
+    
+    // Render the calendar
+    setTimeout(()=>render(), 50);
+  }catch(err){
+    console.error('Init error:', err);
+  }
+});
 </script>
 </body>
 </html>
