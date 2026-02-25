@@ -336,7 +336,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:.86rem;color:var(--muted);">Weekly Report</span>
   </div>
   <div style="position:relative;margin-left:12px;flex-shrink:0;">
-    <button class="btn-secondary" id="settings-btn" onclick="toggleSettings()" style="padding:7px 11px;font-size:.92rem;" title="Settings & account">⚙</button>
+    <button class="btn-secondary" id="settings-btn" onclick="toggleSettings(event)" style="padding:7px 11px;font-size:.92rem;" title="Settings & account">⚙</button>
     <div id="settings-menu">
       <div id="settings-user-email" style="display:none;"></div>
       <div class="set-section">Account</div>
@@ -570,28 +570,37 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <h2 id="sleep-modal-title">Sleep Tracking</h2>
     <div id="sleep-day-label" style="font-size:.82rem;color:var(--muted);margin-bottom:14px;"></div>
     <div class="form-row">
-      <div class="form-group"><label>Bed time</label><input type="time" id="sleep-bed" value="23:00"></div>
-      <div class="form-group"><label>Wake time</label><input type="time" id="sleep-wake" value="07:00"></div>
+      <div class="form-group"><label>Wake time (alarm)</label><input type="time" id="sleep-wake" value="07:00"></div>
+      <div class="form-group"><label>Hours before alarm</label><input type="number" id="sleep-hours-before" value="8.5" step="0.5" min="6" max="12" style="width:100%;"></div>
     </div>
     <div style="background:var(--surface2);padding:12px;border-radius:8px;margin:14px 0;font-size:.75rem;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span>Suggested bed time:</span>
+        <span id="sleep-suggested-bed" style="font-weight:700;color:var(--accent);">23:30</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
         <span>Sleep duration:</span>
-        <span id="sleep-duration" style="font-weight:700;color:var(--accent);">8h 0m</span>
+        <span id="sleep-duration" style="font-weight:700;color:var(--accent);">8h 30m</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span>Target: 8h</span>
+        <span>Target: 8-9h</span>
         <span id="sleep-status" style="font-weight:700;">✓</span>
       </div>
     </div>
-    <button class="btn-secondary" onclick="suggestBedtime()" style="width:100%;margin-bottom:10px;">💡 Smart Suggest (based on tomorrow)</button>
-    <div id="sleep-suggestion" style="background:rgba(78,154,241,.1);padding:10px;border-radius:6px;margin-bottom:12px;font-size:.75rem;display:none;border-left:3px solid var(--work);">
-      <div style="font-weight:700;margin-bottom:4px;">Suggested bedtime:</div>
-      <div id="sleep-suggest-time" style="color:var(--work);">23:30</div>
+    <div style="background:rgba(78,154,241,.1);padding:10px;border-radius:6px;margin-bottom:12px;border-left:3px solid var(--work);">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.82rem;">
+        <input type="checkbox" id="sleep-create-event" checked style="cursor:pointer;">
+        Create bed time event on previous evening at suggested time
+      </label>
+    </div>
+    <div id="sleep-suggestion" style="background:rgba(62,207,142,.1);padding:10px;border-radius:6px;margin-bottom:12px;font-size:.75rem;display:none;border-left:3px solid var(--sports);">
+      <div style="font-weight:700;margin-bottom:4px;">✓ Event will be created:</div>
+      <div id="sleep-suggest-event" style="color:var(--sports);">Tomorrow evening at 23:30 - 07:00 (8h 30m sleep)</div>
     </div>
     <div class="modal-actions">
       <button class="btn-delete" id="sleep-del-btn" style="display:none" onclick="deleteSleep()">Delete</button>
       <button class="btn-cancel" onclick="closeModal('sleep-modal')">Cancel</button>
-      <button class="btn-save" onclick="saveSleep()">Save</button>
+      <button class="btn-save" onclick="saveSleep()">Save & Set Up</button>
     </div>
   </div>
 </div>
@@ -1306,6 +1315,7 @@ function renderMonthly(main){
     });
     if(dayEvs.length>3){const m=document.createElement('div');m.className='month-more';m.textContent=`+${dayEvs.length-3} more`;cell.appendChild(m);}
     cell.addEventListener('dragover',e=>e.preventDefault());
+    cell.addEventListener('click',()=>openTaskPanel(ds));
     cell.addEventListener('drop',e=>{
       if(!dragEvId)return;
       const idx=events.findIndex(ev=>ev.id===dragEvId);
@@ -1391,21 +1401,21 @@ function renderPopupTasks(ds){
   const daySleep=sleep.find(s=>s.date===ds);
   let sleepHtml='';
   if(daySleep){
-    const hours=calcSleepHours(daySleep.bedtime,daySleep.wakeTime);
-    const mins=Math.round((hours%1)*60);
-    const h=Math.floor(hours);
-    let sleepColor='var(--ok)';
-    if(hours<7)sleepColor='var(--danger)';
-    else if(hours<8)sleepColor='var(--warn)';
+    const hoursBefore=daySleep.hoursBefore||8.5;
+    const h=Math.floor(hoursBefore);
+    const mins=Math.round((hoursBefore%1)*60);
+    let sleepColor='var(--ok)',sleepStatus='✓';
+    if(hoursBefore<8){sleepColor='var(--warn)';sleepStatus='~';}
+    else if(hoursBefore<7){sleepColor='var(--danger)';sleepStatus='⚠';}
     sleepHtml=`<div style="margin-bottom:12px;background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:10px 12px;">
-      <div style="font-size:.68rem;font-weight:700;color:var(--personal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;">😴 Sleep</div>
+      <div style="font-size:.68rem;font-weight:700;color:var(--personal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;">🔔 Wake time</div>
       <div class="session-row" style="cursor:pointer;" onclick="openSleepModal('${ds}')">
-        <div class="session-time" style="color:var(--personal);">🛏 ${daySleep.bedtime} – ${daySleep.wakeTime} (${h}h ${mins}m)</div>
+        <div class="session-time" style="color:var(--personal);">⏰ ${daySleep.wakeTime} (${h}h ${mins}m before)</div>
         <span style="font-size:.62rem;color:var(--muted);margin-left:auto;">tap to edit</span>
       </div>
     </div>`;
   }else{
-    sleepHtml=`<button class="btn-secondary" onclick="openSleepModal('${ds}')" style="width:100%;margin-bottom:12px;">+ Log sleep</button>`;
+    sleepHtml=`<button class="btn-secondary" onclick="openSleepModal('${ds}')" style="width:100%;margin-bottom:12px;">+ Set wake time</button>`;
   }
   
   if(!active.length){
@@ -1950,89 +1960,102 @@ function openSleepModal(date){
   document.getElementById('sleep-day-label').textContent=formatDateLong(date);
   const existing=sleep.find(s=>s.date===date);
   if(existing){
-    document.getElementById('sleep-modal-title').textContent='Edit Sleep';
-    document.getElementById('sleep-bed').value=existing.bedtime||'23:00';
+    document.getElementById('sleep-modal-title').textContent='Edit Wake Time';
     document.getElementById('sleep-wake').value=existing.wakeTime||'07:00';
+    document.getElementById('sleep-hours-before').value=existing.hoursBefore||8.5;
     document.getElementById('sleep-del-btn').style.display='block';
   }else{
-    document.getElementById('sleep-modal-title').textContent='Add Sleep';
-    document.getElementById('sleep-bed').value='23:00';
+    document.getElementById('sleep-modal-title').textContent='Set Wake Time';
     document.getElementById('sleep-wake').value='07:00';
+    document.getElementById('sleep-hours-before').value=8.5;
     document.getElementById('sleep-del-btn').style.display='none';
   }
+  document.getElementById('sleep-create-event').checked=true;
   document.getElementById('sleep-suggestion').style.display='none';
-  updateSleepDisplay();
+  updateSleepCalculations();
   openModal('sleep-modal');
 }
-function updateSleepDisplay(){
-  const bed=document.getElementById('sleep-bed').value;
+function updateSleepCalculations(){
   const wake=document.getElementById('sleep-wake').value;
-  if(!bed||!wake)return;
-  const hours=calcSleepHours(bed,wake);
-  const mins=Math.round((hours%1)*60);
-  const h=Math.floor(hours);
-  document.getElementById('sleep-duration').textContent=`${h}h ${mins}m`;
+  const hoursBefore=parseFloat(document.getElementById('sleep-hours-before').value)||8.5;
+  if(!wake)return;
   
-  let status='✓',color='var(--ok)';
-  if(hours<7){status='⚠';color='var(--danger)';}
-  else if(hours<8){status='~';color='var(--warn)';}
-  document.getElementById('sleep-status').textContent=status;
-  document.getElementById('sleep-status').style.color=color;
-}
-function calcSleepHours(bedtime,waketime){
-  const [bh,bm]=bedtime.split(':').map(Number);
-  const [wh,wm]=waketime.split(':').map(Number);
-  let diff=(wh*60+wm)-(bh*60+bm);
-  if(diff<=0)diff+=24*60;
-  return diff/60;
-}
-function suggestBedtime(){
-  if(!editSleepDate)return;
-  const nextDate=new Date(editSleepDate);
-  nextDate.setDate(nextDate.getDate()+1);
-  const nextDateStr=fmtD(nextDate);
-  
-  // Find first task or meeting on next day
-  const nextTasks=tasks.filter(t=>t.startDate===nextDateStr).sort((a,b)=>a.startDate.localeCompare(b.startDate));
-  const nextMeetings=meetings.filter(m=>m.date===nextDateStr).sort((a,b)=>a.startTime.localeCompare(b.startTime));
-  const nextSessions=sessions.filter(s=>s.date===nextDateStr).sort((a,b)=>a.startTime.localeCompare(b.startTime));
-  
-  let firstTime=null;
-  if(nextTasks.length>0&&nextTasks[0].startDate)firstTime=nextTasks[0].startDate.slice(11,16)||'09:00';
-  if(nextMeetings.length>0&&nextMeetings[0].startTime)firstTime=nextMeetings[0].startTime;
-  if(nextSessions.length>0&&nextSessions[0].startTime)firstTime=nextSessions[0].startTime;
-  
-  if(!firstTime)firstTime='08:00';
-  
-  // Calculate bedtime = firstTime - 8 hours
-  const [h,m]=firstTime.split(':').map(Number);
-  let bedH=h-8,bedM=m;
-  if(bedH<0)bedH+=24;
+  // Calculate bed time based on wake time - hours before
+  const [wh,wm]=wake.split(':').map(Number);
+  let bedMin=(wh*60+wm)-(hoursBefore*60);
+  if(bedMin<0)bedMin+=24*60;
+  const bedH=Math.floor(bedMin/60);
+  const bedM=bedMin%60;
   const bedtime=String(bedH).padStart(2,'0')+':'+String(bedM).padStart(2,'0');
   
-  document.getElementById('sleep-bed').value=bedtime;
-  document.getElementById('sleep-wake').value=firstTime;
-  updateSleepDisplay();
+  document.getElementById('sleep-suggested-bed').textContent=bedtime;
+  document.getElementById('sleep-duration').textContent=`${Math.floor(hoursBefore)}h ${Math.round((hoursBefore%1)*60)}m`;
   
-  document.getElementById('sleep-suggest-time').textContent=`${bedtime} to ${firstTime} (8h 0m)`;
-  document.getElementById('sleep-suggestion').style.display='block';
-  showToast('✓ Suggested bedtime set to 8 hours before your first task');
+  let status='✓',color='var(--ok)';
+  if(hoursBefore<8){status='~';color='var(--warn)';}
+  else if(hoursBefore<7){status='⚠';color='var(--danger)';}
+  document.getElementById('sleep-status').textContent=status;
+  document.getElementById('sleep-status').style.color=color;
+  
+  // Show what event will be created
+  if(document.getElementById('sleep-create-event').checked){
+    document.getElementById('sleep-suggestion').style.display='block';
+    const prevDate=new Date(editSleepDate);
+    prevDate.setDate(prevDate.getDate()-1);
+    const prevDateStr=fmtD(prevDate);
+    document.getElementById('sleep-suggest-event').textContent=`${formatDateLong(prevDateStr)} at ${bedtime} → ${wake} (${Math.floor(hoursBefore)}h ${Math.round((hoursBefore%1)*60)}m)`;
+  }else{
+    document.getElementById('sleep-suggestion').style.display='none';
+  }
 }
 function saveSleep(){
   if(!editSleepDate)return;
-  const bedtime=document.getElementById('sleep-bed').value;
   const wakeTime=document.getElementById('sleep-wake').value;
-  if(!bedtime||!wakeTime){showToast('Please set both bed and wake times',true);return;}
+  const hoursBefore=parseFloat(document.getElementById('sleep-hours-before').value)||8.5;
+  const createEvent=document.getElementById('sleep-create-event').checked;
   
-  const s={id:uid(),date:editSleepDate,bedtime,wakeTime};
+  if(!wakeTime){showToast('Please set a wake time',true);return;}
+  
+  const s={id:uid(),date:editSleepDate,wakeTime,hoursBefore};
   const idx=sleep.findIndex(x=>x.date===editSleepDate);
   if(idx!==-1)sleep[idx]=s;
   else sleep.push(s);
   persist('pl3_sleep',sleep);
+  
+  // Create bed time event on previous evening if checked
+  if(createEvent){
+    const prevDate=new Date(editSleepDate);
+    prevDate.setDate(prevDate.getDate()-1);
+    const prevDateStr=fmtD(prevDate);
+    
+    // Calculate bed time
+    const [wh,wm]=wakeTime.split(':').map(Number);
+    let bedMin=(wh*60+wm)-(hoursBefore*60);
+    if(bedMin<0)bedMin+=24*60;
+    const bedH=Math.floor(bedMin/60);
+    const bedM=bedMin%60;
+    const bedtime=String(bedH).padStart(2,'0')+':'+String(bedM).padStart(2,'0');
+    
+    // Create event
+    const bedEvent={
+      id:uid(),
+      title:'Sleep',
+      cat:'personal',
+      date:prevDateStr,
+      start:bedtime,
+      end:wakeTime,
+      notes:'Auto-created bedtime event'
+    };
+    events.push(bedEvent);
+    persist('pl3_events',events);
+    showToast('✓ Wake time set & bed time event created');
+  }else{
+    showToast('✓ Wake time set');
+  }
+  
   closeModal('sleep-modal');
   if(currentPopupDate)renderPopupTasks(currentPopupDate);
   render();
-  showToast('Sleep logged ✓');
 }
 function deleteSleep(){
   if(!editSleepDate)return;
@@ -2947,7 +2970,10 @@ function showToast(msg,isError=false){
   _toastTimer=setTimeout(()=>{t.style.opacity='0';},2800);
 }
 // ── SETTINGS DROPDOWN ──
-function toggleSettings(){document.getElementById('settings-menu').classList.toggle('open');}
+function toggleSettings(e){
+  if(e)e.stopPropagation();
+  document.getElementById('settings-menu').classList.toggle('open');
+}
 function attachEventListeners(){
   // Page tabs
   document.querySelectorAll('.page-tab').forEach(btn=>{
@@ -2986,10 +3012,11 @@ function attachEventListeners(){
   document.getElementById('btn-add-phase')?.addEventListener('click',()=>openPhaseModal());
   
   // Sleep inputs
-  document.getElementById('sleep-bed')?.addEventListener('change',updateSleepDisplay);
-  document.getElementById('sleep-wake')?.addEventListener('change',updateSleepDisplay);
-  document.getElementById('sleep-bed')?.addEventListener('input',updateSleepDisplay);
-  document.getElementById('sleep-wake')?.addEventListener('input',updateSleepDisplay);
+  document.getElementById('sleep-wake')?.addEventListener('change',updateSleepCalculations);
+  document.getElementById('sleep-hours-before')?.addEventListener('change',updateSleepCalculations);
+  document.getElementById('sleep-wake')?.addEventListener('input',updateSleepCalculations);
+  document.getElementById('sleep-hours-before')?.addEventListener('input',updateSleepCalculations);
+  document.getElementById('sleep-create-event')?.addEventListener('change',updateSleepCalculations);
 }
 
 function loadFromStorage(){
@@ -3009,7 +3036,11 @@ function loadFromStorage(){
 
 document.addEventListener('click',function(e){
   const btn=document.getElementById('settings-btn'),menu=document.getElementById('settings-menu');
-  if(menu&&btn&&!btn.contains(e.target)&&!menu.contains(e.target))menu.classList.remove('open');
+  if(!menu||!btn)return;
+  // Only close if clicking outside both button and menu (and not on another interactive element)
+  if(!btn.contains(e.target)&&!menu.contains(e.target)){
+    menu.classList.remove('open');
+  }
 });
 
 // INIT
