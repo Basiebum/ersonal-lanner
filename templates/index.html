@@ -570,8 +570,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <h2 id="sleep-modal-title">Sleep Tracking</h2>
     <div id="sleep-day-label" style="font-size:.82rem;color:var(--muted);margin-bottom:14px;"></div>
     <div class="form-row">
-      <div class="form-group"><label>Wake time (alarm)</label><input type="time" id="sleep-wake" value="07:00"></div>
-      <div class="form-group"><label>Hours before alarm</label><input type="number" id="sleep-hours-before" value="8.5" step="0.5" min="6" max="12" style="width:100%;"></div>
+      <div class="form-group"><label>Wake time (alarm)</label><input type="time" id="sleep-wake" value="07:00" onchange="updateSleepCalculations()" oninput="updateSleepCalculations()"></div>
+      <div class="form-group"><label>Hours before alarm</label><input type="number" id="sleep-hours-before" value="8.5" step="0.5" min="6" max="12" style="width:100%;" onchange="updateSleepCalculations()" oninput="updateSleepCalculations()"></div>
     </div>
     <div style="background:var(--surface2);padding:12px;border-radius:8px;margin:14px 0;font-size:.75rem;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
@@ -589,7 +589,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     </div>
     <div style="background:rgba(78,154,241,.1);padding:10px;border-radius:6px;margin-bottom:12px;border-left:3px solid var(--work);">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.82rem;">
-        <input type="checkbox" id="sleep-create-event" checked style="cursor:pointer;">
+        <input type="checkbox" id="sleep-create-event" checked style="cursor:pointer;" onchange="updateSleepCalculations()">
         Create bed time event on previous evening at suggested time
       </label>
     </div>
@@ -1976,8 +1976,16 @@ function openSleepModal(date){
   openModal('sleep-modal');
 }
 function updateSleepCalculations(){
-  const wake=document.getElementById('sleep-wake').value;
-  const hoursBefore=parseFloat(document.getElementById('sleep-hours-before').value)||8.5;
+  const wakeEl=document.getElementById('sleep-wake');
+  const hoursEl=document.getElementById('sleep-hours-before');
+  const bedEl=document.getElementById('sleep-suggested-bed');
+  const durationEl=document.getElementById('sleep-duration');
+  const statusEl=document.getElementById('sleep-status');
+  
+  if(!wakeEl||!hoursEl||!bedEl||!durationEl||!statusEl)return;
+  
+  const wake=wakeEl.value;
+  const hoursBefore=parseFloat(hoursEl.value)||8.5;
   if(!wake)return;
   
   // Calculate bed time based on wake time - hours before
@@ -1988,24 +1996,29 @@ function updateSleepCalculations(){
   const bedM=bedMin%60;
   const bedtime=String(bedH).padStart(2,'0')+':'+String(bedM).padStart(2,'0');
   
-  document.getElementById('sleep-suggested-bed').textContent=bedtime;
-  document.getElementById('sleep-duration').textContent=`${Math.floor(hoursBefore)}h ${Math.round((hoursBefore%1)*60)}m`;
+  bedEl.textContent=bedtime;
+  durationEl.textContent=`${Math.floor(hoursBefore)}h ${Math.round((hoursBefore%1)*60)}m`;
   
   let status='✓',color='var(--ok)';
   if(hoursBefore<8){status='~';color='var(--warn)';}
   else if(hoursBefore<7){status='⚠';color='var(--danger)';}
-  document.getElementById('sleep-status').textContent=status;
-  document.getElementById('sleep-status').style.color=color;
+  statusEl.textContent=status;
+  statusEl.style.color=color;
   
   // Show what event will be created
-  if(document.getElementById('sleep-create-event').checked){
-    document.getElementById('sleep-suggestion').style.display='block';
+  const checkbox=document.getElementById('sleep-create-event');
+  const suggestion=document.getElementById('sleep-suggestion');
+  if(!checkbox||!suggestion)return;
+  
+  if(checkbox.checked){
+    suggestion.style.display='block';
     const prevDate=new Date(editSleepDate);
     prevDate.setDate(prevDate.getDate()-1);
     const prevDateStr=fmtD(prevDate);
-    document.getElementById('sleep-suggest-event').textContent=`${formatDateLong(prevDateStr)} at ${bedtime} → ${wake} (${Math.floor(hoursBefore)}h ${Math.round((hoursBefore%1)*60)}m)`;
+    const eventEl=document.getElementById('sleep-suggest-event');
+    if(eventEl)eventEl.textContent=`${formatDateLong(prevDateStr)} at ${bedtime} → ${wake} (${Math.floor(hoursBefore)}h ${Math.round((hoursBefore%1)*60)}m)`;
   }else{
-    document.getElementById('sleep-suggestion').style.display='none';
+    suggestion.style.display='none';
   }
 }
 function saveSleep(){
@@ -3010,13 +3023,6 @@ function attachEventListeners(){
   
   // Gantt buttons
   document.getElementById('btn-add-phase')?.addEventListener('click',()=>openPhaseModal());
-  
-  // Sleep inputs
-  document.getElementById('sleep-wake')?.addEventListener('change',updateSleepCalculations);
-  document.getElementById('sleep-hours-before')?.addEventListener('change',updateSleepCalculations);
-  document.getElementById('sleep-wake')?.addEventListener('input',updateSleepCalculations);
-  document.getElementById('sleep-hours-before')?.addEventListener('input',updateSleepCalculations);
-  document.getElementById('sleep-create-event')?.addEventListener('change',updateSleepCalculations);
 }
 
 function loadFromStorage(){
