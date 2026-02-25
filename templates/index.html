@@ -765,6 +765,7 @@ const DS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function load(k,d){try{return JSON.parse(localStorage.getItem(k)||'null')||d;}catch{return d;}}
+const get = load; // Alias for convenience
 function persist(k,v){localStorage.setItem(k,JSON.stringify(v));
   // schedule auto-push for planner data keys
   if(k && k.startsWith && k.startsWith('pl3_')) scheduleAutoSync();
@@ -2792,27 +2793,25 @@ document.addEventListener('click',function(e){
 });
 
 // INIT
-window.addEventListener('DOMContentLoaded', function(){
-  initApp();
-});
-
-function initApp(){
-  // Load data from localStorage
-  loadFromStorage();
-  
-  // Seed data if first time
-  if(!get('pl3_seeded')){
-    seedData();
+document.addEventListener('DOMContentLoaded', function(){
+  try{
+    // Load data from localStorage
+    loadFromStorage();
+    
+    // Seed data if first time
+    if(!get('pl3_seeded')){
+      seedData();
+    }
+    
+    // Attach all event listeners
+    attachEventListeners();
+    
+    // Now show the page (which will render)
+    showPage('calendar');
+  }catch(err){
+    console.error('Init error:', err);
   }
-  
-  // Attach all event listeners
-  attachEventListeners();
-  
-  // Initial render
-  render();
-  showPage('calendar');
-  renderCalendar();
-}
+});
 
 function attachEventListeners(){
   // Page tabs
@@ -2827,29 +2826,29 @@ function attachEventListeners(){
   document.querySelectorAll('.view-tab').forEach(btn=>{
     btn.addEventListener('click',function(){
       const view=this.dataset.view;
-      if(view)setView(view);
+      if(view)switchView(view);
     });
   });
   
   // Nav arrows
   const prevBtn=document.getElementById('nav-prev');
   const nextBtn=document.getElementById('nav-next');
-  if(prevBtn)prevBtn.addEventListener('click',()=>changeMonth(-1));
-  if(nextBtn)nextBtn.addEventListener('click',()=>changeMonth(1));
+  if(prevBtn)prevBtn.addEventListener('click',()=>navigate(-1));
+  if(nextBtn)nextBtn.addEventListener('click',()=>navigate(1));
   
   // Settings
   const settingsBtn=document.getElementById('settings-btn');
   if(settingsBtn)settingsBtn.addEventListener('click',()=>toggleSettings());
   
   // Buttons
-  document.getElementById('btn-new-event')?.addEventListener('click',()=>showNewEventModal());
+  document.getElementById('btn-new-event')?.addEventListener('click',()=>openEventModal());
   document.getElementById('btn-sync-push')?.addEventListener('click',()=>syncSave(true));
   document.getElementById('btn-sync-pull')?.addEventListener('click',()=>syncLoad(true));
   document.getElementById('btn-export')?.addEventListener('click',exportData);
   document.getElementById('import-file')?.addEventListener('change',importData);
   
   // Gantt buttons
-  document.getElementById('btn-add-phase')?.addEventListener('click',()=>showNewPhaseModal());
+  document.getElementById('btn-add-phase')?.addEventListener('click',()=>openPhaseModal());
 }
 
 function loadFromStorage(){
