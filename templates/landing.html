@@ -1,61 +1,953 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>wigbo — Sign in</title>
-  <style>
-    body{font-family:Arial,Helvetica,sans-serif;background:#0f0f13;color:#f0f0f5;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
-    .card{width:380px;background:#16161a;padding:22px;border-radius:12px;border:1px solid #2e2e3d}
-    h1{font-family:Syne,system-ui,Arial;font-weight:800;margin:0 0 12px}
-    label{display:block;margin-top:10px;font-size:.9rem;color:#cfcff5}
-    input{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #2e2e3d;background:#0f0f13;color:#f0f0f5}
-    .row{display:flex;gap:8px;margin-top:14px}
-    button{flex:1;padding:10px;border-radius:8px;border:none;cursor:pointer}
-    .primary{background:#ff6b35;color:#fff}
-    .secondary{background:transparent;border:1px solid #2e2e3d;color:#f0f0f5}
-    .muted{color:#9090b8;font-size:.9rem;margin-top:12px;text-align:center}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jan de Vries — Automotive Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,600;1,300&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0c;
+  --surface: #111116;
+  --border: #1e1e28;
+  --text: #e8e8f0;
+  --muted: #52526e;
+  --accent: #e8c840;
+  --accent2: #4080ff;
+  --mono: 'IBM Plex Mono', monospace;
+  --display: 'Bebas Neue', sans-serif;
+  --body: 'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-weight: 300;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* ── GRID BACKGROUND ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NOISE TEXTURE ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: .4;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 48px;
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s, background .3s;
+}
+nav.scrolled {
+  border-color: var(--border);
+  background: rgba(10,10,12,.85);
+  backdrop-filter: blur(12px);
+}
+.nav-logo {
+  font-family: var(--mono);
+  font-size: .75rem;
+  letter-spacing: .15em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.nav-links {
+  display: flex;
+  gap: 36px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .1em;
+  color: var(--muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color .2s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0; right: 0;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .25s ease;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+/* ── SECTIONS ── */
+section { position: relative; z-index: 1; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 48px 80px;
+  position: relative;
+}
+
+.hero-tag {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  opacity: 0;
+  animation: fadeUp .8s ease .2s forwards;
+}
+.hero-tag::before {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.hero-name {
+  font-family: var(--display);
+  font-size: clamp(5rem, 12vw, 11rem);
+  line-height: .92;
+  letter-spacing: .02em;
+  color: var(--text);
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: fadeUp .9s ease .35s forwards;
+}
+.hero-name span { color: var(--accent); }
+
+.hero-title {
+  font-family: var(--display);
+  font-size: clamp(1.8rem, 4vw, 3.5rem);
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeUp .9s ease .5s forwards;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 48px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp .8s ease .65s forwards;
+}
+.hero-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hero-meta-label {
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .15em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.hero-meta-value {
+  font-size: .92rem;
+  color: var(--text);
+  font-weight: 400;
+}
+
+/* corner decoration */
+.hero-corner {
+  position: absolute;
+  top: 120px; right: 48px;
+  width: 280px;
+  opacity: 0;
+  animation: fadeIn 1.2s ease .8s forwards;
+}
+.corner-diagram {
+  border: 1px solid var(--border);
+  padding: 24px;
+  position: relative;
+}
+.corner-diagram::before {
+  content: 'FIG. 01';
+  position: absolute;
+  top: -10px; left: 16px;
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .15em;
+  color: var(--accent);
+  background: var(--bg);
+  padding: 0 6px;
+}
+.corner-diagram::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; right: 24px;
+  width: 40px; height: 1px;
+  background: var(--accent);
+}
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: .68rem;
+}
+.spec-row:last-child { border-bottom: none; }
+.spec-key { color: var(--muted); letter-spacing: .08em; }
+.spec-val { color: var(--accent); font-weight: 600; }
+
+/* scroll indicator */
+.scroll-hint {
+  position: absolute;
+  bottom: 40px; right: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: .62rem;
+  letter-spacing: .12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  opacity: 0;
+  animation: fadeIn 1s ease 1.2s forwards;
+  writing-mode: vertical-rl;
+}
+.scroll-line {
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(var(--muted), transparent);
+  animation: scrollPulse 2s ease infinite;
+}
+@keyframes scrollPulse {
+  0%,100% { opacity: .3; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(.7); }
+}
+
+/* ── ABOUT ── */
+.about {
+  padding: 120px 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.section-label {
+  font-family: var(--mono);
+  font-size: .68rem;
+  letter-spacing: .2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.section-label::before {
+  content: attr(data-num);
+  color: var(--muted);
+}
+.about-heading {
+  font-family: var(--display);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: .03em;
+  margin-bottom: 28px;
+}
+.about-heading span { color: var(--accent); }
+.about-text {
+  font-size: .95rem;
+  line-height: 1.85;
+  color: rgba(232,232,240,.7);
+  margin-bottom: 20px;
+}
+.about-text strong { color: var(--text); font-weight: 500; }
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 8px;
+}
+.skill-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px 18px;
+  transition: border-color .2s, background .2s;
+  cursor: default;
+}
+.skill-item:hover {
+  border-color: var(--accent);
+  background: rgba(232,200,64,.04);
+}
+.skill-item-name {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .08em;
+  color: var(--text);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.skill-item-sub {
+  font-size: .72rem;
+  color: var(--muted);
+}
+
+/* ── PROJECTS ── */
+.projects {
+  padding: 80px 48px 120px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.projects-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 48px;
+}
+.projects-heading {
+  font-family: var(--display);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: .03em;
+}
+.projects-count {
+  font-family: var(--mono);
+  font-size: .72rem;
+  color: var(--muted);
+  letter-spacing: .1em;
+  padding-bottom: 8px;
+}
+
+.projects-list { display: flex; flex-direction: column; gap: 2px; }
+
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 32px 36px;
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 32px;
+  align-items: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s, transform .2s;
+  position: relative;
+  overflow: hidden;
+}
+.project-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform .25s ease;
+}
+.project-card:hover {
+  border-color: rgba(232,200,64,.3);
+  background: rgba(232,200,64,.03);
+}
+.project-card:hover::before { transform: scaleY(1); }
+.project-card:hover .project-arrow { transform: translateX(4px); opacity: 1; }
+
+.project-num {
+  font-family: var(--mono);
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--border);
+  letter-spacing: -.02em;
+  user-select: none;
+}
+.project-info {}
+.project-tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.project-tag {
+  font-family: var(--mono);
+  font-size: .58rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(232,200,64,.3);
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+.project-tag.blue {
+  color: var(--accent2);
+  border-color: rgba(64,128,255,.3);
+}
+.project-name {
+  font-family: var(--display);
+  font-size: 1.6rem;
+  letter-spacing: .04em;
+  margin-bottom: 8px;
+}
+.project-desc {
+  font-size: .85rem;
+  color: rgba(232,232,240,.55);
+  line-height: 1.6;
+  max-width: 560px;
+}
+.project-arrow {
+  font-size: 1.4rem;
+  color: var(--accent);
+  opacity: 0;
+  transition: transform .2s, opacity .2s;
+  flex-shrink: 0;
+}
+
+/* ── EXPERIENCE ── */
+.experience {
+  padding: 80px 48px 120px;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border);
+}
+.timeline { margin-top: 48px; position: relative; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(var(--border), transparent);
+}
+.timeline-item {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 48px;
+  padding: 32px 0 32px 36px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -4px; top: 38px;
+  width: 9px; height: 9px;
+  border: 1px solid var(--accent);
+  background: var(--bg);
+  transform: rotate(45deg);
+}
+.timeline-period {
+  font-family: var(--mono);
+  font-size: .68rem;
+  letter-spacing: .1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding-top: 4px;
+}
+.timeline-role {
+  font-family: var(--display);
+  font-size: 1.4rem;
+  letter-spacing: .04em;
+  margin-bottom: 4px;
+}
+.timeline-company {
+  font-family: var(--mono);
+  font-size: .75rem;
+  color: var(--accent);
+  letter-spacing: .1em;
+  margin-bottom: 14px;
+}
+.timeline-desc {
+  font-size: .88rem;
+  line-height: 1.8;
+  color: rgba(232,232,240,.6);
+}
+
+/* ── CONTACT ── */
+.contact {
+  padding: 80px 48px 120px;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.contact-heading {
+  font-family: var(--display);
+  font-size: clamp(3rem, 6vw, 6rem);
+  line-height: .95;
+  letter-spacing: .03em;
+  margin-bottom: 24px;
+}
+.contact-heading span { color: var(--accent); }
+.contact-sub {
+  font-size: .92rem;
+  color: rgba(232,232,240,.55);
+  line-height: 1.75;
+  margin-bottom: 40px;
+  max-width: 420px;
+}
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.contact-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: .78rem;
+  letter-spacing: .08em;
+  transition: border-color .2s, background .2s;
+}
+.contact-link:hover {
+  border-color: var(--accent);
+  background: rgba(232,200,64,.04);
+  color: var(--accent);
+}
+.contact-link-arrow { font-size: .9rem; opacity: .4; transition: opacity .2s, transform .2s; }
+.contact-link:hover .contact-link-arrow { opacity: 1; transform: translateX(4px); }
+
+.contact-right {
+  border: 1px solid var(--border);
+  padding: 36px;
+  position: relative;
+}
+.contact-right::before {
+  content: 'STATUS';
+  position: absolute;
+  top: -10px; left: 20px;
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .15em;
+  color: var(--muted);
+  background: var(--bg);
+  padding: 0 6px;
+}
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .88rem;
+}
+.status-item:last-child { border-bottom: none; }
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-dot.green { background: #3ecf8e; box-shadow: 0 0 8px #3ecf8e88; }
+.status-dot.yellow { background: var(--accent); box-shadow: 0 0 8px rgba(232,200,64,.5); }
+.status-dot.muted { background: var(--muted); }
+.status-label { color: var(--muted); font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; flex: 1; text-transform: uppercase; }
+.status-value { font-size: .82rem; color: var(--text); text-align: right; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 28px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+.footer-copy {
+  font-family: var(--mono);
+  font-size: .62rem;
+  letter-spacing: .1em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+.reveal-delay-1 { transition-delay: .1s; }
+.reveal-delay-2 { transition-delay: .2s; }
+.reveal-delay-3 { transition-delay: .3s; }
+.reveal-delay-4 { transition-delay: .4s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 860px) {
+  nav { padding: 18px 24px; }
+  .nav-links { gap: 20px; }
+  .hero { padding: 0 24px 60px; }
+  .hero-corner { display: none; }
+  .about, .contact { grid-template-columns: 1fr; gap: 48px; padding: 80px 24px; }
+  .projects, .experience { padding: 60px 24px; }
+  .project-card { grid-template-columns: 40px 1fr; }
+  .project-arrow { display: none; }
+  .timeline-item { grid-template-columns: 1fr; gap: 8px; padding-left: 28px; }
+  footer { padding: 24px; flex-direction: column; gap: 12px; text-align: center; }
+}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>wigbo</h1>
-    <div class="muted">Sign in to sync your planner across devices</div>
-    <label for="email">Email</label>
-    <input id="email" type="email" autocomplete="username">
-    <label for="password">Password</label>
-    <input id="password" type="password" autocomplete="current-password">
-    <div class="row">
-      <button class="secondary" id="register-btn">Register</button>
-      <button class="primary" id="login-btn">Log in</button>
+
+<nav id="nav">
+  <div class="nav-logo">J.deVries — AE</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero" id="home">
+  <div class="hero-corner">
+    <div class="corner-diagram">
+      <div class="spec-row"><span class="spec-key">SPEC</span><span class="spec-val">MSc Automotive Eng.</span></div>
+      <div class="spec-row"><span class="spec-key">FOCUS</span><span class="spec-val">Powertrain / EV</span></div>
+      <div class="spec-row"><span class="spec-key">TOOLS</span><span class="spec-val">MATLAB · ANSYS · CAD</span></div>
+      <div class="spec-row"><span class="spec-key">STATUS</span><span class="spec-val" style="color:#3ecf8e;">AVAILABLE</span></div>
     </div>
-    <div class="muted">Or go to the <a href="/app" style="color:#ff6b35">app</a> if already logged in</div>
   </div>
 
-  <script>
-    async function apiCall(path, body){
-      const res = await fetch(path,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-      const j = await res.json().catch(()=>({error:'invalid'}));
-      return {ok:res.ok, json:j};
+  <div class="hero-tag">Automotive Engineer</div>
+  <h1 class="hero-name">Jan<br><span>de Vries</span></h1>
+  <div class="hero-title">Engineer · Designer · Builder</div>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Based in</span>
+      <span class="hero-meta-value">Eindhoven, NL</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Speciality</span>
+      <span class="hero-meta-value">EV Powertrain Systems</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Currently</span>
+      <span class="hero-meta-value">Internship @ OEM</span>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section class="about" id="about">
+  <div>
+    <div class="section-label" data-num="01 —">About</div>
+    <h2 class="about-heading reveal">Engineering<br><span>Precision.</span></h2>
+    <p class="about-text reveal reveal-delay-1">
+      I'm an automotive engineer with a passion for <strong>electric vehicle systems</strong> and powertrain development. Currently completing my MSc while gaining hands-on industry experience.
+    </p>
+    <p class="about-text reveal reveal-delay-2">
+      My approach bridges the gap between theoretical engineering principles and practical implementation — from simulation and modelling to physical prototype testing.
+    </p>
+    <p class="about-text reveal reveal-delay-3">
+      Outside of engineering, I'm driven by endurance sport, continuous learning, and building systems that work elegantly.
+    </p>
+  </div>
+  <div>
+    <div class="section-label reveal" data-num="">Core Skills</div>
+    <div class="skills-grid reveal reveal-delay-1">
+      <div class="skill-item">
+        <div class="skill-item-name">Powertrain</div>
+        <div class="skill-item-sub">ICE · Hybrid · BEV</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-item-name">Simulation</div>
+        <div class="skill-item-sub">MATLAB · Simulink</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-item-name">FEA / CFD</div>
+        <div class="skill-item-sub">ANSYS · OpenFOAM</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-item-name">CAD / CAE</div>
+        <div class="skill-item-sub">CATIA · SolidWorks</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-item-name">Data Analysis</div>
+        <div class="skill-item-sub">Python · MATLAB</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-item-name">Testing</div>
+        <div class="skill-item-sub">Dyno · HIL · SIL</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROJECTS ── -->
+<section class="projects" id="projects">
+  <div class="projects-header reveal">
+    <div>
+      <div class="section-label" data-num="02 —">Projects</div>
+      <h2 class="projects-heading">Selected<br>Work</h2>
+    </div>
+    <div class="projects-count">04 PROJECTS</div>
+  </div>
+
+  <div class="projects-list">
+    <div class="project-card reveal">
+      <div class="project-num">01</div>
+      <div class="project-info">
+        <div class="project-tags">
+          <span class="project-tag">EV · Powertrain</span>
+          <span class="project-tag blue">MSc Thesis</span>
+        </div>
+        <div class="project-name">Battery Thermal Management System</div>
+        <div class="project-desc">Design and simulation of a liquid-cooled BMS for a high-performance BEV platform. Achieved 12% improvement in thermal uniformity across cell stack using optimised flow channel geometry.</div>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card reveal reveal-delay-1">
+      <div class="project-num">02</div>
+      <div class="project-info">
+        <div class="project-tags">
+          <span class="project-tag">Hybrid · Controls</span>
+          <span class="project-tag blue">Industry Project</span>
+        </div>
+        <div class="project-name">Hybrid Energy Management Strategy</div>
+        <div class="project-desc">Development of a rule-based and ECMS energy management strategy for a P2 hybrid architecture. Validated using vehicle-level MATLAB/Simulink model on WLTP and custom drive cycles.</div>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card reveal reveal-delay-2">
+      <div class="project-num">03</div>
+      <div class="project-info">
+        <div class="project-tags">
+          <span class="project-tag">CFD · Aerodynamics</span>
+        </div>
+        <div class="project-name">Formula Student Aerodynamic Package</div>
+        <div class="project-desc">Full aerodynamic package design for TU/e Formula Student team. CFD-optimised front wing and diffuser delivering 320N of downforce at 80 km/h with a drag penalty of under 8%.</div>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card reveal reveal-delay-3">
+      <div class="project-num">04</div>
+      <div class="project-info">
+        <div class="project-tags">
+          <span class="project-tag">NVH · Acoustics</span>
+          <span class="project-tag blue">Research</span>
+        </div>
+        <div class="project-name">EV Powertrain NVH Characterisation</div>
+        <div class="project-desc">Experimental investigation of tonal noise sources in a permanent magnet electric motor. Developed post-processing pipeline in Python for automated order tracking analysis from dyno test data.</div>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EXPERIENCE ── -->
+<section class="experience" id="experience">
+  <div class="section-label reveal" data-num="03 —">Experience</div>
+  <h2 class="projects-heading reveal" style="margin-bottom:0">Engineering<br>History</h2>
+
+  <div class="timeline">
+    <div class="timeline-item reveal">
+      <div class="timeline-period">2024 — Present</div>
+      <div>
+        <div class="timeline-role">Powertrain Engineering Intern</div>
+        <div class="timeline-company">OEM · Eindhoven, NL</div>
+        <div class="timeline-desc">Working within the EV powertrain development team on thermal system integration. Responsible for component-level simulation, test planning, and data analysis for battery and e-motor subsystems.</div>
+      </div>
+    </div>
+
+    <div class="timeline-item reveal reveal-delay-1">
+      <div class="timeline-period">2023 — 2024</div>
+      <div>
+        <div class="timeline-role">MSc Automotive Engineering</div>
+        <div class="timeline-company">Eindhoven University of Technology</div>
+        <div class="timeline-desc">Specialisation in vehicle dynamics and powertrain systems. Coursework covering advanced control theory, electromobility, NVH, and vehicle system integration. GPA 8.1 / 10.</div>
+      </div>
+    </div>
+
+    <div class="timeline-item reveal reveal-delay-2">
+      <div class="timeline-period">2022 — 2023</div>
+      <div>
+        <div class="timeline-role">Formula Student — Aerodynamics Lead</div>
+        <div class="timeline-company">TU/e Racing · Eindhoven, NL</div>
+        <div class="timeline-desc">Led a team of 6 engineers in the design, simulation, and manufacturing of the full aerodynamic package for the team's electric formula student car. Competed at FS Netherlands & Germany.</div>
+      </div>
+    </div>
+
+    <div class="timeline-item reveal reveal-delay-3">
+      <div class="timeline-period">2019 — 2022</div>
+      <div>
+        <div class="timeline-role">BSc Mechanical Engineering</div>
+        <div class="timeline-company">Eindhoven University of Technology</div>
+        <div class="timeline-desc">Foundation in mechanics, thermodynamics, materials science, and mathematics. Minor in Automotive Technology. Graduated cum laude.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section class="contact" id="contact">
+  <div>
+    <div class="section-label reveal" data-num="04 —">Contact</div>
+    <h2 class="contact-heading reveal">Let's<br><span>Connect.</span></h2>
+    <p class="contact-sub reveal reveal-delay-1">
+      Open to internship extensions, graduate roles, and research collaborations in automotive and EV engineering.
+    </p>
+    <div class="contact-links reveal reveal-delay-2">
+      <a href="mailto:jan.devries@email.com" class="contact-link">
+        jan.devries@email.com
+        <span class="contact-link-arrow">↗</span>
+      </a>
+      <a href="https://linkedin.com/in/jandevries" target="_blank" class="contact-link">
+        LinkedIn
+        <span class="contact-link-arrow">↗</span>
+      </a>
+      <a href="https://github.com/jandevries" target="_blank" class="contact-link">
+        GitHub
+        <span class="contact-link-arrow">↗</span>
+      </a>
+      <a href="#" class="contact-link">
+        Download CV  ·  PDF
+        <span class="contact-link-arrow">↓</span>
+      </a>
+    </div>
+  </div>
+  <div class="contact-right reveal reveal-delay-1">
+    <div class="status-item">
+      <div class="status-dot green"></div>
+      <span class="status-label">Availability</span>
+      <span class="status-value">Open to opportunities</span>
+    </div>
+    <div class="status-item">
+      <div class="status-dot yellow"></div>
+      <span class="status-label">Current role</span>
+      <span class="status-value">Powertrain Intern</span>
+    </div>
+    <div class="status-item">
+      <div class="status-dot muted"></div>
+      <span class="status-label">Location</span>
+      <span class="status-value">Eindhoven, NL</span>
+    </div>
+    <div class="status-item">
+      <div class="status-dot muted"></div>
+      <span class="status-label">Preferred roles</span>
+      <span class="status-value">EV · Powertrain · Controls</span>
+    </div>
+    <div class="status-item">
+      <div class="status-dot green"></div>
+      <span class="status-label">Response time</span>
+      <span class="status-value">Within 48h</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-copy">© 2025 Jan de Vries — Automotive Engineer</div>
+  <div class="footer-copy">Eindhoven, NL</div>
+</footer>
+
+<script>
+// ── NAV SCROLL ──
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(el => {
+    if (el.isIntersecting) {
+      el.target.classList.add('visible');
+      observer.unobserve(el.target);
     }
-    document.getElementById('login-btn').addEventListener('click', async ()=>{
-      const email=document.getElementById('email').value.trim();
-      const password=document.getElementById('password').value;
-      if(!email||!password){alert('Email and password required');return}
-      const {ok,json}=await apiCall('/api/login',{email,password});
-      if(!ok){alert('Login failed: '+(json.error||'unknown'));return}
-      // on success go to app
-      window.location='/app';
-    });
-    document.getElementById('register-btn').addEventListener('click', async ()=>{
-      const email=document.getElementById('email').value.trim();
-      const password=document.getElementById('password').value;
-      if(!email||!password){alert('Email and password required');return}
-      const {ok,json}=await apiCall('/api/register',{email,password});
-      if(!ok){alert('Register failed: '+(json.error||'unknown'));return}
-      // registered and logged in — go to app
-      window.location='/app';
-    });
-  </script>
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── SUBTLE CURSOR TRAIL (engineering crosshair feel) ──
+let mouseX = 0, mouseY = 0;
+const dot = document.createElement('div');
+dot.style.cssText = `position:fixed;width:4px;height:4px;background:#e8c840;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:opacity .3s;opacity:0;`;
+document.body.appendChild(dot);
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX; mouseY = e.clientY;
+  dot.style.left = mouseX + 'px';
+  dot.style.top = mouseY + 'px';
+  dot.style.opacity = '0.7';
+});
+document.addEventListener('mouseleave', () => dot.style.opacity = '0');
+
+// ── SMOOTH ACTIVE NAV ──
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--text)' : '';
+  });
+});
+</script>
 </body>
 </html>
