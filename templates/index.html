@@ -1314,27 +1314,41 @@ function renderDaily(main){
     }
   });
 
-  // ── SLEEP / WAKE MARKERS ──
+  // ── BED TIME / WAKE TIME MARKERS ──
   const dayWake = sleep.find(s=>s.date===ds);
   if(dayWake&&dayWake.wakeTime){
-    // wake marker
     const wakeMin=toMin(dayWake.wakeTime);
     const wakeMarker=document.createElement('div');
-    wakeMarker.style.cssText=`position:absolute;left:0;right:0;top:${(wakeMin/60)*60}px;height:22px;display:flex;align-items:center;gap:6px;padding:0 8px;z-index:5;pointer-events:auto;cursor:pointer;`;
-    wakeMarker.title='Wake time — click to edit';
-    wakeMarker.innerHTML=`<div style="flex:1;height:4px;background:#a78bfa;opacity:.85;border-radius:2px;"></div><span style="font-size:.65rem;font-weight:700;color:#a78bfa;white-space:nowrap;background:var(--bg);padding:1px 6px;border-radius:4px;">⏰ ${dayWake.wakeTime}</span><div style="flex:1;height:4px;background:#a78bfa;opacity:.85;border-radius:2px;"></div>`;
-    wakeMarker.addEventListener('click',e=>{e.stopPropagation();openWakeModal(ds);});
+    wakeMarker.style.cssText=`position:absolute;left:0;right:0;top:${(wakeMin/60)*60}px;height:0;overflow:visible;z-index:6;`;
+    wakeMarker.innerHTML=`
+      <div style="position:absolute;left:0;right:0;top:0;height:3px;background:#a78bfa;opacity:.9;border-radius:2px;cursor:pointer;" onclick="openWakeModal('${ds}')"></div>
+      <span style="position:absolute;right:8px;top:-18px;font-size:.63rem;font-weight:700;color:#a78bfa;background:var(--bg);padding:1px 6px;border-radius:4px;cursor:pointer;white-space:nowrap;" onclick="openWakeModal('${ds}')">⏰ ${dayWake.wakeTime}</span>`;
     col.appendChild(wakeMarker);
-    // sleep marker (8h15m before wake)
+
     const sleepMin=((wakeMin - 495) + 1440) % 1440;
-    const sleepDate = sleepMin > wakeMin ? fmtD(addDays(parseD(ds),-1)) : ds;
-    if(sleepDate===ds){
-      const sleepMarker=document.createElement('div');
-      sleepMarker.style.cssText=`position:absolute;left:0;right:0;top:${(sleepMin/60)*60}px;height:22px;display:flex;align-items:center;gap:6px;padding:0 8px;z-index:5;pointer-events:auto;cursor:pointer;`;
-      sleepMarker.title='Sleep time — click to edit';
-      sleepMarker.innerHTML=`<div style="flex:1;height:4px;background:#6060a0;opacity:.75;border-radius:2px;"></div><span style="font-size:.65rem;font-weight:700;color:#6060a0;white-space:nowrap;background:var(--bg);padding:1px 6px;border-radius:4px;">💤 ${minToTime(sleepMin)}</span><div style="flex:1;height:4px;background:#6060a0;opacity:.75;border-radius:2px;"></div>`;
-      sleepMarker.addEventListener('click',e=>{e.stopPropagation();openWakeModal(ds);});
-      col.appendChild(sleepMarker);
+    const sleepOnPrevDay = sleepMin > wakeMin;
+    if(!sleepOnPrevDay){
+      const bedMarker=document.createElement('div');
+      bedMarker.style.cssText=`position:absolute;left:0;right:0;top:${(sleepMin/60)*60}px;height:0;overflow:visible;z-index:6;`;
+      bedMarker.innerHTML=`
+        <div style="position:absolute;left:0;right:0;top:0;height:3px;background:#6060a0;opacity:.75;border-radius:2px;cursor:pointer;" onclick="openWakeModal('${ds}')"></div>
+        <span style="position:absolute;right:8px;top:-18px;font-size:.63rem;font-weight:700;color:#6060a0;background:var(--bg);padding:1px 6px;border-radius:4px;cursor:pointer;white-space:nowrap;" onclick="openWakeModal('${ds}')">🛏 ${minToTime(sleepMin)}</span>`;
+      col.appendChild(bedMarker);
+    }
+  }
+  // Bed time marker on previous evening when wake is tomorrow
+  const tomorrowDs = fmtD(addDays(parseD(ds),1));
+  const tomorrowWake = sleep.find(s=>s.date===tomorrowDs);
+  if(tomorrowWake&&tomorrowWake.wakeTime){
+    const wakeMin2=toMin(tomorrowWake.wakeTime);
+    const sleepMin2=((wakeMin2 - 495) + 1440) % 1440;
+    if(sleepMin2 > wakeMin2){
+      const bedMarker2=document.createElement('div');
+      bedMarker2.style.cssText=`position:absolute;left:0;right:0;top:${(sleepMin2/60)*60}px;height:0;overflow:visible;z-index:6;`;
+      bedMarker2.innerHTML=`
+        <div style="position:absolute;left:0;right:0;top:0;height:3px;background:#6060a0;opacity:.75;border-radius:2px;cursor:pointer;" onclick="openWakeModal('${tomorrowDs}')"></div>
+        <span style="position:absolute;right:8px;top:-18px;font-size:.63rem;font-weight:700;color:#6060a0;background:var(--bg);padding:1px 6px;border-radius:4px;cursor:pointer;white-space:nowrap;" onclick="openWakeModal('${tomorrowDs}')">🛏 ${minToTime(sleepMin2)}</span>`;
+      col.appendChild(bedMarker2);
     }
   }
 
@@ -1363,7 +1377,7 @@ function renderWeekly(main){
       const day=new Date(ws);day.setDate(ws.getDate()+d);
       const isTd=day.getTime()===td.getTime();
       const ds=fmtD(day);
-      h+=`<div class="week-cell${isTd?' today-col':''}" data-date="${ds}" data-hour="${i}" ondragover="event.preventDefault()" ondrop="dropW(event,'${ds}',${i})"></div>`;
+      h+=`<div class="week-cell${isTd?' today-col':''}" data-date="${ds}" data-hour="${i}" ondragover="event.preventDefault()" ondrop="dropW(event,'${ds}',${i})" onclick="clickEmptySlotWeek(event,'${ds}',${i})"></div>`;
     }
   }
   h+='</div>';
@@ -1424,7 +1438,10 @@ function renderMonthly(main){
     });
     if(dayEvs.length>3){const m=document.createElement('div');m.className='month-more';m.textContent=`+${dayEvs.length-3} more`;cell.appendChild(m);}
     cell.addEventListener('dragover',e=>e.preventDefault());
-    cell.addEventListener('click',()=>openTaskPanel(ds));
+    cell.addEventListener('click',e=>{
+      if(e.target===cell||e.target.classList.contains('month-day-num'))
+        openEventModal(null,null,null,ds);
+    });
     cell.addEventListener('drop',e=>{
       if(!dragEvId)return;
       const idx=events.findIndex(ev=>ev.id===dragEvId);
@@ -2106,16 +2123,24 @@ function deleteWakeTime(){
   showToast('Wake time removed');
 }
 
-// ── CLICK EMPTY SLOT ──
+// ── CLICK EMPTY SLOT (DAY VIEW) ──
 function clickEmptySlot(e, ds, hour){
-  // only fire if the click is directly on the time-row (not on a child event)
   if(e.target!==e.currentTarget)return;
-  const rect = e.currentTarget.getBoundingClientRect();
-  const offMin = Math.round(((e.clientY - rect.top) / 60) * 60);
-  const totalMin = hour*60 + Math.max(0, Math.min(59, offMin));
-  // snap to nearest 15 min
-  const snapped = Math.round(totalMin/15)*15;
-  openEventModal(null, minToTime(snapped), minToTime(snapped+60), ds);
+  const rect=e.currentTarget.getBoundingClientRect();
+  const offMin=Math.round(((e.clientY-rect.top)/60)*60);
+  const totalMin=hour*60+Math.max(0,Math.min(59,offMin));
+  const snapped=Math.round(totalMin/15)*15;
+  openEventModal(null,minToTime(snapped),minToTime(snapped+60),ds);
+}
+
+// ── CLICK EMPTY SLOT (WEEK VIEW) ──
+function clickEmptySlotWeek(e, ds, hour){
+  if(e.target!==e.currentTarget)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const offMin=Math.round(((e.clientY-rect.top)/50)*60);
+  const totalMin=hour*60+Math.max(0,Math.min(59,offMin));
+  const snapped=Math.round(totalMin/15)*15;
+  openEventModal(null,minToTime(snapped),minToTime(snapped+60),ds);
 }
 
 // ── SUBTASK ──
