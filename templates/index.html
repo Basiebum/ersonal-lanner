@@ -2279,7 +2279,8 @@ function deletePhase(){
 
 // ── CLOSE HANDLERS ──
 ['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','meeting-modal','sleep-modal','review-modal','day-planner-modal','hb-modal','activity-modal'].forEach(id=>{
-  document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});
+  const el=document.getElementById(id);
+  if(el)el.addEventListener('click',function(e){if(e.target===this)closeModal(id);});
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape')
