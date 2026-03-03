@@ -3,17 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jan de Vries — Automotive Engineer</title>
+<title>Bastiaan Wigboldus — Automotive Engineer</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,600;1,300&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0a0a0c;
-  --surface: #111116;
-  --border: #1e1e28;
-  --text: #e8e8f0;
-  --muted: #52526e;
-  --accent: #e8c840;
-  --accent2: #4080ff;
+  --bg: #070d0e;
+  --surface: #0c1517;
+  --border: #122228;
+  --text: #dff0f2;
+  --muted: #3d6068;
+  --accent: #2dd4bf;
+  --accent2: #0891b2;
+  --accent-dim: rgba(45,212,191,.12);
   --mono: 'IBM Plex Mono', monospace;
   --display: 'Bebas Neue', sans-serif;
   --body: 'DM Sans', sans-serif;
@@ -38,22 +39,22 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+    linear-gradient(rgba(45,212,191,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45,212,191,.025) 1px, transparent 1px);
   background-size: 60px 60px;
   pointer-events: none;
   z-index: 0;
 }
 
-/* ── NOISE TEXTURE ── */
+/* ── TEAL AMBIENT GLOW ── */
 body::after {
   content: '';
   position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  top: -20vh; left: -10vw;
+  width: 70vw; height: 70vh;
+  background: radial-gradient(ellipse at 30% 30%, rgba(45,212,191,.07) 0%, transparent 65%);
   pointer-events: none;
   z-index: 0;
-  opacity: .4;
 }
 
 /* ── NAV ── */
@@ -70,7 +71,7 @@ nav {
 }
 nav.scrolled {
   border-color: var(--border);
-  background: rgba(10,10,12,.85);
+  background: rgba(7,13,14,.88);
   backdrop-filter: blur(12px);
 }
 .nav-logo {
@@ -202,7 +203,7 @@ section { position: relative; z-index: 1; }
   position: relative;
 }
 .corner-diagram::before {
-  content: 'FIG. 01';
+  content: 'FIG. 01 — SPEC SHEET';
   position: absolute;
   top: -10px; left: 16px;
   font-family: var(--mono);
@@ -295,7 +296,7 @@ section { position: relative; z-index: 1; }
 .about-text {
   font-size: .95rem;
   line-height: 1.85;
-  color: rgba(232,232,240,.7);
+  color: rgba(223,240,242,.65);
   margin-bottom: 20px;
 }
 .about-text strong { color: var(--text); font-weight: 500; }
@@ -315,7 +316,7 @@ section { position: relative; z-index: 1; }
 }
 .skill-item:hover {
   border-color: var(--accent);
-  background: rgba(232,200,64,.04);
+  background: var(--accent-dim);
 }
 .skill-item-name {
   font-family: var(--mono);
@@ -382,7 +383,7 @@ section { position: relative; z-index: 1; }
   transition: transform .25s ease;
 }
 .project-card:hover {
-  border-color: rgba(232,200,64,.3);
+  border-color: rgba(45,212,191,.25);
   background: rgba(232,200,64,.03);
 }
 .project-card:hover::before { transform: scaleY(1); }
@@ -409,13 +410,13 @@ section { position: relative; z-index: 1; }
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--accent);
-  border: 1px solid rgba(232,200,64,.3);
+  border: 1px solid rgba(45,212,191,.25);
   padding: 2px 8px;
   border-radius: 2px;
 }
 .project-tag.blue {
   color: var(--accent2);
-  border-color: rgba(64,128,255,.3);
+  border-color: rgba(8,145,178,.35);
 }
 .project-name {
   font-family: var(--display);
@@ -425,7 +426,7 @@ section { position: relative; z-index: 1; }
 }
 .project-desc {
   font-size: .85rem;
-  color: rgba(232,232,240,.55);
+  color: rgba(223,240,242,.5);
   line-height: 1.6;
   max-width: 560px;
 }
@@ -493,7 +494,7 @@ section { position: relative; z-index: 1; }
 .timeline-desc {
   font-size: .88rem;
   line-height: 1.8;
-  color: rgba(232,232,240,.6);
+  color: rgba(223,240,242,.55);
 }
 
 /* ── CONTACT ── */
@@ -517,7 +518,7 @@ section { position: relative; z-index: 1; }
 .contact-heading span { color: var(--accent); }
 .contact-sub {
   font-size: .92rem;
-  color: rgba(232,232,240,.55);
+  color: rgba(223,240,242,.5);
   line-height: 1.75;
   margin-bottom: 40px;
   max-width: 420px;
@@ -543,7 +544,7 @@ section { position: relative; z-index: 1; }
 }
 .contact-link:hover {
   border-color: var(--accent);
-  background: rgba(232,200,64,.04);
+  background: var(--accent-dim);
   color: var(--accent);
 }
 .contact-link-arrow { font-size: .9rem; opacity: .4; transition: opacity .2s, transform .2s; }
@@ -579,8 +580,9 @@ section { position: relative; z-index: 1; }
   border-radius: 50%;
   flex-shrink: 0;
 }
-.status-dot.green { background: #3ecf8e; box-shadow: 0 0 8px #3ecf8e88; }
-.status-dot.yellow { background: var(--accent); box-shadow: 0 0 8px rgba(232,200,64,.5); }
+.status-dot.green { background: #2dd4bf; box-shadow: 0 0 8px rgba(45,212,191,.6); }
+.status-dot.cyan  { background: var(--accent2); box-shadow: 0 0 8px rgba(8,145,178,.5); }
+
 .status-dot.muted { background: var(--muted); }
 .status-label { color: var(--muted); font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; flex: 1; text-transform: uppercase; }
 .status-value { font-size: .82rem; color: var(--text); text-align: right; }
@@ -646,7 +648,7 @@ footer {
 <body>
 
 <nav id="nav">
-  <div class="nav-logo">J.deVries — AE</div>
+  <div class="nav-logo">B.Wigboldus — AE</div>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#projects">Projects</a></li>
@@ -659,28 +661,28 @@ footer {
 <section class="hero" id="home">
   <div class="hero-corner">
     <div class="corner-diagram">
-      <div class="spec-row"><span class="spec-key">SPEC</span><span class="spec-val">MSc Automotive Eng.</span></div>
-      <div class="spec-row"><span class="spec-key">FOCUS</span><span class="spec-val">Powertrain / EV</span></div>
-      <div class="spec-row"><span class="spec-key">TOOLS</span><span class="spec-val">MATLAB · ANSYS · CAD</span></div>
+      <div class="spec-row"><span class="spec-key">DEGREE</span><span class="spec-val">BSc Automotive Eng.</span></div>
+      <div class="spec-row"><span class="spec-key">YEAR</span><span class="spec-val">4th — Final Year</span></div>
+      <div class="spec-row"><span class="spec-key">TOOLS</span><span class="spec-val">SolidWorks · NX · FEM</span></div>
       <div class="spec-row"><span class="spec-key">STATUS</span><span class="spec-val" style="color:#3ecf8e;">AVAILABLE</span></div>
     </div>
   </div>
 
   <div class="hero-tag">Automotive Engineer</div>
-  <h1 class="hero-name">Jan<br><span>de Vries</span></h1>
-  <div class="hero-title">Engineer · Designer · Builder</div>
+  <h1 class="hero-name">Bastiaan<br><span>Wigboldus</span></h1>
+  <div class="hero-title">Engineer · Builder · Athlete</div>
   <div class="hero-meta">
     <div class="hero-meta-item">
-      <span class="hero-meta-label">Based in</span>
-      <span class="hero-meta-value">Eindhoven, NL</span>
+      <span class="hero-meta-label">Age</span>
+      <span class="hero-meta-value">21</span>
     </div>
     <div class="hero-meta-item">
       <span class="hero-meta-label">Speciality</span>
-      <span class="hero-meta-value">EV Powertrain Systems</span>
+      <span class="hero-meta-value">Mechanical · CAD · FEM · CFD</span>
     </div>
     <div class="hero-meta-item">
       <span class="hero-meta-label">Currently</span>
-      <span class="hero-meta-value">Internship @ OEM</span>
+      <span class="hero-meta-value">Thesis Intern @ Hyster-Yale</span>
     </div>
   </div>
 
@@ -694,43 +696,43 @@ footer {
 <section class="about" id="about">
   <div>
     <div class="section-label" data-num="01 —">About</div>
-    <h2 class="about-heading reveal">Engineering<br><span>Precision.</span></h2>
+    <h2 class="about-heading reveal">Built to<br><span>Engineer.</span></h2>
     <p class="about-text reveal reveal-delay-1">
-      I'm an automotive engineer with a passion for <strong>electric vehicle systems</strong> and powertrain development. Currently completing my MSc while gaining hands-on industry experience.
+      I'm Bastiaan, a 21-year-old automotive engineering student in my final bachelor year, with a strong foundation in <strong>mechanical engineering</strong> — CAD, FEM and CFD are where I do my best work.
     </p>
     <p class="about-text reveal reveal-delay-2">
-      My approach bridges the gap between theoretical engineering principles and practical implementation — from simulation and modelling to physical prototype testing.
+      Currently completing my thesis internship at <strong>Hyster-Yale</strong>, applying structural analysis and design to real industrial challenges. Outside of the office I work part-time as a car mechanic at <strong>Du Pied Classic Cars</strong>, keeping my hands on actual metal.
     </p>
     <p class="about-text reveal reveal-delay-3">
-      Outside of engineering, I'm driven by endurance sport, continuous learning, and building systems that work elegantly.
+      Two years on the Formula Student team sharpened my ability to work under pressure, collaborate across disciplines, and deliver engineering that actually performs. When I'm not engineering, I'm training.
     </p>
   </div>
   <div>
     <div class="section-label reveal" data-num="">Core Skills</div>
     <div class="skills-grid reveal reveal-delay-1">
       <div class="skill-item">
-        <div class="skill-item-name">Powertrain</div>
-        <div class="skill-item-sub">ICE · Hybrid · BEV</div>
+        <div class="skill-item-name">CAD</div>
+        <div class="skill-item-sub">SolidWorks · NX</div>
       </div>
       <div class="skill-item">
-        <div class="skill-item-name">Simulation</div>
-        <div class="skill-item-sub">MATLAB · Simulink</div>
+        <div class="skill-item-name">FEM / FEA</div>
+        <div class="skill-item-sub">Structural Analysis</div>
       </div>
       <div class="skill-item">
-        <div class="skill-item-name">FEA / CFD</div>
-        <div class="skill-item-sub">ANSYS · OpenFOAM</div>
+        <div class="skill-item-name">CFD</div>
+        <div class="skill-item-sub">Flow Simulation</div>
       </div>
       <div class="skill-item">
-        <div class="skill-item-name">CAD / CAE</div>
-        <div class="skill-item-sub">CATIA · SolidWorks</div>
+        <div class="skill-item-name">Mechanics</div>
+        <div class="skill-item-sub">Classic Cars · Hands-on</div>
       </div>
       <div class="skill-item">
-        <div class="skill-item-name">Data Analysis</div>
-        <div class="skill-item-sub">Python · MATLAB</div>
+        <div class="skill-item-name">Programming</div>
+        <div class="skill-item-sub">Python · CS50 HarvardX</div>
       </div>
       <div class="skill-item">
-        <div class="skill-item-name">Testing</div>
-        <div class="skill-item-sub">Dyno · HIL · SIL</div>
+        <div class="skill-item-name">Formula Student</div>
+        <div class="skill-item-sub">2 Years · Full Car Dev.</div>
       </div>
     </div>
   </div>
@@ -741,7 +743,7 @@ footer {
   <div class="projects-header reveal">
     <div>
       <div class="section-label" data-num="02 —">Projects</div>
-      <h2 class="projects-heading">Selected<br>Work</h2>
+      <h2 class="projects-heading">Engineering<br>Projects</h2>
     </div>
     <div class="projects-count">04 PROJECTS</div>
   </div>
@@ -751,11 +753,11 @@ footer {
       <div class="project-num">01</div>
       <div class="project-info">
         <div class="project-tags">
-          <span class="project-tag">EV · Powertrain</span>
-          <span class="project-tag blue">MSc Thesis</span>
+          <span class="project-tag">FEM · Structural</span>
+          <span class="project-tag blue">Thesis</span>
         </div>
-        <div class="project-name">Battery Thermal Management System</div>
-        <div class="project-desc">Design and simulation of a liquid-cooled BMS for a high-performance BEV platform. Achieved 12% improvement in thermal uniformity across cell stack using optimised flow channel geometry.</div>
+        <div class="project-name">Hyster-Yale Structural Analysis</div>
+        <div class="project-desc">Bachelor thesis project — structural FEM analysis of a forklift component under dynamic loading conditions. Simulation and design optimisation using NX and SolidWorks.</div>
       </div>
       <div class="project-arrow">→</div>
     </div>
@@ -764,11 +766,11 @@ footer {
       <div class="project-num">02</div>
       <div class="project-info">
         <div class="project-tags">
-          <span class="project-tag">Hybrid · Controls</span>
-          <span class="project-tag blue">Industry Project</span>
+          <span class="project-tag">Aero · CFD</span>
+          <span class="project-tag blue">Formula Student</span>
         </div>
-        <div class="project-name">Hybrid Energy Management Strategy</div>
-        <div class="project-desc">Development of a rule-based and ECMS energy management strategy for a P2 hybrid architecture. Validated using vehicle-level MATLAB/Simulink model on WLTP and custom drive cycles.</div>
+        <div class="project-name">Mechanical Component Design</div>
+        <div class="project-desc">Design and CFD validation of the aerodynamic package for the Formula Student car. Two seasons of development, competing at FS events across Europe.</div>
       </div>
       <div class="project-arrow">→</div>
     </div>
@@ -777,10 +779,10 @@ footer {
       <div class="project-num">03</div>
       <div class="project-info">
         <div class="project-tags">
-          <span class="project-tag">CFD · Aerodynamics</span>
+          <span class="project-tag">CAD · Design</span>
         </div>
-        <div class="project-name">Formula Student Aerodynamic Package</div>
-        <div class="project-desc">Full aerodynamic package design for TU/e Formula Student team. CFD-optimised front wing and diffuser delivering 320N of downforce at 80 km/h with a drag penalty of under 8%.</div>
+        <div class="project-name">Mechanical Component Design</div>
+        <div class="project-desc">Placeholder — full parametric CAD design and engineering drawing package for a mechanical assembly. Tolerance analysis and DFM review completed in SolidWorks.</div>
       </div>
       <div class="project-arrow">→</div>
     </div>
@@ -789,11 +791,11 @@ footer {
       <div class="project-num">04</div>
       <div class="project-info">
         <div class="project-tags">
-          <span class="project-tag">NVH · Acoustics</span>
-          <span class="project-tag blue">Research</span>
+          <span class="project-tag">Python · CS50</span>
+          <span class="project-tag blue">Software</span>
         </div>
-        <div class="project-name">EV Powertrain NVH Characterisation</div>
-        <div class="project-desc">Experimental investigation of tonal noise sources in a permanent magnet electric motor. Developed post-processing pipeline in Python for automated order tracking analysis from dyno test data.</div>
+        <div class="project-name">CS50 Final Project</div>
+        <div class="project-desc">Placeholder — software project completed as part of HarvardX CS50. Applied programming fundamentals to an engineering-adjacent problem using Python.</div>
       </div>
       <div class="project-arrow">→</div>
     </div>
@@ -809,18 +811,18 @@ footer {
     <div class="timeline-item reveal">
       <div class="timeline-period">2024 — Present</div>
       <div>
-        <div class="timeline-role">Powertrain Engineering Intern</div>
-        <div class="timeline-company">OEM · Eindhoven, NL</div>
-        <div class="timeline-desc">Working within the EV powertrain development team on thermal system integration. Responsible for component-level simulation, test planning, and data analysis for battery and e-motor subsystems.</div>
+        <div class="timeline-role">Thesis Engineering Intern</div>
+        <div class="timeline-company">Hyster-Yale Group</div>
+        <div class="timeline-desc">Bachelor thesis internship at one of the world's leading forklift manufacturers. Conducting structural analysis and design work, applying FEM simulation to real product development challenges.</div>
       </div>
     </div>
 
     <div class="timeline-item reveal reveal-delay-1">
-      <div class="timeline-period">2023 — 2024</div>
+      <div class="timeline-period">2022 — Present</div>
       <div>
-        <div class="timeline-role">MSc Automotive Engineering</div>
-        <div class="timeline-company">Eindhoven University of Technology</div>
-        <div class="timeline-desc">Specialisation in vehicle dynamics and powertrain systems. Coursework covering advanced control theory, electromobility, NVH, and vehicle system integration. GPA 8.1 / 10.</div>
+        <div class="timeline-role">Car Mechanic</div>
+        <div class="timeline-company">Du Pied Classic Cars</div>
+        <div class="timeline-desc">Part-time role servicing and restoring classic vehicles. Hands-on mechanical work covering engine rebuilds, suspension, brakes and diagnostics — keeping engineering grounded in reality.</div>
       </div>
     </div>
 
@@ -828,17 +830,17 @@ footer {
       <div class="timeline-period">2022 — 2023</div>
       <div>
         <div class="timeline-role">Formula Student — Aerodynamics Lead</div>
-        <div class="timeline-company">TU/e Racing · Eindhoven, NL</div>
+        <div class="timeline-company">TU/e Racing · Open to opportunities</div>
         <div class="timeline-desc">Led a team of 6 engineers in the design, simulation, and manufacturing of the full aerodynamic package for the team's electric formula student car. Competed at FS Netherlands & Germany.</div>
       </div>
     </div>
 
     <div class="timeline-item reveal reveal-delay-3">
-      <div class="timeline-period">2019 — 2022</div>
+      <div class="timeline-period">2021 — Present</div>
       <div>
-        <div class="timeline-role">BSc Mechanical Engineering</div>
-        <div class="timeline-company">Eindhoven University of Technology</div>
-        <div class="timeline-desc">Foundation in mechanics, thermodynamics, materials science, and mathematics. Minor in Automotive Technology. Graduated cum laude.</div>
+        <div class="timeline-role">BSc Automotive Engineering</div>
+        <div class="timeline-company">Final Year — Bachelor</div>
+        <div class="timeline-desc">Four-year bachelor programme with a focus on mechanical engineering: structural mechanics, thermodynamics, vehicle dynamics, CAD/CAM and FEM/CFD simulation. Also completed CS50 from HarvardX.</div>
       </div>
     </div>
   </div>
@@ -850,23 +852,19 @@ footer {
     <div class="section-label reveal" data-num="04 —">Contact</div>
     <h2 class="contact-heading reveal">Let's<br><span>Connect.</span></h2>
     <p class="contact-sub reveal reveal-delay-1">
-      Open to internship extensions, graduate roles, and research collaborations in automotive and EV engineering.
+      Final-year automotive engineering student open to graduate roles, engineering positions and exciting projects in mechanical or automotive engineering.
     </p>
     <div class="contact-links reveal reveal-delay-2">
-      <a href="mailto:jan.devries@email.com" class="contact-link">
-        jan.devries@email.com
+      <a href="mailto:Bastiaan.wigboldus@gmail.com" class="contact-link">
+        Bastiaan.wigboldus@gmail.com
         <span class="contact-link-arrow">↗</span>
       </a>
-      <a href="https://linkedin.com/in/jandevries" target="_blank" class="contact-link">
-        LinkedIn
-        <span class="contact-link-arrow">↗</span>
-      </a>
-      <a href="https://github.com/jandevries" target="_blank" class="contact-link">
-        GitHub
+      <a href="https://www.linkedin.com/in/bastiaan-wigboldus-6a601a211/" target="_blank" class="contact-link">
+        LinkedIn — Bastiaan Wigboldus
         <span class="contact-link-arrow">↗</span>
       </a>
       <a href="#" class="contact-link">
-        Download CV  ·  PDF
+        Download CV · PDF
         <span class="contact-link-arrow">↓</span>
       </a>
     </div>
@@ -878,19 +876,19 @@ footer {
       <span class="status-value">Open to opportunities</span>
     </div>
     <div class="status-item">
-      <div class="status-dot yellow"></div>
+      <div class="status-dot cyan"></div>
       <span class="status-label">Current role</span>
-      <span class="status-value">Powertrain Intern</span>
+      <span class="status-value">Thesis Intern @ Hyster-Yale</span>
     </div>
     <div class="status-item">
       <div class="status-dot muted"></div>
-      <span class="status-label">Location</span>
-      <span class="status-value">Eindhoven, NL</span>
+      <span class="status-label">Education</span>
+      <span class="status-value">BSc Automotive Eng. — Y4</span>
     </div>
     <div class="status-item">
       <div class="status-dot muted"></div>
       <span class="status-label">Preferred roles</span>
-      <span class="status-value">EV · Powertrain · Controls</span>
+      <span class="status-value">Mechanical · Automotive · CAD/FEM</span>
     </div>
     <div class="status-item">
       <div class="status-dot green"></div>
@@ -901,8 +899,8 @@ footer {
 </section>
 
 <footer>
-  <div class="footer-copy">© 2025 Jan de Vries — Automotive Engineer</div>
-  <div class="footer-copy">Eindhoven, NL</div>
+  <div class="footer-copy">© 2025 Bastiaan Wigboldus — Automotive Engineer</div>
+  <div class="footer-copy">Open to opportunities</div>
 </footer>
 
 <script>
@@ -926,7 +924,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 // ── SUBTLE CURSOR TRAIL (engineering crosshair feel) ──
 let mouseX = 0, mouseY = 0;
 const dot = document.createElement('div');
-dot.style.cssText = `position:fixed;width:4px;height:4px;background:#e8c840;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:opacity .3s;opacity:0;`;
+dot.style.cssText = `position:fixed;width:4px;height:4px;background:#2dd4bf;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:opacity .3s;opacity:0;`;
 document.body.appendChild(dot);
 document.addEventListener('mousemove', e => {
   mouseX = e.clientX; mouseY = e.clientY;
