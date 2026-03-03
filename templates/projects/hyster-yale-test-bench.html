@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hyster-Yale Test Bench — Bastiaan Wigboldus</title>
+
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #070d0e;
+  --surface: #0c1517;
+  --border: #122228;
+  --text: #dff0f2;
+  --muted: #3d6068;
+  --accent: #2dd4bf;
+  --mono: 'IBM Plex Mono', monospace;
+  --display: 'Bebas Neue', sans-serif;
+  --body: 'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  padding: 80px 10%;
+  line-height: 1.7;
+}
+
+a {
+  text-decoration: none;
+  color: var(--accent);
+}
+
+.back-link {
+  font-family: var(--mono);
+  font-size: .7rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: inline-block;
+  margin-bottom: 60px;
+}
+
+.back-link:hover { color: var(--text); }
+
+.project-header {
+  margin-bottom: 80px;
+}
+
+.project-title {
+  font-family: var(--display);
+  font-size: clamp(3rem, 6vw, 5rem);
+  letter-spacing: .04em;
+  margin-bottom: 10px;
+}
+
+.project-meta {
+  font-family: var(--mono);
+  font-size: .7rem;
+  letter-spacing: .15em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.section {
+  margin-bottom: 80px;
+  max-width: 900px;
+}
+
+.section-label {
+  font-family: var(--mono);
+  font-size: .65rem;
+  letter-spacing: .2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.image-grid img {
+  width: 100%;
+  border: 1px solid var(--border);
+}
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px 40px;
+  margin-top: 24px;
+  font-family: var(--mono);
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+.spec-label {
+  color: var(--accent);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 80px 0;
+}
+</style>
+</head>
+<body>
+
+<a href="../landing.html" class="back-link">← Back to Projects</a>
+
+<div class="project-header">
+  <div class="project-title">Hyster-Yale Test Bench</div>
+  <div class="project-meta">
+    2024 — FEM · Structural Design · SolidWorks Simulation — Bachelor Thesis
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<div class="section">
+  <div class="section-label">Overview</div>
+  <p>
+    The Hyster-Yale Test Bench project was conducted as part of my bachelor thesis in mechanical engineering.
+    The objective was to design and structurally validate critical components of a hydraulic test bench used
+    for validating heavy-duty drivetrain components under realistic load conditions.
+  </p>
+  <p>
+    The system had to withstand high cyclic loading, significant torsional moments, and dynamic force inputs
+    while maintaining structural stiffness and alignment tolerances required for accurate measurement results.
+  </p>
+</div>
+
+<hr>
+
+<!-- PROBLEM DEFINITION -->
+<div class="section">
+  <div class="section-label">Engineering Challenge</div>
+  <p>
+    The primary engineering challenge was balancing stiffness and manufacturability under strict spatial
+    constraints. The frame components had to resist deformation under peak hydraulic loads while
+    remaining serviceable and modular.
+  </p>
+  <p>
+    Key considerations included:
+  </p>
+
+  <div class="spec-grid">
+    <div class="spec-label">Max Load</div><div>High dynamic hydraulic loading (cyclic)</div>
+    <div class="spec-label">Material</div><div>Structural steel (S355 equivalent)</div>
+    <div class="spec-label">Validation</div><div>Finite Element Analysis (static + safety factor verification)</div>
+    <div class="spec-label">Software</div><div>SolidWorks + Simulation package</div>
+  </div>
+</div>
+
+<hr>
+
+<!-- DESIGN PROCESS -->
+<div class="section">
+  <div class="section-label">Design & Simulation Process</div>
+  <p>
+    The design process began with load case identification and boundary condition modelling.
+    Reaction forces from the hydraulic system were translated into simulation constraints.
+  </p>
+  <p>
+    A parametric CAD model was developed to allow rapid iteration of:
+  </p>
+
+  <ul style="margin-left:20px; margin-top:20px;">
+      <li>Plate thickness optimisation</li>
+      <li>Weld geometry refinement</li>
+      <li>Stiffener placement</li>
+      <li>Bolt connection load distribution</li>
+  </ul>
+
+  <p style="margin-top:20px;">
+    Multiple FEM iterations were conducted to minimise mass while maintaining acceptable
+    stress levels below yield with an appropriate safety factor.
+  </p>
+</div>
+
+<hr>
+
+<!-- RESULTS -->
+<div class="section">
+  <div class="section-label">Results</div>
+  <p>
+    The final design achieved:
+  </p>
+
+  <ul style="margin-left:20px; margin-top:20px;">
+      <li>Reduced peak von Mises stress compared to initial concept</li>
+      <li>Improved stiffness in critical mounting regions</li>
+      <li>Optimised material usage without compromising safety factor</li>
+      <li>Manufacturable weld configurations aligned with workshop capabilities</li>
+  </ul>
+
+  <p style="margin-top:20px;">
+    The validated model provided confidence for manufacturing and integration
+    within the complete hydraulic testing system.
+  </p>
+</div>
+
+<hr>
+
+<!-- GALLERY -->
+<div class="section">
+  <div class="section-label">Gallery</div>
+  <div class="image-grid">
+    <img src="images/hyster-yale-1.jpg" alt="CAD model of test bench structure">
+    <img src="images/hyster-yale-2.jpg" alt="FEM stress analysis result">
+    <img src="images/hyster-yale-3.jpg" alt="Manufactured structural component">
+  </div>
+</div>
+
+</body>
+</html>

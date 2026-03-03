@@ -437,6 +437,11 @@ section { position: relative; z-index: 1; }
   transition: transform .2s, opacity .2s;
   flex-shrink: 0;
 }
+.project-card {
+  text-decoration: none;
+  color: inherit;
+  display: block;   /* important */
+}
 
 /* ── EXPERIENCE ── */
 .experience {
@@ -670,7 +675,7 @@ footer {
 
   <div class="hero-tag">Automotive Engineer</div>
   <h1 class="hero-name">Bastiaan<br><span>Wigboldus</span></h1>
-  <div class="hero-title">Engineer · Enthousiastic · Driven</div>
+  <div class="hero-title">Motivated · Enthousiastic · Driven</div>
   <div class="hero-meta">
     <div class="hero-meta-item">
       <span class="hero-meta-label">Age</span>
@@ -749,7 +754,8 @@ footer {
   </div>
 
   <div class="projects-list">
-    <div class="project-card reveal">
+
+    <a href="projects/hyster-yale-test-bench.html" class="project-card reveal">
       <div class="project-num">01</div>
       <div class="project-info">
         <div class="project-tags">
@@ -757,12 +763,14 @@ footer {
           <span class="project-tag blue">Thesis</span>
         </div>
         <div class="project-name">Hyster-Yale Test Bench</div>
-        <div class="project-desc">Bachelor thesis project — The design and simulation of parts of an hydraulic test bench.</div>
+        <div class="project-desc">
+          Bachelor thesis project — The design and simulation of parts of a hydraulic test bench.
+        </div>
       </div>
       <div class="project-arrow">→</div>
-    </div>
+    </a>
 
-    <div class="project-card reveal reveal-delay-1">
+    <a href="projects/formula-student-front-wing.html" class="project-card reveal reveal-delay-1">
       <div class="project-num">02</div>
       <div class="project-info">
         <div class="project-tags">
@@ -770,24 +778,28 @@ footer {
           <span class="project-tag blue">Formula Student</span>
         </div>
         <div class="project-name">Formula Student Front Wing</div>
-        <div class="project-desc">Design,  CFD validation, and complete manufacturing of the carbon fiber front wing on HFS-E3 produced by the HAN Formula Student Team.</div>
+        <div class="project-desc">
+          Design, CFD validation, and complete manufacturing of the carbon fiber front wing on the HFS-E3 produced by the HAN Formula Student Team.
+        </div>
       </div>
       <div class="project-arrow">→</div>
-    </div>
+    </a>
 
-    <div class="project-card reveal reveal-delay-2">
+    <a href="projects/formula-student-chassis.html" class="project-card reveal reveal-delay-2">
       <div class="project-num">03</div>
       <div class="project-info">
         <div class="project-tags">
           <span class="project-tag">CAD · Design</span>
         </div>
         <div class="project-name">Formula Student Chassis</div>
-        <div class="project-desc">Design, FEM validation, and complete manufacturing of a steel space frame for the HFS-E3 produced by the HAN Formula Student Team.</div>
+        <div class="project-desc">
+          Design, FEM validation, and complete manufacturing of a steel space frame for the HFS-E3 produced by the HAN Formula Student Team.
+        </div>
       </div>
       <div class="project-arrow">→</div>
-    </div>
+    </a>
 
-    <div class="project-card reveal reveal-delay-3">
+    <a href="projects/cs50-final-project.html" class="project-card reveal reveal-delay-3">
       <div class="project-num">04</div>
       <div class="project-info">
         <div class="project-tags">
@@ -795,11 +807,14 @@ footer {
           <span class="project-tag blue">Software</span>
         </div>
         <div class="project-name">CS50 Final Project</div>
-        <div class="project-desc">Making a web application to sort through and edit data for a car fleet managent system.</div>
+        <div class="project-desc">
+          Making a web application to sort through and edit data for a car fleet management system.
+        </div>
       </div>
       <div class="project-arrow">→</div>
-    </div>
+    </a>
   </div>
+
 </section>
 
 <!-- ── EXPERIENCE ── -->
