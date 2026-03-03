@@ -364,6 +364,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
       <button class="nav-arrow" onclick="navigate(1)">→</button>
     </div>
     <button class="btn-primary" onclick="openEventModal()">+ Event</button>
+    <button class="btn-secondary" id="btn-wake-time" onclick="openWakeModal()" style="padding:7px 11px;font-size:.76rem;" title="Set wake time for today">⏰</button>
   </div>
   <div id="proj-controls" style="display:none;align-items:center;gap:9px;margin-left:auto;">
     <button class="btn-primary" onclick="openTaskModal()">+ Task</button>
@@ -606,46 +607,30 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   </div>
 </div>
 
-<!-- ── SLEEP MODAL ── -->
-<div class="modal-overlay" id="sleep-modal">
-  <div class="modal">
-    <h2 id="sleep-modal-title">Sleep Tracking</h2>
-    <div id="sleep-day-label" style="font-size:.82rem;color:var(--muted);margin-bottom:14px;"></div>
-    <div class="form-row">
-      <div class="form-group"><label>Wake time (alarm)</label><input type="time" id="sleep-wake" value="07:00" onchange="updateSleepCalculations()" oninput="updateSleepCalculations()"></div>
-      <div class="form-group"><label>Hours before alarm</label><input type="number" id="sleep-hours-before" value="8.5" step="0.5" min="6" max="12" style="width:100%;" onchange="updateSleepCalculations()" oninput="updateSleepCalculations()"></div>
+<!-- ── WAKE TIME MODAL ── -->
+<div class="modal-overlay" id="wake-modal">
+  <div class="modal" style="width:360px;">
+    <h2 id="wake-modal-title">Set Wake Time</h2>
+    <div id="wake-day-label" style="font-size:.82rem;color:var(--muted);margin-bottom:14px;"></div>
+    <div class="form-group">
+      <label>Wake up time ⏰</label>
+      <input type="time" id="wake-time" value="07:00" oninput="updateWakeSuggestion()">
     </div>
-    <div style="background:var(--surface2);padding:12px;border-radius:8px;margin:14px 0;font-size:.75rem;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <span>Suggested bed time:</span>
-        <span id="sleep-suggested-bed" style="font-weight:700;color:var(--accent);">23:30</span>
+    <div id="wake-suggestion" style="display:none;background:var(--surface2);border-radius:8px;padding:11px 14px;margin-top:10px;font-size:.78rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="color:var(--muted);">💤 Sleep time</span>
+        <span id="wake-sleep-time" style="font-weight:700;color:var(--personal);"></span>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <span>Sleep duration:</span>
-        <span id="sleep-duration" style="font-weight:700;color:var(--accent);">8h 30m</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span>Target: 8-9h</span>
-        <span id="sleep-status" style="font-weight:700;">✓</span>
-      </div>
-    </div>
-    <div style="background:rgba(78,154,241,.1);padding:10px;border-radius:6px;margin-bottom:12px;border-left:3px solid var(--work);">
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.82rem;">
-        <input type="checkbox" id="sleep-create-event" checked style="cursor:pointer;" onchange="updateSleepCalculations()">
-        Create bed time event on previous evening at suggested time
-      </label>
-    </div>
-    <div id="sleep-suggestion" style="background:rgba(62,207,142,.1);padding:10px;border-radius:6px;margin-bottom:12px;font-size:.75rem;display:none;border-left:3px solid var(--sports);">
-      <div style="font-weight:700;margin-bottom:4px;">✓ Event will be created:</div>
-      <div id="sleep-suggest-event" style="color:var(--sports);">Tomorrow evening at 23:30 - 07:00 (8h 30m sleep)</div>
+      <div style="font-size:.7rem;color:var(--muted);">8h 15m before wake up · auto-calculated</div>
     </div>
     <div class="modal-actions">
-      <button class="btn-delete" id="sleep-del-btn" style="display:none" onclick="deleteSleep()">Delete</button>
-      <button class="btn-cancel" onclick="closeModal('sleep-modal')">Cancel</button>
-      <button class="btn-save" onclick="saveSleep()">Save & Set Up</button>
+      <button class="btn-delete" id="wake-del-btn" style="display:none" onclick="deleteWakeTime()">Delete</button>
+      <button class="btn-cancel" onclick="closeModal('wake-modal')">Cancel</button>
+      <button class="btn-save" onclick="saveWakeTime()">Save</button>
     </div>
   </div>
 </div>
+
 
 <!-- ── WEEKLY REPORT MODAL ── -->
 <div class="modal-overlay" id="review-modal">
@@ -1275,14 +1260,13 @@ function renderDaily(main){
   let h='<div class="daily-view"><div class="time-col-sticky">';
   for(let i=0;i<24;i++)h+=`<div class="time-slot-label">${i===0?'':(i<10?'0'+i:i)+':00'}</div>`;
   h+='</div><div class="events-col" id="evcol">';
-  for(let i=0;i<24;i++)h+=`<div class="time-row" ondragover="event.preventDefault()" ondrop="dropD(event,'${ds}',${i})"></div>`;
+  for(let i=0;i<24;i++)h+=`<div class="time-row" ondragover="event.preventDefault()" ondrop="dropD(event,'${ds}',${i})" onclick="clickEmptySlot(event,'${ds}',${i})"></div>`;
   h+='</div></div>';
   main.innerHTML=h;
   const col=document.getElementById('evcol');
   const laid=layoutEvents(dayEvs);
   laid.forEach(ev=>{
     const gap=3,pct=100/ev._total,leftPct=ev._col*pct;
-    // count sessions & overdue for work events
     const daySess=ev.cat==='work'?sessionsOnDate(ds):[];
     const ovCnt=daySess.filter(s=>{const t=tasks.find(x=>x.id===s.taskId);return t&&isOverdue(t);}).length;
     const uniqueTasks=[...new Set(daySess.map(s=>s.taskId))].length;
@@ -1293,10 +1277,9 @@ function renderDaily(main){
     el.draggable=true;
     el.innerHTML=`<div class="ev-title">${ev.title}</div><div class="ev-time">${ev.start}${ev.end?' – '+ev.end:''}</div>${badge}<div class="ev-edit" onclick="event.stopPropagation();openEventModal('${ev.id}')">✎</div>`;
     el.addEventListener('dragstart',e=>{dragEvId=ev.id;e.dataTransfer.effectAllowed='move';});
-    el.addEventListener('click',()=>clickEvent(ev,ds));
+    el.addEventListener('click',e=>{e.stopPropagation();clickEvent(ev,ds);});
     col.appendChild(el);
 
-    // Draw session chips in the RIGHT half of the internship block, positioned by their scheduled time
     if(ev.cat==='work'){
       const evHeightPx=Math.max(((ev.em-ev.sm)/60)*60,30);
       daySess.forEach(s=>{
@@ -1308,7 +1291,6 @@ function renderDaily(main){
         if(clampedEm<=clampedSm)return;
         const chip=document.createElement('div');
         chip.className='session-chip';
-        // Position chip at its actual scheduled time within the block (right 48% of width)
         const topPx=((clampedSm-ev.sm)/60)*60+2;
         const heightPx=Math.max(((clampedEm-clampedSm)/60)*60-4,16);
         chip.style.cssText=`top:${topPx}px;height:${heightPx}px;left:52%;right:2px;background:${color}30;border-left:3px solid ${color};color:${color};border-radius:5px;`;
@@ -1317,7 +1299,6 @@ function renderDaily(main){
         chip.addEventListener('click',e=>{e.stopPropagation();openDayPlanner(ds,ev);});
         el.appendChild(chip);
       });
-      // Meeting chips on the LEFT of the internship block
       meetings.filter(m=>m.date===ds).forEach(m=>{
         const sm2=toMin(m.startTime),em2=toMin(m.endTime);
         const cSm=Math.max(sm2,ev.sm),cEm=Math.min(em2,ev.em);
@@ -1326,12 +1307,37 @@ function renderDaily(main){
         chip.className='meeting-chip';
         chip.style.cssText=`top:${((cSm-ev.sm)/60)*60+2}px;height:${Math.max(((cEm-cSm)/60)*60-4,16)}px;left:2px;width:48%;`;
         chip.textContent='☎ '+m.title;
-        chip.title = `${m.title} · ${m.startTime}–${m.endTime}${m.notes ? '\n' + m.notes : ''}`;
+        chip.title=`${m.title} · ${m.startTime}–${m.endTime}${m.notes?'\n'+m.notes:''}`;
         chip.addEventListener('click',e=>{e.stopPropagation();openMeetingModal(m.id,ds);});
         el.appendChild(chip);
       });
     }
   });
+
+  // ── SLEEP / WAKE MARKERS ──
+  const dayWake = sleep.find(s=>s.date===ds);
+  if(dayWake&&dayWake.wakeTime){
+    // wake marker
+    const wakeMin=toMin(dayWake.wakeTime);
+    const wakeMarker=document.createElement('div');
+    wakeMarker.style.cssText=`position:absolute;left:0;right:0;top:${(wakeMin/60)*60}px;height:22px;display:flex;align-items:center;gap:6px;padding:0 8px;z-index:5;pointer-events:auto;cursor:pointer;`;
+    wakeMarker.title='Wake time — click to edit';
+    wakeMarker.innerHTML=`<div style="flex:1;height:2px;background:#a78bfa;opacity:.7;border-radius:1px;"></div><span style="font-size:.65rem;font-weight:700;color:#a78bfa;white-space:nowrap;background:var(--bg);padding:1px 5px;border-radius:4px;">⏰ ${dayWake.wakeTime}</span><div style="flex:1;height:2px;background:#a78bfa;opacity:.7;border-radius:1px;"></div>`;
+    wakeMarker.addEventListener('click',e=>{e.stopPropagation();openWakeModal(ds);});
+    col.appendChild(wakeMarker);
+    // sleep marker (8h15m before wake)
+    const sleepMin=((wakeMin - 495) + 1440) % 1440;
+    const sleepDate = sleepMin > wakeMin ? fmtD(addDays(parseD(ds),-1)) : ds;
+    if(sleepDate===ds){
+      const sleepMarker=document.createElement('div');
+      sleepMarker.style.cssText=`position:absolute;left:0;right:0;top:${(sleepMin/60)*60}px;height:22px;display:flex;align-items:center;gap:6px;padding:0 8px;z-index:5;pointer-events:auto;cursor:pointer;`;
+      sleepMarker.title='Sleep time — click to edit';
+      sleepMarker.innerHTML=`<div style="flex:1;height:2px;background:#6060a0;opacity:.6;border-radius:1px;"></div><span style="font-size:.65rem;font-weight:700;color:#6060a0;white-space:nowrap;background:var(--bg);padding:1px 5px;border-radius:4px;">💤 ${minToTime(sleepMin)}</span><div style="flex:1;height:2px;background:#6060a0;opacity:.6;border-radius:1px;"></div>`;
+      sleepMarker.addEventListener('click',e=>{e.stopPropagation();openWakeModal(ds);});
+      col.appendChild(sleepMarker);
+    }
+  }
+
   main.scrollTop=8*60;
 }
 function clickEvent(ev,ds){
@@ -1496,31 +1502,24 @@ function openTaskPanel(ds,ev){
   openModal('task-popup-modal');
 }
 function renderPopupTasks(ds){
-  // Show ALL tasks whose span includes this date, with their sessions on this day
   const active=tasksActiveOnDate(ds);
   const cont=document.getElementById('popup-tasks-list');
-  
-  // Sleep info for this day
+
+  // Wake time row
   const daySleep=sleep.find(s=>s.date===ds);
   let sleepHtml='';
   if(daySleep){
-    const hoursBefore=daySleep.hoursBefore||8.5;
-    const h=Math.floor(hoursBefore);
-    const mins=Math.round((hoursBefore%1)*60);
-    let sleepColor='var(--ok)',sleepStatus='✓';
-    if(hoursBefore<8){sleepColor='var(--warn)';sleepStatus='~';}
-    else if(hoursBefore<7){sleepColor='var(--danger)';sleepStatus='⚠';}
-    sleepHtml=`<div style="margin-bottom:12px;background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:10px 12px;">
-      <div style="font-size:.68rem;font-weight:700;color:var(--personal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;">🔔 Wake time</div>
-      <div class="session-row" style="cursor:pointer;" onclick="openSleepModal('${ds}')">
-        <div class="session-time" style="color:var(--personal);">⏰ ${daySleep.wakeTime} (${h}h ${mins}m before)</div>
-        <span style="font-size:.62rem;color:var(--muted);margin-left:auto;">tap to edit</span>
-      </div>
+    const sleepMin=((toMin(daySleep.wakeTime)-495)+1440)%1440;
+    sleepHtml=`<div style="margin-bottom:12px;background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="openWakeModal('${ds}')">
+      <span style="font-size:.78rem;">💤 ${minToTime(sleepMin)}</span>
+      <span style="color:var(--muted);font-size:.7rem;">→</span>
+      <span style="font-size:.78rem;font-weight:700;color:#a78bfa;">⏰ ${daySleep.wakeTime}</span>
+      <span style="font-size:.62rem;color:var(--muted);margin-left:auto;">tap to edit</span>
     </div>`;
   }else{
-    sleepHtml=`<button class="btn-secondary" onclick="openSleepModal('${ds}')" style="width:100%;margin-bottom:12px;">+ Set wake time</button>`;
+    sleepHtml=`<button class="btn-secondary" onclick="openWakeModal('${ds}')" style="width:100%;margin-bottom:12px;">⏰ Set wake time</button>`;
   }
-  
+
   if(!active.length){
     cont.innerHTML=sleepHtml+'<div style="color:var(--muted);font-size:.84rem;text-align:center;padding:22px 0;">No tasks span this day.<br>Go to Project view to create tasks.</div>';
     return;
@@ -1767,7 +1766,7 @@ function computeRepeatDates(pattern,startVal,untilVal){
   }
   return dates;
 }
-function openEventModal(id){
+function openEventModal(id, prefillStart, prefillEnd, prefillDate){
   editEvId=id||null;
   // reset repeat UI
   document.getElementById('ev-repeat').value='none';
@@ -1789,19 +1788,17 @@ function openEventModal(id){
     document.getElementById('ev-end').value=ev.end||'';
     document.getElementById('ev-notes').value=ev.notes||'';
     document.getElementById('ev-del-btn').style.display='block';
-    // show delete series btn if part of a series
     const hasSeries=ev.seriesId&&events.filter(e=>e.seriesId===ev.seriesId).length>1;
     document.getElementById('ev-del-series-btn').style.display=hasSeries?'block':'none';
-    // hide repeat UI for edits (editing one occurrence only)
     document.getElementById('ev-repeat').closest('.form-group').style.display='none';
     document.getElementById('repeat-options').style.display='none';
   }else{
     document.getElementById('ev-modal-title').textContent='Add Event';
     document.getElementById('ev-title').value='';
     document.getElementById('ev-cat').value='work';
-    document.getElementById('ev-date').value=fmtD(currentDate);
-    document.getElementById('ev-start').value='09:00';
-    document.getElementById('ev-end').value='17:00';
+    document.getElementById('ev-date').value=prefillDate||fmtD(currentDate);
+    document.getElementById('ev-start').value=prefillStart||'09:00';
+    document.getElementById('ev-end').value=prefillEnd||'17:00';
     document.getElementById('ev-notes').value='';
     document.getElementById('ev-del-btn').style.display='none';
     document.getElementById('ev-del-series-btn').style.display='none';
@@ -2056,130 +2053,85 @@ function deleteMeeting(){
   render();
 }
 
-// ── SLEEP ──
-let editSleepDate=null;
-function openSleepModal(date){
-  editSleepDate=date;
-  document.getElementById('sleep-day-label').textContent=formatDateLong(date);
-  const existing=sleep.find(s=>s.date===date);
-  if(existing){
-    document.getElementById('sleep-modal-title').textContent='Edit Wake Time';
-    document.getElementById('sleep-wake').value=existing.wakeTime||'07:00';
-    document.getElementById('sleep-hours-before').value=existing.hoursBefore||8.5;
-    document.getElementById('sleep-del-btn').style.display='block';
-  }else{
-    document.getElementById('sleep-modal-title').textContent='Set Wake Time';
-    document.getElementById('sleep-wake').value='07:00';
-    document.getElementById('sleep-hours-before').value=8.5;
-    document.getElementById('sleep-del-btn').style.display='none';
-  }
-  document.getElementById('sleep-create-event').checked=true;
-  document.getElementById('sleep-suggestion').style.display='none';
-  updateSleepCalculations();
-  openModal('sleep-modal');
+// ── WAKE TIME ──
+let editWakeDate=null;
+
+function openWakeModal(date){
+  const ds = date || fmtD(currentDate);
+  editWakeDate = ds;
+  const d = parseD(ds);
+  document.getElementById('wake-modal-title').textContent = 'Wake Time — '+DS[d.getDay()]+' '+d.getDate()+' '+MN[d.getMonth()].slice(0,3);
+  document.getElementById('wake-day-label').textContent = '';
+  const existing = sleep.find(s=>s.date===ds);
+  document.getElementById('wake-time').value = existing ? existing.wakeTime : '07:00';
+  document.getElementById('wake-del-btn').style.display = existing ? 'block' : 'none';
+  updateWakeSuggestion();
+  openModal('wake-modal');
+  setTimeout(()=>document.getElementById('wake-time').focus(),80);
 }
-function updateSleepCalculations(){
-  const wakeEl=document.getElementById('sleep-wake');
-  const hoursEl=document.getElementById('sleep-hours-before');
-  const bedEl=document.getElementById('sleep-suggested-bed');
-  const durationEl=document.getElementById('sleep-duration');
-  const statusEl=document.getElementById('sleep-status');
-  
-  if(!wakeEl||!hoursEl||!bedEl||!durationEl||!statusEl)return;
-  
-  const wake=wakeEl.value;
-  const hoursBefore=parseFloat(hoursEl.value)||8.5;
-  if(!wake)return;
-  
-  // Calculate bed time based on wake time - hours before
-  const [wh,wm]=wake.split(':').map(Number);
-  let bedMin=(wh*60+wm)-(hoursBefore*60);
-  if(bedMin<0)bedMin+=24*60;
-  const bedH=Math.floor(bedMin/60);
-  const bedM=bedMin%60;
-  const bedtime=String(bedH).padStart(2,'0')+':'+String(bedM).padStart(2,'0');
-  
-  bedEl.textContent=bedtime;
-  durationEl.textContent=`${Math.floor(hoursBefore)}h ${Math.round((hoursBefore%1)*60)}m`;
-  
-  let status='✓',color='var(--ok)';
-  if(hoursBefore<8){status='~';color='var(--warn)';}
-  else if(hoursBefore<7){status='⚠';color='var(--danger)';}
-  statusEl.textContent=status;
-  statusEl.style.color=color;
-  
-  // Show what event will be created
-  const checkbox=document.getElementById('sleep-create-event');
-  const suggestion=document.getElementById('sleep-suggestion');
-  if(!checkbox||!suggestion)return;
-  
-  if(checkbox.checked){
-    suggestion.style.display='block';
-    const prevDate=new Date(editSleepDate);
-    prevDate.setDate(prevDate.getDate()-1);
-    const prevDateStr=fmtD(prevDate);
-    const eventEl=document.getElementById('sleep-suggest-event');
-    if(eventEl)eventEl.textContent=`${formatDateLong(prevDateStr)} at ${bedtime} → ${wake} (${Math.floor(hoursBefore)}h ${Math.round((hoursBefore%1)*60)}m)`;
-  }else{
-    suggestion.style.display='none';
-  }
+
+function updateWakeSuggestion(){
+  const wt = document.getElementById('wake-time').value;
+  const sug = document.getElementById('wake-suggestion');
+  const sleepEl = document.getElementById('wake-sleep-time');
+  if(!wt){sug.style.display='none';return;}
+  const sleepMin = ((toMin(wt) - 495) + 1440) % 1440;
+  sleepEl.textContent = minToTime(sleepMin);
+  sug.style.display = 'block';
 }
-function saveSleep(){
-  if(!editSleepDate)return;
-  const wakeTime=document.getElementById('sleep-wake').value;
-  const hoursBefore=parseFloat(document.getElementById('sleep-hours-before').value)||8.5;
-  const createEvent=document.getElementById('sleep-create-event').checked;
-  
-  if(!wakeTime){showToast('Please set a wake time',true);return;}
-  
-  const s={id:uid(),date:editSleepDate,wakeTime,hoursBefore};
-  const idx=sleep.findIndex(x=>x.date===editSleepDate);
-  if(idx!==-1)sleep[idx]=s;
-  else sleep.push(s);
-  persist('pl3_sleep',sleep);
-  
-  // Create bed time event on previous evening if checked
-  if(createEvent){
-    const prevDate=new Date(editSleepDate);
-    prevDate.setDate(prevDate.getDate()-1);
-    const prevDateStr=fmtD(prevDate);
-    
-    // Calculate bed time
-    const [wh,wm]=wakeTime.split(':').map(Number);
-    let bedMin=(wh*60+wm)-(hoursBefore*60);
-    if(bedMin<0)bedMin+=24*60;
-    const bedH=Math.floor(bedMin/60);
-    const bedM=bedMin%60;
-    const bedtime=String(bedH).padStart(2,'0')+':'+String(bedM).padStart(2,'0');
-    
-    // Create event
-    const bedEvent={
-      id:uid(),
-      title:'Sleep',
-      cat:'personal',
-      date:prevDateStr,
-      start:bedtime,
-      end:wakeTime,
-      notes:'Auto-created bedtime event'
-    };
-    events.push(bedEvent);
-    persist('pl3_events',events);
-    showToast('✓ Wake time set & bed time event created');
-  }else{
-    showToast('✓ Wake time set');
-  }
-  
-  closeModal('sleep-modal');
-  if(currentPopupDate)renderPopupTasks(currentPopupDate);
+
+function saveWakeTime(){
+  const wakeTime = document.getElementById('wake-time').value;
+  if(!wakeTime){showToast('Please enter a wake time',true);return;}
+  const sleepMin = ((toMin(wakeTime) - 495) + 1440) % 1440;
+  const sleepTime = minToTime(sleepMin);
+
+  // save to sleep array
+  const s = {id:uid(), date:editWakeDate, wakeTime, hoursBefore:8.25};
+  const idx = sleep.findIndex(x=>x.date===editWakeDate);
+  if(idx!==-1) sleep[idx]=s; else sleep.push(s);
+  persist('pl3_sleep', sleep);
+
+  // remove any previous auto-created sleep/wake events for this date
+  events = events.filter(e=>!(e._sleepDate===editWakeDate));
+
+  // create wake marker event on the day itself (1 min, just a marker)
+  const wakeEv = {id:uid(), title:'⏰ Wake up', cat:'personal', date:editWakeDate, start:wakeTime, end:minToTime(toMin(wakeTime)+15), notes:'', _sleepDate:editWakeDate};
+  events.push(wakeEv);
+
+  // create sleep marker on the previous evening if sleep time is after ~20:00, else same day
+  const prevDs = fmtD(addDays(parseD(editWakeDate),-1));
+  const sleepEvDate = sleepMin >= toMin('20:00') ? prevDs : editWakeDate;
+  const sleepEv = {id:uid(), title:'💤 Sleep', cat:'personal', date:sleepEvDate, start:sleepTime, end:sleepEvDate===editWakeDate ? wakeTime : '23:59', notes:'', _sleepDate:editWakeDate};
+  events.push(sleepEv);
+
+  persist('pl3_events', events);
+  closeModal('wake-modal');
   render();
+  showToast('⏰ Wake time set — sleep '+sleepTime+', wake '+wakeTime);
 }
-function deleteSleep(){
-  if(!editSleepDate)return;
-  sleep=sleep.filter(s=>s.date!==editSleepDate);
+
+function deleteWakeTime(){
+  if(!editWakeDate)return;
+  sleep = sleep.filter(s=>s.date!==editWakeDate);
+  events = events.filter(e=>e._sleepDate!==editWakeDate);
   persist('pl3_sleep',sleep);
-  closeModal('sleep-modal');
-  if(currentPopupDate)renderPopupTasks(currentPopupDate);
+  persist('pl3_events',events);
+  closeModal('wake-modal');
   render();
+  showToast('Wake time removed');
+}
+
+// ── CLICK EMPTY SLOT ──
+function clickEmptySlot(e, ds, hour){
+  // only fire if the click is directly on the time-row (not on a child event)
+  if(e.target!==e.currentTarget)return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const offMin = Math.round(((e.clientY - rect.top) / 60) * 60);
+  const totalMin = hour*60 + Math.max(0, Math.min(59, offMin));
+  // snap to nearest 15 min
+  const snapped = Math.round(totalMin/15)*15;
+  openEventModal(null, minToTime(snapped), minToTime(snapped+60), ds);
 }
 
 // ── SUBTASK ──
@@ -2278,13 +2230,13 @@ function deletePhase(){
 }
 
 // ── CLOSE HANDLERS ──
-['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','meeting-modal','sleep-modal','review-modal','day-planner-modal','hb-modal','activity-modal'].forEach(id=>{
+['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','meeting-modal','wake-modal','review-modal','day-planner-modal','hb-modal','activity-modal'].forEach(id=>{
   const el=document.getElementById(id);
   if(el)el.addEventListener('click',function(e){if(e.target===this)closeModal(id);});
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape')
-    ['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','meeting-modal','sleep-modal','review-modal','day-planner-modal','hb-modal','activity-modal'].forEach(id=>closeModal(id));
+    ['ev-modal','task-modal','phase-modal','task-popup-modal','session-modal','subtask-modal','sport-modal','goal-modal','race-modal','workout-modal','meeting-modal','wake-modal','review-modal','day-planner-modal','hb-modal','activity-modal'].forEach(id=>closeModal(id));
 });
 
 
