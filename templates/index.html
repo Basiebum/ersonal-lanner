@@ -987,10 +987,7 @@ async function login(){
 
 async function logout(){
   try{await fetch('/api/logout',{method:'POST',credentials:'same-origin'});}catch(e){}
-  updateAuthUI(null);
-  // reseed demo data for anonymous view and go to landing
-  seedDemoData();
-  window.location = '/';
+  window.location = '/login';
 }
 
 // helper to show auth modal; when `required` is true, hide cancel so user must register/login
@@ -1076,12 +1073,10 @@ function seedDemoData(){
 // initialize auth UI on load — require login if not authenticated
 fetchCurrentUser().then(u=>{
   if(!u){
-    // not authenticated — return to landing page
-    window.location = '/';
+    window.location = '/login';
     return;
   }
   updateAuthUI(u);
-  // automatically pull user's latest plan
   syncLoad(false).catch(e=>console.warn('initial syncLoad failed',e));
 });
 
