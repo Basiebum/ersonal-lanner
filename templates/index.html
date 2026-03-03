@@ -1322,7 +1322,7 @@ function renderDaily(main){
     const wakeMarker=document.createElement('div');
     wakeMarker.style.cssText=`position:absolute;left:0;right:0;top:${(wakeMin/60)*60}px;height:22px;display:flex;align-items:center;gap:6px;padding:0 8px;z-index:5;pointer-events:auto;cursor:pointer;`;
     wakeMarker.title='Wake time — click to edit';
-    wakeMarker.innerHTML=`<div style="flex:1;height:2px;background:#a78bfa;opacity:.7;border-radius:1px;"></div><span style="font-size:.65rem;font-weight:700;color:#a78bfa;white-space:nowrap;background:var(--bg);padding:1px 5px;border-radius:4px;">⏰ ${dayWake.wakeTime}</span><div style="flex:1;height:2px;background:#a78bfa;opacity:.7;border-radius:1px;"></div>`;
+    wakeMarker.innerHTML=`<div style="flex:1;height:4px;background:#a78bfa;opacity:.85;border-radius:2px;"></div><span style="font-size:.65rem;font-weight:700;color:#a78bfa;white-space:nowrap;background:var(--bg);padding:1px 6px;border-radius:4px;">⏰ ${dayWake.wakeTime}</span><div style="flex:1;height:4px;background:#a78bfa;opacity:.85;border-radius:2px;"></div>`;
     wakeMarker.addEventListener('click',e=>{e.stopPropagation();openWakeModal(ds);});
     col.appendChild(wakeMarker);
     // sleep marker (8h15m before wake)
@@ -1332,7 +1332,7 @@ function renderDaily(main){
       const sleepMarker=document.createElement('div');
       sleepMarker.style.cssText=`position:absolute;left:0;right:0;top:${(sleepMin/60)*60}px;height:22px;display:flex;align-items:center;gap:6px;padding:0 8px;z-index:5;pointer-events:auto;cursor:pointer;`;
       sleepMarker.title='Sleep time — click to edit';
-      sleepMarker.innerHTML=`<div style="flex:1;height:2px;background:#6060a0;opacity:.6;border-radius:1px;"></div><span style="font-size:.65rem;font-weight:700;color:#6060a0;white-space:nowrap;background:var(--bg);padding:1px 5px;border-radius:4px;">💤 ${minToTime(sleepMin)}</span><div style="flex:1;height:2px;background:#6060a0;opacity:.6;border-radius:1px;"></div>`;
+      sleepMarker.innerHTML=`<div style="flex:1;height:4px;background:#6060a0;opacity:.75;border-radius:2px;"></div><span style="font-size:.65rem;font-weight:700;color:#6060a0;white-space:nowrap;background:var(--bg);padding:1px 6px;border-radius:4px;">💤 ${minToTime(sleepMin)}</span><div style="flex:1;height:4px;background:#6060a0;opacity:.75;border-radius:2px;"></div>`;
       sleepMarker.addEventListener('click',e=>{e.stopPropagation();openWakeModal(ds);});
       col.appendChild(sleepMarker);
     }
@@ -2086,37 +2086,21 @@ function saveWakeTime(){
   const sleepMin = ((toMin(wakeTime) - 495) + 1440) % 1440;
   const sleepTime = minToTime(sleepMin);
 
-  // save to sleep array
+  // save to sleep array — markers render directly from this, no calendar events needed
   const s = {id:uid(), date:editWakeDate, wakeTime, hoursBefore:8.25};
   const idx = sleep.findIndex(x=>x.date===editWakeDate);
   if(idx!==-1) sleep[idx]=s; else sleep.push(s);
   persist('pl3_sleep', sleep);
 
-  // remove any previous auto-created sleep/wake events for this date
-  events = events.filter(e=>!(e._sleepDate===editWakeDate));
-
-  // create wake marker event on the day itself (1 min, just a marker)
-  const wakeEv = {id:uid(), title:'⏰ Wake up', cat:'personal', date:editWakeDate, start:wakeTime, end:minToTime(toMin(wakeTime)+15), notes:'', _sleepDate:editWakeDate};
-  events.push(wakeEv);
-
-  // create sleep marker on the previous evening if sleep time is after ~20:00, else same day
-  const prevDs = fmtD(addDays(parseD(editWakeDate),-1));
-  const sleepEvDate = sleepMin >= toMin('20:00') ? prevDs : editWakeDate;
-  const sleepEv = {id:uid(), title:'💤 Sleep', cat:'personal', date:sleepEvDate, start:sleepTime, end:sleepEvDate===editWakeDate ? wakeTime : '23:59', notes:'', _sleepDate:editWakeDate};
-  events.push(sleepEv);
-
-  persist('pl3_events', events);
   closeModal('wake-modal');
   render();
-  showToast('⏰ Wake time set — sleep '+sleepTime+', wake '+wakeTime);
+  showToast('⏰ Wake '+wakeTime+' · 💤 Sleep '+sleepTime);
 }
 
 function deleteWakeTime(){
   if(!editWakeDate)return;
   sleep = sleep.filter(s=>s.date!==editWakeDate);
-  events = events.filter(e=>e._sleepDate!==editWakeDate);
   persist('pl3_sleep',sleep);
-  persist('pl3_events',events);
   closeModal('wake-modal');
   render();
   showToast('Wake time removed');
@@ -2629,20 +2613,43 @@ function saveActivity(){
   const note=document.getElementById('act-notes').value.trim();
   const st=document.getElementById('act-start').value;
   const et=document.getElementById('act-end').value;
+  const info=ACT_TYPES[_actType]||ACT_TYPES.other;
+  const calTitle=info.icon+' '+(note||info.label);
+
   const a={id:_actEditId||uid(),date:_actDate,type:_actType,notes:note,startTime:st,endTime:et};
-  if(_actEditId){const i=(activities||[]).findIndex(x=>x.id===_actEditId);if(i!==-1)activities[i]=a;}
-  else activities.push(a);
+
+  if(_actEditId){
+    const i=(activities||[]).findIndex(x=>x.id===_actEditId);
+    if(i!==-1){
+      activities[i]=a;
+      // update linked calendar event if it exists
+      const ei=events.findIndex(e=>e._actId===_actEditId);
+      if(ei!==-1) events[ei]={...events[ei],title:calTitle,date:_actDate,start:st,end:et};
+      else events.push({id:uid(),title:calTitle,cat:'sports',date:_actDate,start:st,end:et,notes:'',_actId:_actEditId});
+    }
+  }else{
+    activities.push(a);
+    // create calendar event
+    events.push({id:uid(),title:calTitle,cat:'sports',date:_actDate,start:st,end:et,notes:'',_actId:a.id});
+  }
+
   persist('pl3_activities',activities);
+  persist('pl3_events',events);
   closeModal('activity-modal');
   renderSports();
+  if(currentPage==='calendar')render();
 }
 
 function deleteActivity(){
   if(!_actEditId)return;
+  // remove linked calendar event too
+  events=events.filter(e=>e._actId!==_actEditId);
   activities=activities.filter(x=>x.id!==_actEditId);
   persist('pl3_activities',activities);
+  persist('pl3_events',events);
   closeModal('activity-modal');
   renderSports();
+  if(currentPage==='calendar')render();
 }
 
 // ══════════════════════════════════════════════════
@@ -3250,18 +3257,17 @@ document.addEventListener('click',function(e){
 // INIT
 document.addEventListener('DOMContentLoaded', function(){
   try{
-    // Load data from localStorage
     loadFromStorage();
     
-    // Seed data if first time
-    if(!get('pl3_seeded')){
-      seedData();
-    }
-    
-    // Attach all event listeners
+    // Clean up any old auto-created sleep/wake events from previous version
+    const before=events.length;
+    events=events.filter(e=>!(e._sleepDate)||(e.cat==='sports'&&e._actId));
+    // also clean leftover title-based sleep events
+    events=events.filter(e=>!(e.title==='⏰ Wake up'||e.title==='💤 Sleep'));
+    if(events.length!==before) persistSilent('pl3_events',events);
+
+    if(!get('pl3_seeded')) seedData();
     attachEventListeners();
-    
-    // Render the calendar
     setTimeout(()=>render(), 50);
   }catch(err){
     console.error('Init error:', err);
