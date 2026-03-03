@@ -159,5 +159,10 @@ def api_me():
         return jsonify({'error': 'internal server error'}), 500
 
 
+@app.route("/projects/hyster-yale-test-bench")
+def hyster_yale():
+    return render_template("projects/hyster-yale-test-bench.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
