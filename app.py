@@ -37,16 +37,13 @@ def _google_client_config():
 def _save_token(token_dict):
     """Save Google token to Supabase for the current user."""
     uid = session.get('user_id')
+    session['google_token'] = token_dict  # always save to session
     if not uid or not supabase:
-        # fallback to session only
-        session['google_token'] = token_dict
         return
     try:
         supabase.table('users').update({'google_token': token_dict}).eq('id', uid).execute()
-        session['google_token'] = token_dict  # cache in session too
     except Exception as e:
-        logging.error("Failed to save google token: %s", e)
-        session['google_token'] = token_dict
+        logging.warning("Could not save google token to Supabase (column may not exist): %s", e)
 
 def _load_token():
     """Load Google token — try session cache first, then Supabase."""

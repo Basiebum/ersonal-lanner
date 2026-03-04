@@ -3309,18 +3309,17 @@ document.addEventListener('DOMContentLoaded', function(){
     _initSettings();
     setTimeout(()=>render(), 50);
     // Check Google Calendar connection status on load
-    gcalCheckStatus();
+    gcalCheckStatus(true);
     // Check URL params for gcal connection result
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.get('gcal_connected')==='1'){
       showToast('✓ Google Calendar connected');
       history.replaceState({}, '', '/planner');
-      gcalCheckStatus();
-      gcalSync();
+      gcalCheckStatus(true);
     }
     if(urlParams.get('gcal_error')==='1'){
       const msg = urlParams.get('msg') || 'unknown error';
-      showToast('Google Calendar connection failed: ' + msg);
+      showToast('Google Calendar failed: ' + msg);
       history.replaceState({}, '', '/planner');
     }
   }catch(err){
@@ -3336,13 +3335,13 @@ let gcalConnected = false;
 // gcal events are stored separately so they never overwrite local events
 let gcalEvents = JSON.parse(localStorage.getItem('pl3_gcal_events') || '[]');
 
-function gcalCheckStatus(){
+function gcalCheckStatus(thenSync){
   fetch('/api/gcal/status', {credentials:'same-origin'})
     .then(r=>r.json())
     .then(d=>{
       gcalConnected = d.connected === true;
       gcalUpdateUI();
-      if(gcalConnected) gcalPull(); // auto-pull on load if connected
+      if(gcalConnected && thenSync) gcalPull();
     })
     .catch(()=>{ gcalConnected = false; gcalUpdateUI(); });
 }
@@ -3406,7 +3405,7 @@ function gcalSync(){
     method: 'POST',
     credentials: 'same-origin',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({events: toSync})
+    body: JSON.stringify({events: toPush})
   })
   .then(r=>r.json())
   .then(d=>{
