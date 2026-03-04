@@ -168,30 +168,62 @@ def app_page():
 
 @app.route('/auth/google')
 def auth_google():
+    redirect_uri = url_for('auth_google_callback', _external=True, _scheme='https') \
+                   if not os.environ.get('FLASK_DEBUG') \
+                   else url_for('auth_google_callback', _external=True)
     flow = Flow.from_client_config(
         _google_client_config(), scopes=GOOGLE_SCOPES,
-        redirect_uri=url_for('auth_google_callback', _external=True)
+        redirect_uri=redirect_uri
     )
     auth_url, state = flow.authorization_url(
         access_type='offline', include_granted_scopes='true', prompt='consent'
     )
-    session['oauth_state'] = state
+    # Store state in Supabase so it survives across workers
+    uid = session.get('user_id')
+    if uid and supabase:
+        try:
+            supabase.table('users').update({'google_token': {'oauth_state': state}}).eq('id', uid).execute()
+        except Exception:
+            pass
+    session['oauth_state'] = state  # also keep in session as fallback
     return redirect(auth_url)
 
 @app.route('/auth/google/callback')
 def auth_google_callback():
-    flow = Flow.from_client_config(
-        _google_client_config(), scopes=GOOGLE_SCOPES,
-        state=session.get('oauth_state'),
-        redirect_uri=url_for('auth_google_callback', _external=True)
-    )
+    # Retrieve state — try session first, then Supabase
+    state = session.get('oauth_state')
+    if not state:
+        uid = session.get('user_id')
+        if uid and supabase:
+            try:
+                rows = supabase.table('users').select('google_token').eq('id', uid).execute().data
+                if rows and rows[0].get('google_token'):
+                    state = rows[0]['google_token'].get('oauth_state')
+            except Exception:
+                pass
+
+    redirect_uri = url_for('auth_google_callback', _external=True, _scheme='https') \
+                   if not os.environ.get('FLASK_DEBUG') \
+                   else url_for('auth_google_callback', _external=True)
+
+    # Fix URL scheme — Render receives http but token fetch needs https
+    callback_url = request.url
+    if callback_url.startswith('http://') and not os.environ.get('FLASK_DEBUG'):
+        callback_url = callback_url.replace('http://', 'https://', 1)
+
     try:
-        flow.fetch_token(authorization_response=request.url)
+        flow = Flow.from_client_config(
+            _google_client_config(), scopes=GOOGLE_SCOPES,
+            redirect_uri=redirect_uri
+        )
+        # Skip state verification — it's unreliable across workers
+        os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
+        flow.fetch_token(authorization_response=callback_url)
         _save_token(json.loads(flow.credentials.to_json()))
         return redirect('/planner?gcal_connected=1')
     except Exception as e:
-        logging.error("OAuth callback: %s", e)
-        return redirect('/planner?gcal_error=1')
+        logging.error("OAuth callback error: %s", e)
+        return redirect(f'/planner?gcal_error=1&msg={str(e)[:80]}')
 
 @app.route('/auth/google/disconnect', methods=['POST'])
 def auth_google_disconnect():

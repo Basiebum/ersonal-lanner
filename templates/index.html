@@ -3319,7 +3319,8 @@ document.addEventListener('DOMContentLoaded', function(){
       gcalSync();
     }
     if(urlParams.get('gcal_error')==='1'){
-      showToast('Google Calendar connection failed');
+      const msg = urlParams.get('msg') || 'unknown error';
+      showToast('Google Calendar connection failed: ' + msg);
       history.replaceState({}, '', '/planner');
     }
   }catch(err){
