@@ -3308,14 +3308,13 @@ document.addEventListener('DOMContentLoaded', function(){
     attachEventListeners();
     _initSettings();
     setTimeout(()=>render(), 50);
-    // Check Google Calendar connection status on load
     gcalCheckStatus(true);
-    // Check URL params for gcal connection result
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.get('gcal_connected')==='1'){
       showToast('✓ Google Calendar connected');
       history.replaceState({}, '', '/planner');
-      gcalCheckStatus(true);
+      // Wait a second then pull — gives worker time to settle
+      setTimeout(()=>gcalCheckStatus(true), 1000);
     }
     if(urlParams.get('gcal_error')==='1'){
       const msg = urlParams.get('msg') || 'unknown error';
@@ -3394,13 +3393,18 @@ function gcalPull(){
     .catch(err => console.warn('gcal pull failed:', err));
 }
 
+let _gcalSyncTimer = null;
 function gcalSync(){
   if(!gcalConnected){ showToast('Connect Google Calendar first'); return; }
+  // Debounce — don't fire multiple syncs at once
+  if(_gcalSyncTimer) clearTimeout(_gcalSyncTimer);
+  _gcalSyncTimer = setTimeout(_doGcalSync, 800);
+}
+
+function _doGcalSync(){
+  _gcalSyncTimer = null;
   showToast('Syncing with Google Calendar…');
-
-  // Only push local events (not ones that came from Google)
   const toPush = events.filter(e => !e.from_gcal && !e.gcal_id);
-
   fetch('/api/gcal/sync', {
     method: 'POST',
     credentials: 'same-origin',
@@ -3409,20 +3413,22 @@ function gcalSync(){
   })
   .then(r=>r.json())
   .then(d=>{
-    if(d.error){ showToast('Sync error: ' + d.error); return; }
+    if(d.error){
+      if(d.error.includes('rateLimitExceeded') || d.error.includes('Rate Limit')){
+        showToast('Google rate limit — try again in a moment');
+      } else {
+        showToast('Sync error: ' + d.error);
+      }
+      return;
+    }
     const {pushed, pulled} = d.data;
-
-    // Attach gcal_id to local events that were just pushed
     pushed.forEach(p=>{
       const ev = events.find(e=>String(e.id)===String(p.wigbo_id));
       if(ev) ev.gcal_id = p.gcal_id;
     });
     persistSilent('pl3_events', events);
-
-    // Store pulled gcal events separately
     gcalEvents = pulled;
     localStorage.setItem('pl3_gcal_events', JSON.stringify(gcalEvents));
-
     render();
     showToast(`✓ Synced — ${pulled.length} from Google, ${pushed.length} pushed`);
   })
