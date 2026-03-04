@@ -165,43 +165,53 @@ def app_page():
 
 @app.route('/auth/google')
 def auth_google():
+    import secrets
+    from urllib.parse import urlencode
+    state = secrets.token_urlsafe(32)
+    session['oauth_state'] = state
     redirect_uri = url_for('auth_google_callback', _external=True, _scheme='https') \
                    if not os.environ.get('FLASK_DEBUG') \
                    else url_for('auth_google_callback', _external=True)
-    flow = Flow.from_client_config(
-        _google_client_config(), scopes=GOOGLE_SCOPES,
-        redirect_uri=redirect_uri
-    )
-    # Disable PKCE — code verifier won't survive across Render workers
-    flow.code_verifier = None
-    auth_url, state = flow.authorization_url(
-        access_type='offline',
-        include_granted_scopes='true',
-        prompt='consent'
-    )
-    session['oauth_state'] = state
-    return redirect(auth_url)
+    params = {
+        'client_id':     GOOGLE_CLIENT_ID,
+        'redirect_uri':  redirect_uri,
+        'response_type': 'code',
+        'scope':         ' '.join(GOOGLE_SCOPES),
+        'access_type':   'offline',
+        'prompt':        'consent',
+        'state':         state,
+    }
+    return redirect('https://accounts.google.com/o/oauth2/auth?' + urlencode(params))
 
 @app.route('/auth/google/callback')
 def auth_google_callback():
+    import requests as req_lib
+    code = request.args.get('code')
+    if not code:
+        return redirect('/planner?gcal_error=1&msg=no_code')
     redirect_uri = url_for('auth_google_callback', _external=True, _scheme='https') \
                    if not os.environ.get('FLASK_DEBUG') \
                    else url_for('auth_google_callback', _external=True)
-
-    # Fix URL scheme — Render proxy strips https
-    callback_url = request.url
-    if callback_url.startswith('http://') and not os.environ.get('FLASK_DEBUG'):
-        callback_url = callback_url.replace('http://', 'https://', 1)
-
     try:
-        flow = Flow.from_client_config(
-            _google_client_config(), scopes=GOOGLE_SCOPES,
-            redirect_uri=redirect_uri
-        )
-        flow.code_verifier = None
-        os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
-        flow.fetch_token(authorization_response=callback_url)
-        _save_token(json.loads(flow.credentials.to_json()))
+        resp       = req_lib.post('https://oauth2.googleapis.com/token', data={
+            'code':          code,
+            'client_id':     GOOGLE_CLIENT_ID,
+            'client_secret': GOOGLE_CLIENT_SECRET,
+            'redirect_uri':  redirect_uri,
+            'grant_type':    'authorization_code',
+        })
+        token_data = resp.json()
+        if 'error' in token_data:
+            logging.error("Token exchange error: %s", token_data)
+            return redirect(f'/planner?gcal_error=1&msg={token_data["error"]}')
+        _save_token({
+            'token':         token_data.get('access_token'),
+            'refresh_token': token_data.get('refresh_token'),
+            'token_uri':     'https://oauth2.googleapis.com/token',
+            'client_id':     GOOGLE_CLIENT_ID,
+            'client_secret': GOOGLE_CLIENT_SECRET,
+            'scopes':        GOOGLE_SCOPES,
+        })
         return redirect('/planner?gcal_connected=1')
     except Exception as e:
         logging.error("OAuth callback error: %s", e)
