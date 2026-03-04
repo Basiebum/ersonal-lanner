@@ -177,8 +177,7 @@ def auth_google():
     auth_url, state = flow.authorization_url(
         access_type='offline',
         include_granted_scopes='true',
-        prompt='consent',
-        code_challenge_method=None
+        prompt='consent'
     )
     session['oauth_state'] = state
     return redirect(auth_url)
