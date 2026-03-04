@@ -1844,9 +1844,11 @@ function saveEvent(){
     notes:document.getElementById('ev-notes').value
   };
   if(editEvId){
-    // editing a single occurrence — just update it
     const i=events.findIndex(e=>e.id===editEvId);
-    if(i!==-1)events[i]={...events[i],...base};
+    if(i!==-1){
+      events[i]={...events[i],...base};
+      gcalUpdateEvent(events[i]); // ← update in Google if synced
+    }
   }else{
     const pattern=document.getElementById('ev-repeat').value;
     const startVal=document.getElementById('ev-date').value;
@@ -1854,15 +1856,23 @@ function saveEvent(){
     if(pattern!=='none'&&untilVal){
       const dates=computeRepeatDates(pattern,startVal,untilVal);
       const seriesId=uid();
-      dates.forEach(date=>events.push({id:uid(),seriesId,...base,date}));
+      dates.forEach(date=>{
+        const ev={id:uid(),seriesId,...base,date};
+        events.push(ev);
+        gcalPushEvent(ev); // ← push each occurrence
+      });
     }else{
-      events.push({id:uid(),...base,date:startVal});
+      const ev={id:uid(),...base,date:startVal};
+      events.push(ev);
+      gcalPushEvent(ev); // ← push new event
     }
   }
   persist('pl3_events',events);closeModal('ev-modal');render();
 }
 function deleteEvent(){
   if(!editEvId)return;
+  const ev=events.find(e=>e.id===editEvId);
+  gcalDeleteEvent(ev); // ← delete from Google if synced
   events=events.filter(e=>e.id!==editEvId);
   persist('pl3_events',events);closeModal('ev-modal');render();
 }
@@ -1871,6 +1881,7 @@ function deleteEventSeries(){
   const ev=events.find(e=>e.id===editEvId);
   if(!ev||!ev.seriesId)return;
   if(!confirm(`Delete all ${events.filter(e=>e.seriesId===ev.seriesId).length} events in this series?`))return;
+  events.filter(e=>e.seriesId===ev.seriesId).forEach(e=>gcalDeleteEvent(e)); // ← delete all from Google
   events=events.filter(e=>e.seriesId!==ev.seriesId);
   persist('pl3_events',events);closeModal('ev-modal');render();
 }
@@ -2050,23 +2061,32 @@ function openMeetingModal(id, prefillDate){
 function saveMeeting(){
   const title=document.getElementById('mtg-title').value.trim();
   if(!title){document.getElementById('mtg-title').focus();return;}
+  const isEdit = !!editMeetingId;
+  const existing = isEdit ? meetings.find(x=>x.id===editMeetingId) : null;
   const m={
     id:editMeetingId||uid(),
     title,
     date:document.getElementById('mtg-date').value,
     startTime:document.getElementById('mtg-start').value,
     endTime:document.getElementById('mtg-end').value,
-    notes:document.getElementById('mtg-notes').value.trim()
+    notes:document.getElementById('mtg-notes').value.trim(),
+    gcal_id: existing?.gcal_id || null,
   };
-  if(editMeetingId){const i=meetings.findIndex(x=>x.id===editMeetingId);if(i!==-1)meetings[i]=m;}
+  if(isEdit){const i=meetings.findIndex(x=>x.id===editMeetingId);if(i!==-1)meetings[i]=m;}
   else meetings.push(m);
   persist('pl3_meetings',meetings);
+  // Sync to Google
+  const gcalEv={id:'meeting_'+m.id,gcal_id:m.gcal_id,title:'📋 '+m.title,date:m.date,start:m.startTime||'09:00',end:m.endTime||'10:00',cat:'work',note:m.notes,from_gcal:false};
+  if(isEdit && m.gcal_id) gcalUpdateEvent(gcalEv);
+  else if(!isEdit) gcalPushEvent(gcalEv);
   closeModal('meeting-modal');
   if(currentPopupDate)renderPopupTasks(currentPopupDate);
   render();
 }
 function deleteMeeting(){
   if(!editMeetingId)return;
+  const m=meetings.find(x=>x.id===editMeetingId);
+  if(m?.gcal_id) gcalDeleteEvent({gcal_id:m.gcal_id});
   meetings=meetings.filter(m=>m.id!==editMeetingId);
   persist('pl3_meetings',meetings);
   closeModal('meeting-modal');
@@ -3069,7 +3089,12 @@ function saveWorkout(){
 function deleteWorkout(){
   if(!editWorkoutId)return;
   const w=workouts.find(x=>x.id===editWorkoutId);
-  if(w&&w.calEventId){events=events.filter(e=>e.id!==w.calEventId);persist('pl3_events',events);}
+  if(w&&w.calEventId){
+    const calEv=events.find(e=>e.id===w.calEventId);
+    if(calEv) gcalDeleteEvent(calEv); // ← delete from Google
+    events=events.filter(e=>e.id!==w.calEventId);
+    persist('pl3_events',events);
+  }
   workouts=workouts.filter(x=>x.id!==editWorkoutId);
   persist('pl3_workouts',workouts);
   closeModal('workout-modal');renderSports();
@@ -3381,7 +3406,7 @@ function gcalDisconnect(){
 
 function gcalPull(){
   if(!gcalConnected) return;
-  fetch('/api/gcal/pull?days_back=30&days_forward=60', {credentials:'same-origin'})
+  fetch('/api/gcal/pull?days_back=30&days_forward=90', {credentials:'same-origin'})
     .then(r=>r.json())
     .then(d=>{
       if(d.data){
@@ -3404,7 +3429,28 @@ function gcalSync(){
 function _doGcalSync(){
   _gcalSyncTimer = null;
   showToast('Syncing with Google Calendar…');
-  const toPush = events.filter(e => !e.from_gcal && !e.gcal_id);
+
+  // Collect ALL wigbo items that should go to Google Calendar
+  const allItems = [
+    ...events.filter(e => !e.from_gcal),
+    // Convert workouts to event-like objects
+    ...(workouts||[]).map(w=>({
+      id: 'workout_'+w.id, title: (w.emoji||'🏃')+' '+w.type,
+      date: w.date, start: w.start||'07:00', end: w.end||'08:00',
+      cat: 'sports', note: `${w.distance||''} ${w.unit||''} · ${w.notes||''}`.trim(),
+      gcal_id: w.gcal_id, from_gcal: false
+    })),
+    // Convert meetings to event-like objects
+    ...(meetings||[]).map(m=>({
+      id: 'meeting_'+m.id, title: '📋 '+m.title,
+      date: m.date, start: m.start||'09:00', end: m.end||'10:00',
+      cat: 'work', note: m.notes||'',
+      gcal_id: m.gcal_id, from_gcal: false
+    })),
+  ];
+
+  const toPush = allItems.filter(e => !e.from_gcal && !e.gcal_id);
+
   fetch('/api/gcal/sync', {
     method: 'POST',
     credentials: 'same-origin',
@@ -3422,11 +3468,27 @@ function _doGcalSync(){
       return;
     }
     const {pushed, pulled} = d.data;
+
+    // Attach gcal_id back to local events
     pushed.forEach(p=>{
-      const ev = events.find(e=>String(e.id)===String(p.wigbo_id));
-      if(ev) ev.gcal_id = p.gcal_id;
+      const id = String(p.wigbo_id);
+      // Check regular events
+      const ev = events.find(e=>String(e.id)===id);
+      if(ev){ ev.gcal_id = p.gcal_id; return; }
+      // Check workouts
+      const wid = id.replace('workout_','');
+      const wo = (workouts||[]).find(w=>String(w.id)===wid);
+      if(wo){ wo.gcal_id = p.gcal_id; return; }
+      // Check meetings
+      const mid = id.replace('meeting_','');
+      const mt = (meetings||[]).find(m=>String(m.id)===mid);
+      if(mt) mt.gcal_id = p.gcal_id;
     });
     persistSilent('pl3_events', events);
+    persistSilent('pl3_workouts', workouts||[]);
+    persistSilent('pl3_meetings', meetings||[]);
+
+    // Store pulled Google events
     gcalEvents = pulled;
     localStorage.setItem('pl3_gcal_events', JSON.stringify(gcalEvents));
     render();
@@ -3435,35 +3497,39 @@ function _doGcalSync(){
   .catch(err=>{ showToast('Sync failed'); console.error(err); });
 }
 
-// Push a single event to Google Calendar when it's saved
+// Push a single NEW event to Google Calendar
 function gcalPushEvent(ev){
   if(!gcalConnected || ev.from_gcal) return;
   fetch('/api/gcal/push', {
-    method: 'POST',
-    credentials: 'same-origin',
-    headers: {'Content-Type':'application/json'},
+    method:'POST', credentials:'same-origin',
+    headers:{'Content-Type':'application/json'},
     body: JSON.stringify({event: ev})
   })
   .then(r=>r.json())
-  .then(d=>{
-    if(d.data?.gcal_id){
-      ev.gcal_id = d.data.gcal_id;
-      persistSilent('pl3_events', events);
-    }
-  })
-  .catch(err => console.warn('gcal push event failed:', err));
+  .then(d=>{ if(d.data?.gcal_id){ ev.gcal_id=d.data.gcal_id; persistSilent('pl3_events',events); }})
+  .catch(err=>console.warn('gcal push failed:',err));
 }
 
-// Delete a single event from Google Calendar when it's deleted locally
+// Update an EXISTING event in Google Calendar
+function gcalUpdateEvent(ev){
+  if(!gcalConnected || !ev || ev.from_gcal || !ev.gcal_id) return;
+  fetch('/api/gcal/push', {
+    method:'POST', credentials:'same-origin',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({event: ev})
+  })
+  .catch(err=>console.warn('gcal update failed:',err));
+}
+
+// Delete an event from Google Calendar
 function gcalDeleteEvent(ev){
-  if(!gcalConnected || !ev.gcal_id) return;
+  if(!gcalConnected || !ev || !ev.gcal_id) return;
   fetch('/api/gcal/delete', {
-    method: 'POST',
-    credentials: 'same-origin',
-    headers: {'Content-Type':'application/json'},
+    method:'POST', credentials:'same-origin',
+    headers:{'Content-Type':'application/json'},
     body: JSON.stringify({gcal_id: ev.gcal_id})
   })
-  .catch(err => console.warn('gcal delete event failed:', err));
+  .catch(err=>console.warn('gcal delete failed:',err));
 }
 
 // Helper: get all events including gcal events for rendering

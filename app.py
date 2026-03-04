@@ -126,6 +126,7 @@ def _gcal_to_wigbo(gcal_ev):
     return {
         'id':        f"gcal_{gcal_ev['id']}",
         'gcal_id':   gcal_ev['id'],
+        'wigbo_id':  private.get('wigbo_id'),
         'title':     gcal_ev.get('summary','(no title)'),
         'date':      date_str,
         'start':     start_str,
@@ -237,14 +238,32 @@ def gcal_pull():
     try:
         now      = datetime.datetime.utcnow()
         time_min = (now - datetime.timedelta(days=int(request.args.get('days_back',30)))).isoformat()+'Z'
-        time_max = (now + datetime.timedelta(days=int(request.args.get('days_forward',60)))).isoformat()+'Z'
+        time_max = (now + datetime.timedelta(days=int(request.args.get('days_forward',90)))).isoformat()+'Z'
         svc      = build('calendar','v3',credentials=creds)
-        result   = svc.events().list(
-            calendarId='primary', timeMin=time_min, timeMax=time_max,
-            maxResults=500, singleEvents=True, orderBy='startTime'
-        ).execute()
-        events = [_gcal_to_wigbo(e) for e in result.get('items',[]) if e.get('status')!='cancelled']
-        return jsonify({'data': events}), 200
+
+        # Pull from ALL calendars
+        cal_list = svc.calendarList().list().execute()
+        all_events = []
+        seen_ids   = set()
+        for cal in cal_list.get('items',[]):
+            if cal.get('accessRole') not in ('owner','writer','reader'):
+                continue
+            try:
+                result = svc.events().list(
+                    calendarId=cal['id'],
+                    timeMin=time_min, timeMax=time_max,
+                    maxResults=500, singleEvents=True, orderBy='startTime'
+                ).execute()
+                for e in result.get('items',[]):
+                    if e.get('status')!='cancelled' and e['id'] not in seen_ids:
+                        seen_ids.add(e['id'])
+                        ev = _gcal_to_wigbo(e)
+                        ev['calendar_name'] = cal.get('summary','')
+                        all_events.append(ev)
+            except Exception as ce:
+                logging.warning("Pull failed for calendar %s: %s", cal['id'], ce)
+
+        return jsonify({'data': all_events}), 200
     except Exception as e:
         logging.error("gcal pull: %s", e)
         return jsonify({'error': str(e)}), 500
@@ -292,22 +311,78 @@ def gcal_sync():
     if not creds:
         return jsonify({'error': 'not connected'}), 401
     payload        = request.get_json() or {}
-    events_to_push = [e for e in payload.get('events',[]) if not e.get('from_gcal')]
+    events_to_push = [e for e in payload.get('events', []) if not e.get('from_gcal')]
     try:
-        svc    = build('calendar','v3',credentials=creds)
+        svc = build('calendar', 'v3', credentials=creds)
+
+        # ── PULL first so we know which wigbo_ids already exist in Google ──
+        now      = datetime.datetime.utcnow()
+        time_min = (now - datetime.timedelta(days=60)).isoformat() + 'Z'
+        time_max = (now + datetime.timedelta(days=90)).isoformat() + 'Z'
+
+        # Pull from ALL calendars the user has
+        cal_list = svc.calendarList().list().execute()
+        all_pulled = []
+        seen_gcal_ids = set()
+        for cal in cal_list.get('items', []):
+            if cal.get('accessRole') not in ('owner', 'writer', 'reader'):
+                continue
+            try:
+                result = svc.events().list(
+                    calendarId=cal['id'],
+                    timeMin=time_min, timeMax=time_max,
+                    maxResults=500, singleEvents=True, orderBy='startTime'
+                ).execute()
+                for e in result.get('items', []):
+                    if e.get('status') != 'cancelled' and e['id'] not in seen_gcal_ids:
+                        seen_gcal_ids.add(e['id'])
+                        ev = _gcal_to_wigbo(e)
+                        ev['calendar_name'] = cal.get('summary', '')
+                        all_pulled.append(ev)
+            except Exception as ce:
+                logging.warning("Could not pull calendar %s: %s", cal['id'], ce)
+
+        # Build set of wigbo_ids already in Google (tagged by us)
+        existing_wigbo_ids = set()
+        for e in all_pulled:
+            wid = e.get('wigbo_id')
+            if wid:
+                existing_wigbo_ids.add(str(wid))
+
+        # Also check extendedProperties on primary calendar events
+        try:
+            ep_result = svc.events().list(
+                calendarId='primary',
+                timeMin=time_min, timeMax=time_max,
+                maxResults=500, singleEvents=True,
+                privateExtendedProperty='wigbo=true'
+            ).execute()
+            for e in ep_result.get('items', []):
+                priv = e.get('extendedProperties', {}).get('private', {})
+                wid  = priv.get('wigbo_id')
+                if wid:
+                    existing_wigbo_ids.add(str(wid))
+        except Exception:
+            pass
+
+        # ── PUSH only events not already in Google ──
         pushed = []
         for ev in events_to_push:
-            r = svc.events().insert(calendarId='primary', body=_wigbo_to_gcal(ev)).execute()
-            pushed.append({'wigbo_id': ev.get('id'), 'gcal_id': r['id']})
-        now      = datetime.datetime.utcnow()
-        time_min = (now - datetime.timedelta(days=30)).isoformat()+'Z'
-        time_max = (now + datetime.timedelta(days=60)).isoformat()+'Z'
-        result   = svc.events().list(
-            calendarId='primary', timeMin=time_min, timeMax=time_max,
-            maxResults=500, singleEvents=True, orderBy='startTime'
-        ).execute()
-        pulled = [_gcal_to_wigbo(e) for e in result.get('items',[]) if e.get('status')!='cancelled']
-        return jsonify({'data': {'pushed': pushed, 'pulled': pulled}}), 200
+            ev_id = str(ev.get('id', ''))
+            # Skip if already pushed (has gcal_id) or already exists in Google
+            if ev.get('gcal_id') or ev_id in existing_wigbo_ids:
+                continue
+            try:
+                r = svc.events().insert(
+                    calendarId='primary',
+                    body=_wigbo_to_gcal(ev)
+                ).execute()
+                pushed.append({'wigbo_id': ev.get('id'), 'gcal_id': r['id']})
+            except Exception as pe:
+                logging.warning("Could not push event %s: %s", ev.get('title'), pe)
+
+        return jsonify({'data': {'pushed': pushed, 'pulled': all_pulled}}), 200
+
     except Exception as e:
         logging.error("gcal sync: %s", e)
         return jsonify({'error': str(e)}), 500
