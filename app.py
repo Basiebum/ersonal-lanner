@@ -24,8 +24,8 @@ SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY") or os.environ.get("SUPABAS
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY) if (SUPABASE_URL and SUPABASE_KEY) else None
 
 # ── Google OAuth config — move to env vars after testing ──
-GOOGLE_CLIENT_ID     = os.environ.get("GOOGLE_CLIENT_ID",     "1017569655161-t8ojsdqfo9bbph41ned9jeh954m3813c.apps.googleusercontent.com")
-GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "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")
+GOOGLE_CLIENT_ID     = os.environ.get("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
 GOOGLE_SCOPES        = ["https://www.googleapis.com/auth/calendar"]
 
 
