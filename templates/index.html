@@ -251,7 +251,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 @keyframes sdpulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ── SETTINGS DROPDOWN ── */
-#settings-menu{display:none;position:fixed;right:16px;top:52px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px;z-index:9999;min-width:210px;box-shadow:0 8px 32px rgba(0,0,0,.85);pointer-events:all;}
+#settings-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px;z-index:9999;min-width:210px;box-shadow:0 8px 32px rgba(0,0,0,.85);pointer-events:all;}
 #settings-menu.open{display:block;}
 .set-section{font-size:.6rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;padding:6px 8px 3px;font-family:'IBM Plex Mono',monospace;}
 .set-item{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;color:var(--text);padding:8px 10px;border-radius:4px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.72rem;transition:background .15s,color .15s;text-align:left;box-sizing:border-box;letter-spacing:.04em;}
@@ -381,26 +381,26 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <span style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;">Weekly Report</span>
   </div>
   <!-- Google Calendar sync button in header -->
-  <button class="btn-secondary" id="gcal-sync-btn" onclick="gcalSync()" style="display:none;padding:7px 11px;font-size:.8rem;" title="Sync with Google Calendar">⟳ Google Cal</button>
-  <div style="position:relative;margin-left:4px;flex-shrink:0;">
+  <button class="btn-secondary" id="gcal-sync-btn" style="display:none;padding:7px 11px;font-size:.8rem;" title="Sync with Google Calendar">⟳ Google Cal</button>
+  <div style="flex-shrink:0;margin-left:4px;position:relative;">
     <button class="btn-secondary" id="settings-btn" style="padding:7px 11px;font-size:.92rem;" title="Settings & account">⚙</button>
     <div id="settings-menu">
-      <div id="settings-user-email" style="display:none;"></div>
+      <div id="settings-user-email" style="display:none;padding:5px 10px 7px;font-size:.68rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;"></div>
       <div class="set-section">Account</div>
-      <button class="set-item" id="s-login-btn" onclick="showAuthModal(false);toggleSettings()">🔑 Log in / Register</button>
-      <button class="set-item" id="s-logout-btn" style="display:none;" onclick="logout();toggleSettings()">↩ Log out</button>
+      <button class="set-item" id="s-login-btn">🔑 Log in / Register</button>
+      <button class="set-item" id="s-logout-btn" style="display:none;">↩ Log out</button>
       <hr class="set-sep">
       <div class="set-section">Google Calendar</div>
-      <button class="set-item" id="gcal-connect-btn" onclick="gcalConnect();toggleSettings()">📅 Connect Google Calendar</button>
-      <button class="set-item" id="gcal-disconnect-btn" style="display:none;" onclick="gcalDisconnect();toggleSettings()">✕ Disconnect Google Calendar</button>
-      <button class="set-item" id="gcal-sync-menu-btn" style="display:none;" onclick="gcalSync();toggleSettings()">⟳ Sync now</button>
+      <button class="set-item" id="gcal-connect-btn">📅 Connect Google Calendar</button>
+      <button class="set-item" id="gcal-disconnect-btn" style="display:none;">✕ Disconnect Google Calendar</button>
+      <button class="set-item" id="gcal-sync-menu-btn" style="display:none;">⟳ Sync now</button>
       <hr class="set-sep">
       <div class="set-section">Data</div>
-      <button class="set-item" onclick="syncSave(true);toggleSettings()">⬆ Push to server</button>
-      <button class="set-item" onclick="syncLoad(true);toggleSettings()">⬇ Pull from server</button>
+      <button class="set-item" id="s-push-btn">⬆ Push to server</button>
+      <button class="set-item" id="s-pull-btn">⬇ Pull from server</button>
       <hr class="set-sep">
-      <button class="set-item" onclick="exportData();toggleSettings()">💾 Export backup</button>
-      <label class="set-item">📂 Import backup<input type="file" accept=".json" onchange="importData(event);toggleSettings()" style="display:none"></label>
+      <button class="set-item" id="s-export-btn">💾 Export backup</button>
+      <label class="set-item" id="s-import-label">📂 Import backup<input type="file" id="s-import-file" accept=".json" style="display:none"></label>
     </div>
   </div>
 </header>
@@ -3215,10 +3215,41 @@ function showToast(msg,isError=false){
   _toastTimer=setTimeout(()=>{t.style.opacity='0';},2800);
 }
 // ── SETTINGS DROPDOWN ──
-function toggleSettings(e){
-  if(e)e.stopPropagation();
-  document.getElementById('settings-menu').classList.toggle('open');
-}
+(function(){
+  function closeMenu(){ document.getElementById('settings-menu').classList.remove('open'); }
+  function openMenu(){  document.getElementById('settings-menu').classList.add('open'); }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    const btn  = document.getElementById('settings-btn');
+    const menu = document.getElementById('settings-menu');
+
+    // Toggle on gear button click
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      menu.classList.toggle('open');
+    });
+
+    // Stop clicks inside menu from bubbling to document
+    menu.addEventListener('click', function(e){ e.stopPropagation(); });
+
+    // Close when clicking anywhere outside
+    document.addEventListener('click', function(){ closeMenu(); });
+
+    // Wire up each menu item
+    document.getElementById('s-login-btn').addEventListener('click',    function(){ closeMenu(); showAuthModal(false); });
+    document.getElementById('s-logout-btn').addEventListener('click',   function(){ closeMenu(); logout(); });
+    document.getElementById('gcal-connect-btn').addEventListener('click',    function(){ closeMenu(); gcalConnect(); });
+    document.getElementById('gcal-disconnect-btn').addEventListener('click', function(){ closeMenu(); gcalDisconnect(); });
+    document.getElementById('gcal-sync-menu-btn').addEventListener('click',  function(){ closeMenu(); gcalSync(); });
+    document.getElementById('gcal-sync-btn').addEventListener('click',       function(){ gcalSync(); });
+    document.getElementById('s-push-btn').addEventListener('click',   function(){ closeMenu(); syncSave(true); });
+    document.getElementById('s-pull-btn').addEventListener('click',   function(){ closeMenu(); syncLoad(true); });
+    document.getElementById('s-export-btn').addEventListener('click', function(){ closeMenu(); exportData(); });
+    document.getElementById('s-import-file').addEventListener('change', function(e){ closeMenu(); importData(e); });
+  });
+})();
+
+function toggleSettings(){ /* kept for compatibility — no longer used */ }
 function attachEventListeners(){
   // Page tabs
   document.querySelectorAll('.page-tab').forEach(btn=>{
@@ -3242,17 +3273,6 @@ function attachEventListeners(){
   if(prevBtn)prevBtn.addEventListener('click',()=>navigate(-1));
   if(nextBtn)nextBtn.addEventListener('click',()=>navigate(1));
   
-  // Settings
-  const settingsBtn=document.getElementById('settings-btn');
-  if(settingsBtn)settingsBtn.addEventListener('click',(e)=>toggleSettings(e));
-  
-  // Buttons
-  document.getElementById('btn-new-event')?.addEventListener('click',()=>openEventModal());
-  document.getElementById('btn-sync-push')?.addEventListener('click',()=>syncSave(true));
-  document.getElementById('btn-sync-pull')?.addEventListener('click',()=>syncLoad(true));
-  document.getElementById('btn-export')?.addEventListener('click',exportData);
-  document.getElementById('import-file')?.addEventListener('change',importData);
-  
   // Gantt buttons
   document.getElementById('btn-add-phase')?.addEventListener('click',()=>openPhaseModal());
 }
@@ -3273,14 +3293,6 @@ function loadFromStorage(){
   activities=get('pl3_activities')||[];
   dayBlocks=get('pl3_dayblocks')||{};
 }
-
-document.addEventListener('mousedown',function(e){
-  const btn=document.getElementById('settings-btn'),menu=document.getElementById('settings-menu');
-  if(!menu||!btn)return;
-  if(!btn.contains(e.target)&&!menu.contains(e.target)){
-    menu.classList.remove('open');
-  }
-});
 
 // INIT
 document.addEventListener('DOMContentLoaded', function(){
