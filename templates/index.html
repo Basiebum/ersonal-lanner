@@ -1109,49 +1109,8 @@ let meetings= load('pl3_meetings',[]);
 let sleep=load('pl3_sleep',[]);
 let weeklyReviews= load('pl3_reviews',[]);
 
-// ── SEED (runs only once; data persists via localStorage after that) ──
-const _seeded=load('pl3_seeded',false);
-if(!_seeded){
-  const td=today0();
-  const a=(n)=>fmtD(addDays(td,n));
-  events=[
-    {id:'e1',title:'Internship',cat:'work',date:a(0),start:'09:00',end:'17:00',notes:''},
-    {id:'e2',title:'Football training',cat:'sports',date:a(0),start:'18:30',end:'20:00',notes:''},
-    {id:'e3',title:'Dinner w/ girlfriend',cat:'social',date:a(0),start:'20:30',end:'22:00',notes:''},
-    {id:'e4',title:'Internship',cat:'work',date:a(1),start:'09:00',end:'17:00',notes:''},
-    {id:'e5',title:'Gym',cat:'sports',date:a(1),start:'07:00',end:'08:00',notes:''},
-    {id:'e6',title:'Internship',cat:'work',date:a(2),start:'09:00',end:'17:00',notes:''},
-    {id:'e7',title:'Internship',cat:'work',date:a(3),start:'09:00',end:'17:00',notes:''},
-    {id:'e8',title:'Internship',cat:'work',date:a(4),start:'09:00',end:'17:00',notes:''},
-    {id:'e9',title:'Friends hangout',cat:'social',date:a(5),start:'15:00',end:'20:00',notes:''},
-  ];
-  phases=[
-    {id:'ph1',name:'Research',start:a(-7),end:a(5),color:'#4e9af1'},
-    {id:'ph2',name:'Development',start:a(6),end:a(28),color:'#3ecf8e'},
-    {id:'ph3',name:'Testing & Delivery',start:a(29),end:a(45),color:'#a78bfa'},
-  ];
-  tasks=[
-    {id:'t1',name:'Stakeholder interviews',phaseId:'ph1',priority:'high',startDate:a(-8),deadline:a(1),status:'done',notes:''},
-    {id:'t2',name:'Literature review',phaseId:'ph1',priority:'medium',startDate:a(-4),deadline:a(3),status:'done',notes:''},
-    {id:'t3',name:'Write requirements doc',phaseId:'ph1',priority:'high',startDate:a(0),deadline:a(5),status:'in-progress',notes:'Draft in progress'},
-    {id:'t4',name:'Design architecture',phaseId:'ph2',priority:'high',startDate:a(6),deadline:a(12),status:'todo',notes:''},
-    {id:'t5',name:'Build core module',phaseId:'ph2',priority:'high',startDate:a(9),deadline:a(20),status:'todo',notes:''},
-    {id:'t6',name:'API integration',phaseId:'ph2',priority:'medium',startDate:a(16),deadline:a(24),status:'todo',notes:''},
-    {id:'t7',name:'Write unit tests',phaseId:'ph3',priority:'medium',startDate:a(28),deadline:a(33),status:'todo',notes:''},
-    {id:'t8',name:'Final presentation',phaseId:'ph3',priority:'high',startDate:a(38),deadline:a(43),status:'todo',notes:'Prepare slides'},
-  ];
-  sessions=[
-    {id:'s1',taskId:'t3',date:a(0),startTime:'09:00',endTime:'11:00'},
-    {id:'s2',taskId:'t3',date:a(1),startTime:'09:00',endTime:'12:00'},
-    {id:'s3',taskId:'t3',date:a(2),startTime:'14:00',endTime:'17:00'},
-  ];
-  // store demo data locally WITHOUT triggering autosync
-  persistSilent('pl3_events',events);
-  persistSilent('pl3_phases',phases);
-  persistSilent('pl3_tasks',tasks);
-  persistSilent('pl3_sessions',sessions);
-  persistSilent('pl3_seeded',true);
-}
+// ── SEED disabled — user has real data ──
+const _seeded=true;
 
 // ══════════════════════════════════════════════════
 // STATE
@@ -3368,7 +3327,7 @@ document.addEventListener('DOMContentLoaded', function(){
     events=events.filter(e=>!(e.title==='⏰ Wake up'||e.title==='💤 Sleep'));
     if(events.length!==before) persistSilent('pl3_events',events);
 
-    if(!get('pl3_seeded')) seedData();
+    if(!get('pl3_seeded')) persistSilent('pl3_seeded', true); // mark seeded without overwriting data
     attachEventListeners();
     _initSettings();
     setTimeout(()=>render(), 50);
@@ -3581,9 +3540,19 @@ function gcalDeleteEvent(ev){
 
 // Helper: get all events including gcal events for rendering
 function allEventsForRender(){
-  // Deduplicate: if a gcal event has a matching local event (via gcal_id), prefer local
-  const localGcalIds = new Set(events.filter(e=>e.gcal_id).map(e=>e.gcal_id));
-  const filteredGcal = gcalEvents.filter(e => !localGcalIds.has(e.gcal_id));
+  // Build fingerprints of all local events to detect duplicates
+  const localGcalIds  = new Set(events.filter(e=>e.gcal_id).map(e=>e.gcal_id));
+  const localFingerprints = new Set(
+    events.map(e=>`${e.date}|${e.start}|${(e.title||'').trim().toLowerCase()}`)
+  );
+  const filteredGcal = gcalEvents.filter(e => {
+    // Skip if we already have this gcal_id locally
+    if(localGcalIds.has(e.gcal_id)) return false;
+    // Skip if we have a local event with same date+time+title (imported backup match)
+    const fp = `${e.date}|${e.start}|${(e.title||'').trim().toLowerCase()}`;
+    if(localFingerprints.has(fp)) return false;
+    return true;
+  });
   return [...events, ...filteredGcal];
 }
 
