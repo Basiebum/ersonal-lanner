@@ -17,7 +17,7 @@
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
 /* ─── HEADER ─── */
-header{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border-bottom:1px solid var(--border);background:rgba(7,13,14,.95);backdrop-filter:blur(12px);flex-shrink:0;gap:10px;flex-wrap:wrap;}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border-bottom:1px solid var(--border);background:rgba(7,13,14,.95);backdrop-filter:blur(12px);flex-shrink:0;gap:10px;flex-wrap:wrap;overflow:visible;position:relative;z-index:100;}
 .logo{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:1rem;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;color:var(--accent);}
 .logo span{color:var(--text);}
 .page-tabs{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border);}
@@ -3215,41 +3215,39 @@ function showToast(msg,isError=false){
   _toastTimer=setTimeout(()=>{t.style.opacity='0';},2800);
 }
 // ── SETTINGS DROPDOWN ──
-(function(){
-  function closeMenu(){ document.getElementById('settings-menu').classList.remove('open'); }
-  function openMenu(){  document.getElementById('settings-menu').classList.add('open'); }
+function toggleSettings(){ /* legacy no-op */ }
+function _initSettings(){
+  const btn  = document.getElementById('settings-btn');
+  const menu = document.getElementById('settings-menu');
+  if(!btn||!menu) return;
 
-  document.addEventListener('DOMContentLoaded', function(){
-    const btn  = document.getElementById('settings-btn');
-    const menu = document.getElementById('settings-menu');
+  // Open/close on gear click
+  btn.onclick = function(e){
+    e.stopPropagation();
+    const isOpen = menu.classList.contains('open');
+    menu.classList.toggle('open', !isOpen);
+  };
 
-    // Toggle on gear button click
-    btn.addEventListener('click', function(e){
-      e.stopPropagation();
-      menu.classList.toggle('open');
-    });
+  // Prevent clicks inside menu from reaching document
+  menu.onclick = function(e){ e.stopPropagation(); };
 
-    // Stop clicks inside menu from bubbling to document
-    menu.addEventListener('click', function(e){ e.stopPropagation(); });
+  // Close on outside click
+  document.addEventListener('click', function(){ menu.classList.remove('open'); });
 
-    // Close when clicking anywhere outside
-    document.addEventListener('click', function(){ closeMenu(); });
-
-    // Wire up each menu item
-    document.getElementById('s-login-btn').addEventListener('click',    function(){ closeMenu(); showAuthModal(false); });
-    document.getElementById('s-logout-btn').addEventListener('click',   function(){ closeMenu(); logout(); });
-    document.getElementById('gcal-connect-btn').addEventListener('click',    function(){ closeMenu(); gcalConnect(); });
-    document.getElementById('gcal-disconnect-btn').addEventListener('click', function(){ closeMenu(); gcalDisconnect(); });
-    document.getElementById('gcal-sync-menu-btn').addEventListener('click',  function(){ closeMenu(); gcalSync(); });
-    document.getElementById('gcal-sync-btn').addEventListener('click',       function(){ gcalSync(); });
-    document.getElementById('s-push-btn').addEventListener('click',   function(){ closeMenu(); syncSave(true); });
-    document.getElementById('s-pull-btn').addEventListener('click',   function(){ closeMenu(); syncLoad(true); });
-    document.getElementById('s-export-btn').addEventListener('click', function(){ closeMenu(); exportData(); });
-    document.getElementById('s-import-file').addEventListener('change', function(e){ closeMenu(); importData(e); });
-  });
-})();
-
-function toggleSettings(){ /* kept for compatibility — no longer used */ }
+  // Wire each item
+  function item(id, fn){ const el=document.getElementById(id); if(el) el.onclick=function(e){ e.stopPropagation(); menu.classList.remove('open'); fn(); }; }
+  item('s-login-btn',         ()=>showAuthModal(false));
+  item('s-logout-btn',        ()=>logout());
+  item('gcal-connect-btn',    ()=>gcalConnect());
+  item('gcal-disconnect-btn', ()=>gcalDisconnect());
+  item('gcal-sync-menu-btn',  ()=>gcalSync());
+  item('gcal-sync-btn',       ()=>gcalSync());
+  item('s-push-btn',          ()=>syncSave(true));
+  item('s-pull-btn',          ()=>syncLoad(true));
+  item('s-export-btn',        ()=>exportData());
+  const imp = document.getElementById('s-import-file');
+  if(imp) imp.onchange = function(e){ menu.classList.remove('open'); importData(e); };
+}
 function attachEventListeners(){
   // Page tabs
   document.querySelectorAll('.page-tab').forEach(btn=>{
@@ -3308,6 +3306,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     if(!get('pl3_seeded')) seedData();
     attachEventListeners();
+    _initSettings();
     setTimeout(()=>render(), 50);
     // Check Google Calendar connection status on load
     gcalCheckStatus();
