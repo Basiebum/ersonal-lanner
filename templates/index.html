@@ -1260,7 +1260,7 @@ function layoutEvents(evs){
 // ══════════════════════════════════════════════════
 function renderDaily(main){
   const ds=fmtD(currentDate);
-  const dayEvs=events.filter(e=>e.date===ds&&e.start).map(ev=>({...ev,sm:toMin(ev.start),em:ev.end?toMin(ev.end):toMin(ev.start)+60}));
+  const dayEvs=allEventsForRender().filter(e=>e.date===ds&&e.start).map(ev=>({...ev,sm:toMin(ev.start),em:ev.end?toMin(ev.end):toMin(ev.start)+60}));
   let h='<div class="daily-view"><div class="time-col-sticky">';
   for(let i=0;i<24;i++)h+=`<div class="time-slot-label">${i===0?'':(i<10?'0'+i:i)+':00'}</div>`;
   h+='</div><div class="events-col" id="evcol">';
@@ -1389,7 +1389,7 @@ function renderWeekly(main){
   for(let d=0;d<7;d++){
     const day=new Date(ws);day.setDate(ws.getDate()+d);
     const ds=fmtD(day);
-    const dayEvs=events.filter(e=>e.date===ds&&e.start).map(ev=>({...ev,sm:toMin(ev.start),em:ev.end?toMin(ev.end):toMin(ev.start)+60}));
+    const dayEvs=allEventsForRender().filter(e=>e.date===ds&&e.start).map(ev=>({...ev,sm:toMin(ev.start),em:ev.end?toMin(ev.end):toMin(ev.start)+60}));
     const laid=layoutEvents(dayEvs);
     laid.forEach(ev=>{
       const sh=Math.floor(ev.sm/60);
@@ -1427,7 +1427,7 @@ function renderMonthly(main){
   main.innerHTML=h;
   main.querySelectorAll('.month-cell[data-date]').forEach(cell=>{
     const ds=cell.dataset.date;
-    const dayEvs=events.filter(e=>e.date===ds);
+    const dayEvs=allEventsForRender().filter(e=>e.date===ds);
     dayEvs.slice(0,3).forEach(ev=>{
       const daySess=ev.cat==='work'?sessionsOnDate(ds):[];
       const hasOv=daySess.some(s=>{const t=tasks.find(x=>x.id===s.taskId);return t&&isOverdue(t);});
@@ -2127,11 +2127,45 @@ function saveWakeTime(){
   const sleepMin = ((toMin(wakeTime) - 495) + 1440) % 1440;
   const sleepTime = minToTime(sleepMin);
 
-  // save to sleep array — markers render directly from this, no calendar events needed
-  const s = {id:uid(), date:editWakeDate, wakeTime, hoursBefore:8.25};
+  const existing = sleep.find(x=>x.date===editWakeDate);
+  const s = {
+    id: existing?.id || uid(),
+    date: editWakeDate,
+    wakeTime,
+    hoursBefore: 8.25,
+    gcal_wake_id:  existing?.gcal_wake_id  || null,
+    gcal_sleep_id: existing?.gcal_sleep_id || null,
+  };
   const idx = sleep.findIndex(x=>x.date===editWakeDate);
   if(idx!==-1) sleep[idx]=s; else sleep.push(s);
   persist('pl3_sleep', sleep);
+
+  // Push wake + sleep blocks to Google Calendar
+  if(gcalConnected){
+    // Wake up block (30 min)
+    const wakeEv = {
+      id: 'wake_'+s.id, gcal_id: s.gcal_wake_id,
+      title: '⏰ Wake up', date: editWakeDate,
+      start: wakeTime, end: minToTime(toMin(wakeTime)+5),
+      cat: 'personal', note: '', from_gcal: false
+    };
+    // Sleep block (30 min, night before if before midnight)
+    const sleepDate = toMin(wakeTime) < 495
+      ? editWakeDate  // early wake, sleep same night
+      : (() => { const d=new Date(editWakeDate); d.setDate(d.getDate()-1); return fmtD(d); })();
+    const sleepEv = {
+      id: 'sleep_'+s.id, gcal_id: s.gcal_sleep_id,
+      title: '🛌 Bedtime', date: sleepDate,
+      start: sleepTime, end: minToTime((sleepMin+5)%1440),
+      cat: 'personal', note: '', from_gcal: false
+    };
+    // Update or push wake event
+    if(s.gcal_wake_id) gcalUpdateEvent(wakeEv);
+    else gcalPushEvent({...wakeEv, _onPush: (gcal_id)=>{ s.gcal_wake_id=gcal_id; persistSilent('pl3_sleep',sleep); }});
+    // Update or push sleep event
+    if(s.gcal_sleep_id) gcalUpdateEvent(sleepEv);
+    else gcalPushEvent({...sleepEv, _onPush: (gcal_id)=>{ s.gcal_sleep_id=gcal_id; persistSilent('pl3_sleep',sleep); }});
+  }
 
   closeModal('wake-modal');
   render();
@@ -2140,6 +2174,11 @@ function saveWakeTime(){
 
 function deleteWakeTime(){
   if(!editWakeDate)return;
+  const s = sleep.find(x=>x.date===editWakeDate);
+  if(s){
+    if(s.gcal_wake_id)  gcalDeleteEvent({gcal_id: s.gcal_wake_id});
+    if(s.gcal_sleep_id) gcalDeleteEvent({gcal_id: s.gcal_sleep_id});
+  }
   sleep = sleep.filter(s=>s.date!==editWakeDate);
   persist('pl3_sleep',sleep);
   closeModal('wake-modal');
@@ -3500,13 +3539,21 @@ function _doGcalSync(){
 // Push a single NEW event to Google Calendar
 function gcalPushEvent(ev){
   if(!gcalConnected || ev.from_gcal) return;
+  const onPush = ev._onPush;
+  const payload = {...ev};
+  delete payload._onPush;
   fetch('/api/gcal/push', {
     method:'POST', credentials:'same-origin',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({event: ev})
+    body: JSON.stringify({event: payload})
   })
   .then(r=>r.json())
-  .then(d=>{ if(d.data?.gcal_id){ ev.gcal_id=d.data.gcal_id; persistSilent('pl3_events',events); }})
+  .then(d=>{
+    if(d.data?.gcal_id){
+      if(onPush) onPush(d.data.gcal_id);
+      else { ev.gcal_id=d.data.gcal_id; persistSilent('pl3_events',events); }
+    }
+  })
   .catch(err=>console.warn('gcal push failed:',err));
 }
 
