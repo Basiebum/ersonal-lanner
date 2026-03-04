@@ -345,7 +345,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 
 <header>
   <div style="display:flex;align-items:center;gap:0;flex-shrink:0;">
-    <div class="logo">wig<span>bo</span></div>
+    <div class="logo" style="color:var(--text);">wig<span style="color:var(--accent);">bo</span></div>
     <span id="sync-dot" title="Sync status"></span>
   </div>
   <div class="page-tabs">
@@ -378,15 +378,22 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <button class="btn-secondary" onclick="openGoalModal()">+ Goal</button>
   </div>
   <div id="review-controls" style="display:none;align-items:center;gap:9px;margin-left:auto;">
-    <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:.86rem;color:var(--muted);">Weekly Report</span>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;">Weekly Report</span>
   </div>
-  <div style="position:relative;margin-left:12px;flex-shrink:0;">
+  <!-- Google Calendar sync button in header -->
+  <button class="btn-secondary" id="gcal-sync-btn" onclick="gcalSync()" style="display:none;padding:7px 11px;font-size:.8rem;" title="Sync with Google Calendar">⟳ Google Cal</button>
+  <div style="position:relative;margin-left:4px;flex-shrink:0;">
     <button class="btn-secondary" id="settings-btn" style="padding:7px 11px;font-size:.92rem;" title="Settings & account">⚙</button>
     <div id="settings-menu">
       <div id="settings-user-email" style="display:none;"></div>
       <div class="set-section">Account</div>
       <button class="set-item" id="s-login-btn" onclick="showAuthModal(false);toggleSettings()">🔑 Log in / Register</button>
       <button class="set-item" id="s-logout-btn" style="display:none;" onclick="logout();toggleSettings()">↩ Log out</button>
+      <hr class="set-sep">
+      <div class="set-section">Google Calendar</div>
+      <button class="set-item" id="gcal-connect-btn" onclick="gcalConnect();toggleSettings()">📅 Connect Google Calendar</button>
+      <button class="set-item" id="gcal-disconnect-btn" style="display:none;" onclick="gcalDisconnect();toggleSettings()">✕ Disconnect Google Calendar</button>
+      <button class="set-item" id="gcal-sync-menu-btn" style="display:none;" onclick="gcalSync();toggleSettings()">⟳ Sync now</button>
       <hr class="set-sep">
       <div class="set-section">Data</div>
       <button class="set-item" onclick="syncSave(true);toggleSettings()">⬆ Push to server</button>
@@ -3291,10 +3298,166 @@ document.addEventListener('DOMContentLoaded', function(){
     if(!get('pl3_seeded')) seedData();
     attachEventListeners();
     setTimeout(()=>render(), 50);
+    // Check Google Calendar connection status on load
+    gcalCheckStatus();
+    // Check URL params for gcal connection result
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.get('gcal_connected')==='1'){
+      showToast('✓ Google Calendar connected');
+      history.replaceState({}, '', '/planner');
+      gcalCheckStatus();
+      gcalSync();
+    }
+    if(urlParams.get('gcal_error')==='1'){
+      showToast('Google Calendar connection failed');
+      history.replaceState({}, '', '/planner');
+    }
   }catch(err){
     console.error('Init error:', err);
   }
 });
+
+// ═══════════════════════════════════════════
+// GOOGLE CALENDAR SYNC
+// ═══════════════════════════════════════════
+
+let gcalConnected = false;
+// gcal events are stored separately so they never overwrite local events
+let gcalEvents = JSON.parse(localStorage.getItem('pl3_gcal_events') || '[]');
+
+function gcalCheckStatus(){
+  fetch('/api/gcal/status', {credentials:'same-origin'})
+    .then(r=>r.json())
+    .then(d=>{
+      gcalConnected = d.connected === true;
+      gcalUpdateUI();
+      if(gcalConnected) gcalPull(); // auto-pull on load if connected
+    })
+    .catch(()=>{ gcalConnected = false; gcalUpdateUI(); });
+}
+
+function gcalUpdateUI(){
+  const connectBtn    = document.getElementById('gcal-connect-btn');
+  const disconnectBtn = document.getElementById('gcal-disconnect-btn');
+  const syncMenuBtn   = document.getElementById('gcal-sync-menu-btn');
+  const syncHeaderBtn = document.getElementById('gcal-sync-btn');
+  if(gcalConnected){
+    if(connectBtn)    connectBtn.style.display    = 'none';
+    if(disconnectBtn) disconnectBtn.style.display = '';
+    if(syncMenuBtn)   syncMenuBtn.style.display   = '';
+    if(syncHeaderBtn) syncHeaderBtn.style.display = '';
+  } else {
+    if(connectBtn)    connectBtn.style.display    = '';
+    if(disconnectBtn) disconnectBtn.style.display = 'none';
+    if(syncMenuBtn)   syncMenuBtn.style.display   = 'none';
+    if(syncHeaderBtn) syncHeaderBtn.style.display = 'none';
+  }
+}
+
+function gcalConnect(){
+  window.location = '/auth/google';
+}
+
+function gcalDisconnect(){
+  fetch('/auth/google/disconnect', {method:'POST', credentials:'same-origin'})
+    .then(()=>{
+      gcalConnected = false;
+      gcalEvents = [];
+      localStorage.removeItem('pl3_gcal_events');
+      gcalUpdateUI();
+      render();
+      showToast('Google Calendar disconnected');
+    });
+}
+
+function gcalPull(){
+  if(!gcalConnected) return;
+  fetch('/api/gcal/pull?days_back=30&days_forward=60', {credentials:'same-origin'})
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.data){
+        gcalEvents = d.data;
+        localStorage.setItem('pl3_gcal_events', JSON.stringify(gcalEvents));
+        render();
+      }
+    })
+    .catch(err => console.warn('gcal pull failed:', err));
+}
+
+function gcalSync(){
+  if(!gcalConnected){ showToast('Connect Google Calendar first'); return; }
+  showToast('Syncing with Google Calendar…');
+
+  // Only push local events (not ones that came from Google)
+  const toPush = events.filter(e => !e.from_gcal && !e.gcal_id);
+
+  fetch('/api/gcal/sync', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({events: toSync})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    if(d.error){ showToast('Sync error: ' + d.error); return; }
+    const {pushed, pulled} = d.data;
+
+    // Attach gcal_id to local events that were just pushed
+    pushed.forEach(p=>{
+      const ev = events.find(e=>String(e.id)===String(p.wigbo_id));
+      if(ev) ev.gcal_id = p.gcal_id;
+    });
+    persistSilent('pl3_events', events);
+
+    // Store pulled gcal events separately
+    gcalEvents = pulled;
+    localStorage.setItem('pl3_gcal_events', JSON.stringify(gcalEvents));
+
+    render();
+    showToast(`✓ Synced — ${pulled.length} from Google, ${pushed.length} pushed`);
+  })
+  .catch(err=>{ showToast('Sync failed'); console.error(err); });
+}
+
+// Push a single event to Google Calendar when it's saved
+function gcalPushEvent(ev){
+  if(!gcalConnected || ev.from_gcal) return;
+  fetch('/api/gcal/push', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({event: ev})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    if(d.data?.gcal_id){
+      ev.gcal_id = d.data.gcal_id;
+      persistSilent('pl3_events', events);
+    }
+  })
+  .catch(err => console.warn('gcal push event failed:', err));
+}
+
+// Delete a single event from Google Calendar when it's deleted locally
+function gcalDeleteEvent(ev){
+  if(!gcalConnected || !ev.gcal_id) return;
+  fetch('/api/gcal/delete', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({gcal_id: ev.gcal_id})
+  })
+  .catch(err => console.warn('gcal delete event failed:', err));
+}
+
+// Helper: get all events including gcal events for rendering
+function allEventsForRender(){
+  // Deduplicate: if a gcal event has a matching local event (via gcal_id), prefer local
+  const localGcalIds = new Set(events.filter(e=>e.gcal_id).map(e=>e.gcal_id));
+  const filteredGcal = gcalEvents.filter(e => !localGcalIds.has(e.gcal_id));
+  return [...events, ...filteredGcal];
+}
+
 </script>
 </body>
 </html>
