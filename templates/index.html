@@ -3274,10 +3274,9 @@ function loadFromStorage(){
   dayBlocks=get('pl3_dayblocks')||{};
 }
 
-document.addEventListener('click',function(e){
+document.addEventListener('mousedown',function(e){
   const btn=document.getElementById('settings-btn'),menu=document.getElementById('settings-menu');
   if(!menu||!btn)return;
-  // Only close if clicking outside both button and menu (and not on another interactive element)
   if(!btn.contains(e.target)&&!menu.contains(e.target)){
     menu.classList.remove('open');
   }
