@@ -251,7 +251,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 @keyframes sdpulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ── SETTINGS DROPDOWN ── */
-#settings-menu{display:none;position:absolute;right:0;top:calc(100% + 8px);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px;z-index:400;min-width:190px;box-shadow:0 8px 32px rgba(0,0,0,.7);}
+#settings-menu{display:none;position:fixed;right:16px;top:52px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px;z-index:9999;min-width:210px;box-shadow:0 8px 32px rgba(0,0,0,.85);pointer-events:all;}
 #settings-menu.open{display:block;}
 .set-section{font-size:.6rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;padding:6px 8px 3px;font-family:'IBM Plex Mono',monospace;}
 .set-item{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;color:var(--text);padding:8px 10px;border-radius:4px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.72rem;transition:background .15s,color .15s;text-align:left;box-sizing:border-box;letter-spacing:.04em;}
