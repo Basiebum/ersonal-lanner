@@ -252,20 +252,37 @@ nav.scrolled {
 .photo-strip {
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  display: grid; grid-template-columns: 2fr 1fr 1fr;
-  gap: 2px; background: var(--border);
+  /* Changed to 1fr 1fr for two equal columns */
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 2px; 
+  background: var(--border);
   overflow: hidden;
 }
+
 .photo-strip-item {
   background: var(--surface);
-  aspect-ratio: 16/9;
-  position: relative; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
+  /* Using 3/2 or 4/3 often looks better for side-by-side shots than 16/9 */
+  aspect-ratio: 3/2; 
+  position: relative; 
+  overflow: hidden;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
 }
-.photo-strip-item:first-child { aspect-ratio: 16/9; }
+
+/* Remove the specific first-child rule as they should now be identical */
+.photo-strip-item:first-child { 
+  aspect-ratio: auto; 
+}
+
 .photo-strip-item img {
-  width: 100%; height: 100%; object-fit: cover;
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover;
   transition: transform .4s ease;
+  /* Just like the portrait, you can add a focal point here if needed */
+  object-position: center; 
 }
 .photo-strip-item:hover img { transform: scale(1.04); }
 .photo-strip-placeholder {
