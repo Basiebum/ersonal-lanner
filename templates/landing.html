@@ -146,14 +146,22 @@ nav.scrolled {
 }
 
 /* portrait photo */
+.hero-photo {
+  width: 100%; aspect-ratio: 3/4; max-height: 340px;
+  object-fit: cover; object-position: center top;
+  border: 1px solid var(--border);
+  margin-bottom: 28px;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; position: relative;
+}
+.hero-photo img { width: 100%; height: 100%; object-fit: cover; }
 .photo-placeholder {
-  width: 100%;
-  aspect-ratio: 3/4;
+  width: 100%; aspect-ratio: 3/4; max-height: 340px;
   background: var(--surface); border: 1px solid var(--border);
   display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 10px;
   margin-bottom: 28px; position: relative;
-  overflow: hidden;
 }
 .photo-placeholder::before {
   content: 'ADD PORTRAIT PHOTO HERE';
@@ -161,15 +169,7 @@ nav.scrolled {
   letter-spacing: .16em; color: var(--border); text-align: center;
   padding: 0 20px;
 }
-.hero-photo {
-  width: 100%;
-  aspect-ratio: 3/4;
-  object-fit: cover;
-  object-position: center top;
-  border: 1px solid var(--border);
-  margin-bottom: 28px;
-  display: block;
-}
+.photo-placeholder-icon { font-size: 2rem; opacity: .2; }
 
 /* spec box */
 .spec-box {
@@ -239,23 +239,17 @@ nav.scrolled {
 .photo-strip {
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  grid-template-rows: 320px 320px;
+  display: grid; grid-template-columns: 2fr 1fr 1fr;
   gap: 2px; background: var(--border);
   overflow: hidden;
 }
 .photo-strip-item {
   background: var(--surface);
+  aspect-ratio: 16/9;
   position: relative; overflow: hidden;
   display: flex; align-items: center; justify-content: center;
-  min-height: 0;
 }
-/* big photo spans both rows on the right */
-.photo-strip-item:last-child {
-  grid-column: 2;
-  grid-row: 1 / 3;
-}
+.photo-strip-item:first-child { aspect-ratio: 16/9; }
 .photo-strip-item img {
   width: 100%; height: 100%; object-fit: cover;
   transition: transform .4s ease;
@@ -587,6 +581,7 @@ footer {
     border-left: none; border-top: 1px solid var(--border);
     padding-left: 0; padding-top: 32px; padding-bottom: 0;
   }
+  .photo-placeholder { max-height: 260px; }
 
   .about  { grid-template-columns: 1fr; gap: 48px; padding: 72px 28px; }
   .beyond { padding: 72px 28px; }
@@ -596,8 +591,8 @@ footer {
   .experience { padding: 72px 28px; }
   .contact { grid-template-columns: 1fr; gap: 48px; padding: 72px 28px; }
 
-  .photo-strip { grid-template-columns: 1fr; grid-template-rows: auto; }
-  .photo-strip-item:last-child { grid-column: 1; grid-row: auto; }
+  .photo-strip { grid-template-columns: 1fr 1fr; }
+  .photo-strip-item:first-child { grid-column: span 2; }
 
   .timeline-item { grid-template-columns: 1fr; gap: 4px; padding-left: 28px; }
   footer { padding: 24px 28px; flex-direction: column; gap: 10px; text-align: center; }
@@ -613,6 +608,7 @@ footer {
   .hero-intro { font-size: .9rem; margin-bottom: 32px; }
   .hero-cta { flex-direction: column; gap: 10px; }
   .btn-dark, .btn-outline { text-align: center; padding: 14px 24px; width: 100%; }
+  .photo-placeholder { max-height: 220px; }
   .spec-row { padding: 10px 16px; font-size: .62rem; }
 
   .about { padding: 56px 20px; gap: 40px; }
@@ -684,7 +680,7 @@ footer {
     <div class="hero-tag">Automotive Engineer</div>
     <h1 class="hero-name">Bastiaan<br><span>Wigboldus</span></h1>
     <p class="hero-intro">
-      Final-year automotive engineering student with a passion for <strong>mechanical design, simulation and making things work</strong>. Currently doing my thesis internship at Hyster-Yale. Always building something on the side.
+      Final-year Automotive Engineering student and maker, currently completing my thesis internship at <strong>Hyster-Yale</strong>. I specialize in <strong>mechanical design and simulation</strong>, complemented by <strong>practical, hands-on experience</strong> in the workshop. I'm always motivated to get involved in projects where I can see a design through from the screen to the finished build.
     </p>
     <div class="hero-cta">
       <a href="#projects" class="btn-dark">See my work</a>
@@ -694,8 +690,8 @@ footer {
 
   <div class="hero-right">
     <!-- ↓ REPLACE src WITH YOUR PORTRAIT PHOTO PATH -->
-    <!-- <img src="images/bastiaan-portrait.jpg" class="hero-photo" alt="Bastiaan Wigboldus"> -->
-    <div class="photo-placeholder">
+    <img src="/static/images/portrait_photo.JPG" class="hero-photo" alt="Bastiaan Wigboldus">
+    <div class="photo-placeholder"> 
       <div class="photo-placeholder-icon">📷</div>
     </div>
 
@@ -714,7 +710,7 @@ footer {
       </div>
       <div class="spec-row">
         <span class="spec-key">Tools</span>
-        <span class="spec-val">SolidWorks · NX · FEM · CFD</span>
+        <span class="spec-val">SolidWorks · NX · FEM · CFD · Python</span>
       </div>
       <div class="spec-row">
         <span class="spec-key">Status</span>
@@ -730,16 +726,16 @@ footer {
     <div class="section-label" data-num="01 —">About</div>
     <h2 class="about-heading reveal">Built to<br><span>Engineer.</span></h2>
     <p class="about-text reveal reveal-delay-1">
-      I'm Bastiaan — a 21-year-old automotive engineering student in my final bachelor year, with a strong foundation in <strong>mechanical engineering</strong>. CAD, FEM and CFD are where I do my best work.
+      I'm Bastiaan — a 21-year-old automotive engineering student in my final bachelor year, with a strong foundation in <strong>mechanical engineering</strong>. CAD, FEM and CFD are where I do my best work. Complimented by hands-on practical experience.
     </p>
     <p class="about-text reveal reveal-delay-2">
-      Currently completing my thesis internship at <strong>Hyster-Yale</strong>, applying structural analysis and design to real industrial challenges. Outside of the office I work part-time as a car mechanic at <strong>Du Pied Classic Cars</strong> — classic and modern vehicles. It keeps engineering grounded in reality.
+      Currently completing my thesis internship at <strong>Hyster-Yale</strong>, applying structural analysis and design to real industrial challenges. Outside of the office I work part-time as a car mechanic at <strong>Du Pied Classic Cars</strong>, working on classic and modern cars.
     </p>
     <p class="about-text reveal reveal-delay-3">
-      Two years on the Formula Student team as <strong>Chief Chassis & Bodywork</strong> sharpened my ability to work under pressure, lead a small team, and deliver engineering that actually performs on track.
+      Two years on the HAN Formula Student team (of which one) as <strong>Chief Chassis & Bodywork</strong> sharpened my ability to work under pressure, lead a small team, and deliver engineering that actually performs on track.
     </p>
     <div class="personal-aside reveal">
-      <p>When I'm not doing engineering work I like to <strong>run, cycle and train</strong> — mostly to clear my head. I also built <strong>Wigbo</strong>, a personal planning app, because I couldn't find one that worked the way I think. If the right tool doesn't exist, make it.</p>
+      <p>When I'm not doing engineering work I like to <strong>run, cycle and workout</strong>. Next to my passion for sports I also enjoy meeting new people and learning new things. I like to think of myself as a <strong>curious and open-minded</strong> person, always looking for new challenges and opportunities to grow.</p>
     </div>
   </div>
   <div>
@@ -759,11 +755,11 @@ footer {
       </div>
       <div class="skill-item">
         <div class="skill-item-name">Mechanic</div>
-        <div class="skill-item-sub">Classic Cars · Hands-on</div>
+        <div class="skill-item-sub">Classic / Modern Cars · Hands-on</div>
       </div>
       <div class="skill-item">
         <div class="skill-item-name">Programming</div>
-        <div class="skill-item-sub">Python · C · Full-stack</div>
+        <div class="skill-item-sub">Python · C · HTML · SQL</div>
       </div>
       <div class="skill-item">
         <div class="skill-item-name">Formula Student</div>
@@ -777,6 +773,11 @@ footer {
 <!-- ↓ REPLACE src ATTRIBUTES WITH YOUR FORMULA STUDENT PHOTO PATHS -->
 <div class="photo-strip reveal">
   <div class="photo-strip-item">
+    <!-- <img src="images/fs-car-main.jpg" alt="HFS-E3 Formula Student Car"> -->
+    <div class="photo-strip-placeholder"><span>ADD FORMULA STUDENT CAR PHOTO (WIDE)</span></div>
+    <div class="photo-strip-caption">HFS-E3 · HAN Formula Student · 2025</div>
+  </div>
+  <div class="photo-strip-item">
     <!-- <img src="images/fs-chassis.jpg" alt="Chassis detail"> -->
     <div class="photo-strip-placeholder"><span>CHASSIS DETAIL</span></div>
     <div class="photo-strip-caption">Space Frame · Chassis</div>
@@ -785,11 +786,6 @@ footer {
     <!-- <img src="images/fs-wing.jpg" alt="Front wing"> -->
     <div class="photo-strip-placeholder"><span>FRONT WING</span></div>
     <div class="photo-strip-caption">Carbon Fibre · Front Wing</div>
-  </div>
-  <div class="photo-strip-item">
-    <!-- <img src="images/fs-car-main.jpg" alt="HFS-E3 Formula Student Car"> -->
-    <div class="photo-strip-placeholder"><span>ADD FORMULA STUDENT CAR PHOTO (MAIN)</span></div>
-    <div class="photo-strip-caption">HFS-E3 · HAN Formula Student · 2025</div>
   </div>
 </div>
 
