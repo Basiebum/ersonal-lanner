@@ -147,15 +147,28 @@ nav.scrolled {
 
 /* portrait photo */
 .hero-photo {
-  width: 100%; aspect-ratio: 3/4; max-height: 340px;
-  object-fit: cover; object-position: center top;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  max-width: 400px; /* Limits width on large screens so it doesn't get huge */
+  max-height: 500px; /* Limits height to prevent awkward stretching */
+  object-fit: cover;
   border: 1px solid var(--border);
   margin-bottom: 28px;
   background: var(--surface);
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden; position: relative;
+  display: block; /* Changed from flex */
+  overflow: hidden;
+  position: relative;
+  margin-left: auto; /* Centers the image in the right column */
+  margin-right: auto;
 }
-.hero-photo img { width: 100%; height: 100%; object-fit: cover; }
+.hero-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Adjust this percentage to keep your face in frame! */
+  /* 50% 20% means: center horizontally, 20% from the top */
+  object-position: 50% 20%; 
+}
 .photo-placeholder {
   width: 100%; aspect-ratio: 3/4; max-height: 340px;
   background: var(--surface); border: 1px solid var(--border);
@@ -691,9 +704,6 @@ footer {
   <div class="hero-right">
     <!-- ↓ REPLACE src WITH YOUR PORTRAIT PHOTO PATH -->
     <img src="/static/images/portrait_photo.JPG" class="hero-photo" alt="Bastiaan Wigboldus">
-    <div class="photo-placeholder"> 
-      <div class="photo-placeholder-icon">📷</div>
-    </div>
 
     <div class="spec-box">
       <div class="spec-row">
