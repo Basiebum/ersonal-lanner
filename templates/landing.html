@@ -273,7 +273,82 @@ nav.scrolled {
   letter-spacing: .12em; color: rgba(255,255,255,.7); text-transform: uppercase;
 }
 
-/* ── PROJECTS 2x2 ── */
+/* ── BEYOND ENGINEERING ── */
+.beyond {
+  padding: 100px 56px;
+  max-width: 1300px; margin: 0 auto;
+  border-top: 1px solid var(--border);
+}
+.beyond-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.beyond-heading {
+  font-family: var(--display); font-size: clamp(3rem, 5vw, 4.5rem);
+  line-height: 1; letter-spacing: .03em; color: var(--dark);
+}
+.beyond-sub {
+  font-size: .88rem; color: var(--muted); line-height: 1.7;
+  max-width: 460px; margin-bottom: 48px; margin-top: 12px;
+}
+.beyond-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2px; background: var(--border);
+}
+.beyond-card {
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  transition: background .25s;
+  cursor: default;
+}
+.beyond-card:hover { background: var(--surface); }
+.beyond-card-img {
+  width: 100%; aspect-ratio: 4/3; overflow: hidden;
+  background: var(--surface); position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.beyond-card-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .5s ease;
+}
+.beyond-card:hover .beyond-card-img img { transform: scale(1.05); }
+.beyond-img-placeholder {
+  width: 100%; height: 100%; min-height: 180px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+}
+.beyond-img-placeholder .ph-icon { font-size: 2.4rem; opacity: .25; }
+.beyond-img-placeholder span {
+  font-family: var(--mono); font-size: .56rem;
+  letter-spacing: .14em; color: var(--border); text-align: center; padding: 0 16px;
+}
+.beyond-card-body { padding: 28px 28px 32px; flex: 1; display: flex; flex-direction: column; }
+.beyond-card-tag {
+  font-family: var(--mono); font-size: .58rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--navy);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.beyond-card-tag::before {
+  content: ''; width: 20px; height: 1px; background: var(--navy); flex-shrink: 0;
+}
+.beyond-card-title {
+  font-family: var(--display); font-size: 1.7rem;
+  letter-spacing: .04em; color: var(--dark);
+  margin-bottom: 12px; line-height: 1.05;
+}
+.beyond-card-desc {
+  font-size: .84rem; line-height: 1.7; color: var(--muted); flex: 1;
+}
+.beyond-card-stat {
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono); font-size: .65rem;
+  letter-spacing: .1em; color: var(--navy);
+  text-transform: uppercase;
+}
+
+
 .projects {
   padding: 100px 56px; max-width: 1300px; margin: 0 auto;
   border-top: 1px solid var(--border);
@@ -446,22 +521,133 @@ footer {
 .reveal-delay-2 { transition-delay: .2s; }
 .reveal-delay-3 { transition-delay: .3s; }
 
+/* ── HAMBURGER BUTTON ── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column; gap: 5px;
+  cursor: pointer; padding: 4px; background: none; border: none;
+}
+.nav-hamburger span {
+  display: block; width: 24px; height: 2px;
+  background: var(--navy); transition: all .3s;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── MOBILE MENU ── */
+.nav-mobile {
+  display: none;
+  position: fixed; top: 65px; left: 0; right: 0;
+  background: rgba(243,237,228,.97);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  flex-direction: column;
+  padding: 8px 0 20px;
+  z-index: 99;
+}
+.nav-mobile.open { display: flex; }
+.nav-mobile a {
+  font-family: var(--mono); font-size: .78rem;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--border);
+  transition: color .2s, background .2s;
+}
+.nav-mobile a:last-child { border-bottom: none; }
+.nav-mobile a:hover { color: var(--navy); background: var(--navy-dim); }
+.nav-mobile .nav-cv-mobile {
+  margin: 12px 28px 0;
+  background: var(--navy); color: var(--bg) !important;
+  text-align: center; padding: 14px !important;
+  border: none !important;
+}
+
 /* ── RESPONSIVE ── */
+/* Tablet */
 @media (max-width: 960px) {
-  nav { padding: 18px 24px; }
-  .nav-links { gap: 18px; }
-  .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; gap: 48px; }
+  nav { padding: 18px 28px; }
+  .nav-links { display: none; }
+  .nav-hamburger { display: flex; }
+
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 80px 28px 60px;
+    gap: 40px; min-height: auto;
+  }
   .hero-left { padding-right: 0; padding-bottom: 0; }
-  .hero-right { border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 36px; }
-  .about, .contact { grid-template-columns: 1fr; gap: 48px; padding: 60px 24px; }
-  .projects, .experience { padding: 60px 24px; }
-  .projects-grid { grid-template-columns: 1fr; }
+  .hero-right {
+    border-left: none; border-top: 1px solid var(--border);
+    padding-left: 0; padding-top: 32px; padding-bottom: 0;
+  }
+  .photo-placeholder { max-height: 260px; }
+
+  .about  { grid-template-columns: 1fr; gap: 48px; padding: 72px 28px; }
+  .beyond { padding: 72px 28px; }
+  .beyond-grid { grid-template-columns: 1fr 1fr; }
+  .projects { padding: 72px 28px; }
+  .projects-grid { grid-template-columns: 1fr 1fr; }
+  .experience { padding: 72px 28px; }
+  .contact { grid-template-columns: 1fr; gap: 48px; padding: 72px 28px; }
+
   .photo-strip { grid-template-columns: 1fr 1fr; }
   .photo-strip-item:first-child { grid-column: span 2; }
-  .timeline-item { grid-template-columns: 1fr; gap: 6px; padding-left: 28px; }
-  footer { padding: 24px; flex-direction: column; gap: 10px; text-align: center; }
+
+  .timeline-item { grid-template-columns: 1fr; gap: 4px; padding-left: 28px; }
+  footer { padding: 24px 28px; flex-direction: column; gap: 10px; text-align: center; }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  nav { padding: 16px 20px; }
+
+  .hero { padding: 72px 20px 48px; gap: 32px; }
+  .hero-tag { font-size: .6rem; margin-bottom: 18px; }
+  .hero-name { font-size: clamp(3.8rem, 18vw, 6rem); margin-bottom: 20px; }
+  .hero-intro { font-size: .9rem; margin-bottom: 32px; }
+  .hero-cta { flex-direction: column; gap: 10px; }
+  .btn-dark, .btn-outline { text-align: center; padding: 14px 24px; width: 100%; }
+  .photo-placeholder { max-height: 220px; }
+  .spec-row { padding: 10px 16px; font-size: .62rem; }
+
+  .about { padding: 56px 20px; gap: 40px; }
+  .about-heading { font-size: clamp(2.4rem, 11vw, 3.5rem); }
+  .skills-grid { grid-template-columns: 1fr; }
+
+  .beyond { padding: 56px 20px; }
+  .beyond-heading { font-size: clamp(2.4rem, 11vw, 3.5rem); }
+  .beyond-grid { grid-template-columns: 1fr; }
+  .beyond-card-title { font-size: 1.5rem; }
+
+  .photo-strip { grid-template-columns: 1fr; }
+  .photo-strip-item:first-child { grid-column: span 1; }
+  .photo-strip-item { min-height: 160px; }
+
+  .projects { padding: 56px 20px; }
+  .projects-heading { font-size: clamp(2.4rem, 11vw, 3.5rem); }
+  .projects-grid { grid-template-columns: 1fr; }
+  .project-card { padding: 28px 24px; min-height: auto; }
+  .project-name { font-size: 1.5rem; }
+  .project-arrow { display: none; }
+  .projects-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+
+  .experience { padding: 56px 20px; }
+  .timeline-item { padding-left: 24px; gap: 2px; }
+  .timeline-period { font-size: .6rem; }
+  .timeline-role { font-size: 1.2rem; }
+
+  .contact { padding: 56px 20px; gap: 40px; }
+  .contact-heading { font-size: clamp(2.8rem, 13vw, 5rem); }
+  .contact-link { font-size: .66rem; padding: 15px 16px; }
+  .contact-right { padding: 24px 20px; }
+  .status-value { font-size: .76rem; }
+
+  .beyond-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  footer { padding: 20px; }
 }
 </style>
+
 </head>
 <body>
 
@@ -474,7 +660,19 @@ footer {
     <li><a href="#contact">Contact</a></li>
     <li><a href="/cv" class="nav-cv">CV →</a></li>
   </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- Mobile menu -->
+<div class="nav-mobile" id="mobileMenu">
+  <a href="#about"      onclick="closeMobile()">About</a>
+  <a href="#projects"   onclick="closeMobile()">Projects</a>
+  <a href="#experience" onclick="closeMobile()">Experience</a>
+  <a href="#contact"    onclick="closeMobile()">Contact</a>
+  <a href="/cv" class="nav-cv-mobile">CV →</a>
+</div>
 
 <!-- ── HERO ── -->
 <section class="hero" id="home">
@@ -590,6 +788,72 @@ footer {
     <div class="photo-strip-caption">Carbon Fibre · Front Wing</div>
   </div>
 </div>
+
+<!-- ── BEYOND ENGINEERING ── -->
+<section class="beyond" id="beyond">
+  <div class="beyond-header reveal">
+    <div>
+      <div class="section-label" data-num="— ">Beyond Engineering</div>
+      <h2 class="beyond-heading">More than<br>a résumé.</h2>
+    </div>
+  </div>
+  <p class="beyond-sub reveal">A few things that don't fit on a CV but say something about who I am.</p>
+
+  <div class="beyond-grid">
+
+    <!-- CARD 1: SIM RACING -->
+    <div class="beyond-card reveal">
+      <div class="beyond-card-img">
+        <!-- <img src="images/simracing.jpg" alt="Sim racing setup"> -->
+        <div class="beyond-img-placeholder">
+          <div class="ph-icon">🎮</div>
+          <span>ADD SIM RACING PHOTO</span>
+        </div>
+      </div>
+      <div class="beyond-card-body">
+        <div class="beyond-card-tag">Motorsport · Competition</div>
+        <div class="beyond-card-title">Sim Racing</div>
+        <div class="beyond-card-desc">Competing at national and international level in sim racing — 4th in the Netherlands overall championship, and LAN events abroad. Motorsport when you can't afford the real thing.</div>
+        <div class="beyond-card-stat">🏆 4th Netherlands · International LAN Events</div>
+      </div>
+    </div>
+
+    <!-- CARD 2: CHINA -->
+    <div class="beyond-card reveal reveal-delay-1">
+      <div class="beyond-card-img">
+        <!-- <img src="images/china.jpg" alt="China exchange trip"> -->
+        <div class="beyond-img-placeholder">
+          <div class="ph-icon">✈️</div>
+          <span>ADD CHINA TRIP PHOTO</span>
+        </div>
+      </div>
+      <div class="beyond-card-body">
+        <div class="beyond-card-tag">Exchange · Travel</div>
+        <div class="beyond-card-title">Study Exchange — China</div>
+        <div class="beyond-card-desc">Study exchange trip to China — engineering from a completely different perspective. Navigating a new culture and education system teaches you things no classroom at home can.</div>
+        <div class="beyond-card-stat">📍 China · Study Exchange</div>
+      </div>
+    </div>
+
+    <!-- CARD 3: MARATHON -->
+    <div class="beyond-card reveal reveal-delay-2">
+      <div class="beyond-card-img">
+        <!-- <img src="images/running.jpg" alt="Running training"> -->
+        <div class="beyond-img-placeholder">
+          <div class="ph-icon">🏃</div>
+          <span>ADD RUNNING PHOTO</span>
+        </div>
+      </div>
+      <div class="beyond-card-body">
+        <div class="beyond-card-tag">Sport · Goal</div>
+        <div class="beyond-card-title">Marathon Training</div>
+        <div class="beyond-card-desc">Currently training for my first marathon. Running is how I reset — there's something about committing to a goal that takes months of consistent work that carries over into everything else.</div>
+        <div class="beyond-card-stat">🎯 First Marathon — In Training</div>
+      </div>
+    </div>
+
+  </div>
+</section>
 
 <!-- ── PROJECTS 2×2 ── -->
 <section class="projects" id="projects">
@@ -760,10 +1024,31 @@ footer {
 
 <script>
 const nav = document.getElementById('nav');
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+
+// Nav scroll
 window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', window.scrollY > 60);
 });
 
+// Hamburger toggle
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+});
+
+function closeMobile() {
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+}
+
+// Close on outside click
+document.addEventListener('click', e => {
+  if (!nav.contains(e.target) && !mobileMenu.contains(e.target)) closeMobile();
+});
+
+// Scroll reveal
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(el => {
     if (el.isIntersecting) { el.target.classList.add('visible'); observer.unobserve(el.target); }
@@ -771,6 +1056,7 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+// Active nav highlight
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-links a:not(.nav-cv)');
 window.addEventListener('scroll', () => {
