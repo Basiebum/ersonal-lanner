@@ -146,22 +146,14 @@ nav.scrolled {
 }
 
 /* portrait photo */
-.hero-photo {
-  width: 100%; aspect-ratio: 3/4; max-height: 340px;
-  object-fit: cover; object-position: center top;
-  border: 1px solid var(--border);
-  margin-bottom: 28px;
-  background: var(--surface);
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden; position: relative;
-}
-.hero-photo img { width: 100%; height: 100%; object-fit: cover; }
 .photo-placeholder {
-  width: 100%; aspect-ratio: 3/4; max-height: 340px;
+  width: 100%;
+  aspect-ratio: 3/4;
   background: var(--surface); border: 1px solid var(--border);
   display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 10px;
   margin-bottom: 28px; position: relative;
+  overflow: hidden;
 }
 .photo-placeholder::before {
   content: 'ADD PORTRAIT PHOTO HERE';
@@ -169,7 +161,15 @@ nav.scrolled {
   letter-spacing: .16em; color: var(--border); text-align: center;
   padding: 0 20px;
 }
-.photo-placeholder-icon { font-size: 2rem; opacity: .2; }
+.hero-photo {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  object-position: center top;
+  border: 1px solid var(--border);
+  margin-bottom: 28px;
+  display: block;
+}
 
 /* spec box */
 .spec-box {
@@ -239,17 +239,23 @@ nav.scrolled {
 .photo-strip {
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  display: grid; grid-template-columns: 2fr 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: 320px 320px;
   gap: 2px; background: var(--border);
   overflow: hidden;
 }
 .photo-strip-item {
   background: var(--surface);
-  aspect-ratio: 16/9;
   position: relative; overflow: hidden;
   display: flex; align-items: center; justify-content: center;
+  min-height: 0;
 }
-.photo-strip-item:first-child { aspect-ratio: 16/9; }
+/* big photo spans both rows on the right */
+.photo-strip-item:last-child {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
 .photo-strip-item img {
   width: 100%; height: 100%; object-fit: cover;
   transition: transform .4s ease;
@@ -581,7 +587,6 @@ footer {
     border-left: none; border-top: 1px solid var(--border);
     padding-left: 0; padding-top: 32px; padding-bottom: 0;
   }
-  .photo-placeholder { max-height: 260px; }
 
   .about  { grid-template-columns: 1fr; gap: 48px; padding: 72px 28px; }
   .beyond { padding: 72px 28px; }
@@ -591,8 +596,8 @@ footer {
   .experience { padding: 72px 28px; }
   .contact { grid-template-columns: 1fr; gap: 48px; padding: 72px 28px; }
 
-  .photo-strip { grid-template-columns: 1fr 1fr; }
-  .photo-strip-item:first-child { grid-column: span 2; }
+  .photo-strip { grid-template-columns: 1fr; grid-template-rows: auto; }
+  .photo-strip-item:last-child { grid-column: 1; grid-row: auto; }
 
   .timeline-item { grid-template-columns: 1fr; gap: 4px; padding-left: 28px; }
   footer { padding: 24px 28px; flex-direction: column; gap: 10px; text-align: center; }
@@ -608,7 +613,6 @@ footer {
   .hero-intro { font-size: .9rem; margin-bottom: 32px; }
   .hero-cta { flex-direction: column; gap: 10px; }
   .btn-dark, .btn-outline { text-align: center; padding: 14px 24px; width: 100%; }
-  .photo-placeholder { max-height: 220px; }
   .spec-row { padding: 10px 16px; font-size: .62rem; }
 
   .about { padding: 56px 20px; gap: 40px; }
@@ -690,7 +694,7 @@ footer {
 
   <div class="hero-right">
     <!-- ↓ REPLACE src WITH YOUR PORTRAIT PHOTO PATH -->
-    <img src="static/images/me_on_roof_.jpg" class="hero-photo" alt="Bastiaan Wigboldus">
+    <!-- <img src="images/bastiaan-portrait.jpg" class="hero-photo" alt="Bastiaan Wigboldus"> -->
     <div class="photo-placeholder">
       <div class="photo-placeholder-icon">📷</div>
     </div>
@@ -773,11 +777,6 @@ footer {
 <!-- ↓ REPLACE src ATTRIBUTES WITH YOUR FORMULA STUDENT PHOTO PATHS -->
 <div class="photo-strip reveal">
   <div class="photo-strip-item">
-    <!-- <img src="images/fs-car-main.jpg" alt="HFS-E3 Formula Student Car"> -->
-    <div class="photo-strip-placeholder"><span>ADD FORMULA STUDENT CAR PHOTO (WIDE)</span></div>
-    <div class="photo-strip-caption">HFS-E3 · HAN Formula Student · 2025</div>
-  </div>
-  <div class="photo-strip-item">
     <!-- <img src="images/fs-chassis.jpg" alt="Chassis detail"> -->
     <div class="photo-strip-placeholder"><span>CHASSIS DETAIL</span></div>
     <div class="photo-strip-caption">Space Frame · Chassis</div>
@@ -786,6 +785,11 @@ footer {
     <!-- <img src="images/fs-wing.jpg" alt="Front wing"> -->
     <div class="photo-strip-placeholder"><span>FRONT WING</span></div>
     <div class="photo-strip-caption">Carbon Fibre · Front Wing</div>
+  </div>
+  <div class="photo-strip-item">
+    <!-- <img src="images/fs-car-main.jpg" alt="HFS-E3 Formula Student Car"> -->
+    <div class="photo-strip-placeholder"><span>ADD FORMULA STUDENT CAR PHOTO (MAIN)</span></div>
+    <div class="photo-strip-caption">HFS-E3 · HAN Formula Student · 2025</div>
   </div>
 </div>
 
