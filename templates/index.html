@@ -1748,7 +1748,6 @@ function computeRepeatDates(pattern,startVal,untilVal){
 }
 function openEventModal(id, prefillStart, prefillEnd, prefillDate){
   editEvId=id||null;
-  // reset repeat UI
   document.getElementById('ev-repeat').value='none';
   document.getElementById('repeat-options').style.display='none';
   document.getElementById('repeat-interval-row').style.display='none';
@@ -1759,14 +1758,25 @@ function openEventModal(id, prefillStart, prefillEnd, prefillDate){
   document.getElementById('ev-interval').value='2';
 
   if(id){
-    const ev=events.find(e=>e.id===id);if(!ev)return;
+    // Look in local events first, then gcalEvents
+    let ev = events.find(e=>e.id===id);
+    if(!ev){
+      // It's a gcal event — convert to local so it becomes editable
+      const gcalEv = gcalEvents.find(e=>e.id===id);
+      if(!gcalEv) return;
+      // Add to local events array so saveEvent can find and update it
+      ev = {...gcalEv, from_gcal: false};
+      events.push(ev);
+      persistSilent('pl3_events', events);
+      editEvId = ev.id;
+    }
     document.getElementById('ev-modal-title').textContent='Edit Event';
     document.getElementById('ev-title').value=ev.title;
-    document.getElementById('ev-cat').value=ev.cat;
+    document.getElementById('ev-cat').value=ev.cat||'personal';
     document.getElementById('ev-date').value=ev.date;
     document.getElementById('ev-start').value=ev.start||'';
     document.getElementById('ev-end').value=ev.end||'';
-    document.getElementById('ev-notes').value=ev.notes||'';
+    document.getElementById('ev-notes').value=ev.notes||ev.note||'';
     document.getElementById('ev-del-btn').style.display='block';
     const hasSeries=ev.seriesId&&events.filter(e=>e.seriesId===ev.seriesId).length>1;
     document.getElementById('ev-del-series-btn').style.display=hasSeries?'block':'none';
@@ -1784,7 +1794,6 @@ function openEventModal(id, prefillStart, prefillEnd, prefillDate){
     document.getElementById('ev-del-series-btn').style.display='none';
     document.getElementById('ev-repeat').closest('.form-group').style.display='block';
   }
-  // hook preview update
   ['ev-date','ev-until','ev-interval'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.oninput=updateRepeatPreview;
@@ -2319,8 +2328,9 @@ function rvCurrentKey(){ return rvWeekKey(addDays(today0(),rvWeekOffset*7)); }
 function rvStats(wkKey){
   const mon=rvMonday(wkKey), sun=addDays(mon,6);
   const inRange=d=>{const dt=parseD(d);return dt&&dt>=mon&&dt<=sun;};
-  // work hours from calendar work events
-  const workEvs=events.filter(e=>e.cat==='work'&&inRange(e.date));
+  const allEvs = allEventsForRender();
+  // work hours from calendar work events (including gcal)
+  const workEvs=allEvs.filter(e=>e.cat==='work'&&inRange(e.date));
   const workHrs=workEvs.reduce((a,e)=>{
     if(e.start&&e.end)return a+(toMin(e.end)-toMin(e.start))/60;
     return a+8;
@@ -2339,10 +2349,10 @@ function rvStats(wkKey){
   const doneTasks=tasks.filter(t=>t.status==='done'&&t.deadline&&inRange(t.deadline));
   // meetings
   const mtgCount=meetings.filter(m=>inRange(m.date)).length;
-  // sports sessions
+  // sports sessions — include gcal sports events
   const sportStats=sports.map(sp=>{
     const wks=workouts.filter(w=>w.sportId===sp.id&&inRange(w.date));
-    const calEvs=events.filter(e=>e.cat==='sports'&&inRange(e.date)&&(e.sportId===sp.id||e.title.toLowerCase().includes(sp.name.toLowerCase())));
+    const calEvs=allEvs.filter(e=>e.cat==='sports'&&inRange(e.date)&&(e.sportId===sp.id||e.title.toLowerCase().includes(sp.name.toLowerCase())));
     const calIds=new Set(workouts.map(w=>w.calEventId).filter(Boolean));
     const extra=calEvs.filter(e=>!calIds.has(e.id));
     const done=wks.length+extra.length;
@@ -2719,8 +2729,8 @@ function openDayPlanner(ds, ev){
 
 function renderDayPlanner(ds, ev){
   const body = document.getElementById('dp-body');
-  // determine work hours from the calendar event
-  const workEv = ev || events.find(e=>e.date===ds&&e.cat==='work');
+  const allEvs = allEventsForRender();
+  const workEv = ev || allEvs.find(e=>e.date===ds&&e.cat==='work');
   const startMin = workEv&&workEv.start ? toMin(workEv.start) : toMin('09:00');
   const endMin   = workEv&&workEv.end   ? toMin(workEv.end)   : toMin('17:00');
 
@@ -2811,12 +2821,12 @@ function saveHalfHourBlock(){
   }
   persist('pl3_dayblocks',dayBlocks);
   closeModal('hb-modal');
-  renderDayPlanner(_hbDate, events.find(e=>e.date===_hbDate&&e.cat==='work'));
+  renderDayPlanner(_hbDate, allEventsForRender().find(e=>e.date===_hbDate&&e.cat==='work'));
 }
 
 function openTaskPanelFromPlanner(){
   closeModal('day-planner-modal');
-  openTaskPanel(dayPlannerDate, events.find(e=>e.date===dayPlannerDate&&e.cat==='work'));
+  openTaskPanel(dayPlannerDate, allEventsForRender().find(e=>e.date===dayPlannerDate&&e.cat==='work'));
 }
 
 function deleteHalfHourBlock(){
@@ -2824,7 +2834,7 @@ function deleteHalfHourBlock(){
   dayBlocks[_hbDate]=(dayBlocks[_hbDate]||[]).filter(b=>b.id!==_hbEditId);
   persist('pl3_dayblocks',dayBlocks);
   closeModal('hb-modal');
-  renderDayPlanner(_hbDate, events.find(e=>e.date===_hbDate&&e.cat==='work'));
+  renderDayPlanner(_hbDate, allEventsForRender().find(e=>e.date===_hbDate&&e.cat==='work'));
 }
 
 function changeSportsWeek(delta){
@@ -3112,6 +3122,7 @@ function exportData(){
     pl3_workouts:workouts,
     pl3_races:races,
     pl3_meetings:meetings,
+    pl3_sleep:sleep,
     pl3_reviews:weeklyReviews,
     pl3_activities:activities,
     pl3_dayblocks:dayBlocks,
