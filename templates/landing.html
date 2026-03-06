@@ -250,39 +250,23 @@ nav.scrolled {
 
 /* ── FORMULA STUDENT PHOTO STRIP ── */
 .photo-strip {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border)
   border-bottom: 1px solid var(--border);
-  /* Changed to 1fr 1fr for two equal columns */
-  display: grid; 
-  grid-template-columns: 1fr 1fr; 
-  gap: 2px; 
-  background: var(--border);
+  display: grid; grid-template-columns: 1fr 1fr ;
+  gap: 2px; background: var(--border);
   overflow: hidden;
 }
-
 .photo-strip-item {
   background: var(--surface);
-  /* Using 3/2 or 4/3 often looks better for side-by-side shots than 16/9 */
-  aspect-ratio: 3/2; 
-  position: relative; 
-  overflow: hidden;
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
+  aspect-ratio: 16/9;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
 }
 
-/* Remove the specific first-child rule as they should now be identical */
-.photo-strip-item:first-child { 
-  aspect-ratio: auto; 
-}
-
+.photo-strip-item:first-child { aspect-ratio: 16/9; }
 .photo-strip-item img {
-  width: 100%; 
-  height: 100%; 
-  object-fit: cover;
+  width: 100%; height: 100%; object-fit: cover;
   transition: transform .4s ease;
-  /* Just like the portrait, you can add a focal point here if needed */
-  object-position: center; 
 }
 .photo-strip-item:hover img { transform: scale(1.04); }
 .photo-strip-placeholder {
@@ -822,17 +806,14 @@ footer {
     <!-- CARD 1: SIM RACING -->
     <div class="beyond-card reveal">
       <div class="beyond-card-img">
-        <!-- <img src="images/simracing.jpg" alt="Sim racing setup"> -->
-        <div class="beyond-img-placeholder">
-          <div class="ph-icon">🎮</div>
-          <span>ADD SIM RACING PHOTO</span>
+        <img src="/static/images/Simracing.jpg" alt="Sim racing setup">
         </div>
       </div>
       <div class="beyond-card-body">
         <div class="beyond-card-tag">Motorsport · Competition</div>
         <div class="beyond-card-title">Sim Racing</div>
         <div class="beyond-card-desc">Competing at national and international level in sim racing — 4th in the Netherlands overall championship, and LAN events abroad. Motorsport when you can't afford the real thing.</div>
-        <div class="beyond-card-stat">🏆 4th Netherlands · International LAN Events</div>
+        <div class="beyond-card-stat">🏆 4th of The Netherlands · International LAN Events</div>
       </div>
     </div>
 
@@ -853,7 +834,7 @@ footer {
       </div>
     </div>
 
-    <!-- CARD 3: MARATHON -->
+    <!-- CARD 3: Sports -->
     <div class="beyond-card reveal reveal-delay-2">
       <div class="beyond-card-img">
         <!-- <img src="images/running.jpg" alt="Running training"> -->
@@ -864,26 +845,9 @@ footer {
       </div>
       <div class="beyond-card-body">
         <div class="beyond-card-tag">Sport · Goal</div>
-        <div class="beyond-card-title">Marathon Training</div>
-        <div class="beyond-card-desc">Currently training for my first marathon. Running is how I reset — there's something about committing to a goal that takes months of consistent work that carries over into everything else.</div>
-        <div class="beyond-card-stat">🎯 First Marathon — In Training</div>
-      </div>
-    </div>
-
-    <!-- CARD 3: MARATHON -->
-    <div class="beyond-card reveal reveal-delay-2">
-      <div class="beyond-card-img">
-        <!-- <img src="images/running.jpg" alt="Running training"> -->
-        <div class="beyond-img-placeholder">
-          <div class="ph-icon">🏃</div>
-          <span>ADD RUNNING PHOTO</span>
-        </div>
-      </div>
-      <div class="beyond-card-body">
-        <div class="beyond-card-tag">Sport · Goal</div>
-        <div class="beyond-card-title">Marathon Training</div>
-        <div class="beyond-card-desc">Currently training for my first marathon. Running is how I reset — there's something about committing to a goal that takes months of consistent work that carries over into everything else.</div>
-        <div class="beyond-card-stat">🎯 First Marathon — In Training</div>
+        <div class="beyond-card-title">Sports</div>
+        <div class="beyond-card-desc">I love all sports and try to stay active year-round. Whether it's running, cycling, or team sports, I find that physical activity helps me stay focused and energized.</div>
+        <div class="beyond-card-stat">🎯 Being the best version of myself</div>
       </div>
     </div>
 
