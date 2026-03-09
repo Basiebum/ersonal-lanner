@@ -17,7 +17,9 @@
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
 /* ─── HEADER ─── */
-header{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border-bottom:1px solid var(--border);background:rgba(7,13,14,.95);backdrop-filter:blur(12px);flex-shrink:0;gap:10px;flex-wrap:wrap;overflow:visible;position:relative;z-index:100;}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border-bottom:1px solid var(--border);background:rgba(7,13,14,.95);backdrop-filter:blur(12px);flex-shrink:0;gap:10px;overflow:visible;position:relative;z-index:100;}
+.header-logo-row{display:contents;}
+.header-controls-row{display:contents;}
 .logo{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:1rem;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;color:var(--accent);}
 .logo span{color:var(--text);}
 .page-tabs{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border);}
@@ -209,80 +211,76 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
   background: var(--surface);
   border-top: 1px solid var(--border);
-  padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+  padding: 4px 0 max(4px, env(safe-area-inset-bottom));
   display: none;
   grid-template-columns: repeat(4, 1fr);
 }
 .mob-tab {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   background: none; border: none; cursor: pointer;
-  padding: 8px 0; color: var(--muted); transition: color .2s;
+  padding: 6px 0; color: var(--muted); transition: color .2s;
   position: relative;
 }
 .mob-tab.active { color: var(--accent); }
-.mob-tab.active::after {
+.mob-tab.active::before {
   content: '';
-  position: absolute; top: 0; left: 20%; right: 20%; height: 2px;
+  position: absolute; top: 0; left: 25%; right: 25%; height: 2px;
   background: var(--accent); border-radius: 0 0 2px 2px;
 }
-.mob-tab-label { font-family: 'IBM Plex Mono', monospace; font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 500; }
+.mob-tab-label { font-family: 'IBM Plex Mono', monospace; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 500; }
 
 /* Hide on mobile */
 @media(max-width: 640px) {
   .mobile-hide { display: none !important; }
-  .desktop-hide { display: block !important; }
+  .desktop-hide { display: flex !important; }
   #page-tabs-desktop { display: none !important; }
   #mobile-bottom-nav { display: grid !important; }
-  .app-body { padding-bottom: 60px; }
-  header { padding: 8px 12px; gap: 6px; }
-  .logo { font-size: 1.1rem !important; }
-  .period-label { font-size: .7rem; max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .nav-arrow { width: 26px; height: 26px; font-size: .8rem; }
-  .btn-primary { padding: 6px 10px; font-size: .7rem; }
-  .btn-secondary { padding: 6px 8px; font-size: .7rem; }
-  #settings-menu { bottom: auto; top: calc(100% + 6px); right: 0; left: auto; max-height: 70vh; overflow-y: auto; }
+  .app-body { padding-bottom: 52px; }
+
+  /* Two-row stacked header */
+  header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px 12px 0;
+    gap: 0;
+  }
+  .header-logo-row {
+    display: flex !important;
+    align-items: center;
+    padding-bottom: 6px;
+  }
+  .header-controls-row {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+    padding: 6px 0 8px;
+    gap: 6px;
+  }
+
+  .logo { font-size: 1rem !important; }
+  .period-label { font-size: .7rem; min-width: 0; white-space: nowrap; }
+  .nav-arrow { width: 24px; height: 24px; font-size: .8rem; }
+  .btn-primary { padding: 5px 9px; font-size: .66rem; }
+  .btn-secondary { padding: 5px 8px; font-size: .66rem; }
+  #settings-menu { top: calc(100% + 6px); right: 0; left: auto; max-height: 70vh; overflow-y: auto; }
 
   /* Monthly view — Google Calendar style */
-  .month-grid {
-    display: grid; grid-template-columns: repeat(7,1fr);
-    gap: 0; background: var(--bg); border: none; border-radius: 0;
-    height: 100%; 
-  }
-  .month-day-header {
-    padding: 4px 0; font-size: .58rem; letter-spacing: 0;
-    background: var(--bg); border-bottom: 1px solid var(--border);
-    text-align: center;
-  }
-  .month-cell {
-    min-height: 0; flex: 1;
-    padding: 4px 2px 2px;
-    background: var(--bg);
-    border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
-    cursor: pointer; overflow: hidden;
-  }
+  .month-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 0; background: var(--bg); border: none; border-radius: 0; height: 100%; }
+  .month-day-header { padding: 4px 0; font-size: .58rem; letter-spacing: 0; background: var(--bg); border-bottom: 1px solid var(--border); text-align: center; }
+  .month-cell { min-height: 0; flex: 1; padding: 4px 2px 2px; background: var(--bg); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; overflow: hidden; }
   .month-cell:nth-child(7n) { border-right: none; }
   .month-cell.other-month { opacity: .3; }
   .month-cell.today .month-day-num { background: var(--accent); color: #070d0e; }
-  .month-day-num {
-    font-size: .72rem; width: 20px; height: 20px; margin-bottom: 0;
-    display: flex; align-items: center; justify-content: center; border-radius: 50%;
-    flex-shrink: 0;
-  }
-  /* Event dots instead of text labels */
-  .month-event {
-    display: none !important;
-  }
+  .month-day-num { font-size: .72rem; width: 20px; height: 20px; margin-bottom: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; }
+  .month-event { display: none !important; }
   .month-more { display: none !important; }
-  /* Dot container injected per cell */
   .month-dots { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; max-width: 28px; }
   .month-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
 
   /* Review page mobile */
   .review-layout { display: flex; flex-direction: column; gap: 0; height: auto; }
-  .review-sidebar { display: flex !important; flex-direction: row; overflow-x: auto; gap: 6px; padding: 10px 12px;
-    border-bottom: 1px solid var(--border); flex-shrink: 0; scrollbar-width: none; }
+  .review-sidebar { display: flex !important; flex-direction: row; overflow-x: auto; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; scrollbar-width: none; }
   .review-sidebar::-webkit-scrollbar { display: none; }
   .review-entry { min-width: 120px; flex-shrink: 0; padding: 8px 10px; }
   .review-entry-head { font-size: .7rem; margin-bottom: 2px; }
@@ -298,6 +296,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 }
 @media(min-width: 641px) {
   .desktop-hide { display: none !important; }
+  .header-logo-row { display: contents; }
+  .header-controls-row { display: contents; }
 }
 .sports-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;}
 .sports-card-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
@@ -442,88 +442,91 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <body>
 
 <header>
-  <!-- Logo -->
-  <div style="display:flex;align-items:center;gap:0;flex-shrink:0;">
-    <div class="logo" style="color:var(--text);">wig<span style="color:var(--accent);">bo</span></div>
-    <span id="sync-dot" title="Sync status"></span>
+  <!-- Row 1: logo + desktop page tabs -->
+  <div class="header-logo-row">
+    <div style="display:flex;align-items:center;gap:0;flex-shrink:0;">
+      <div class="logo" style="color:var(--text);">wig<span style="color:var(--accent);">bo</span></div>
+      <span id="sync-dot" title="Sync status"></span>
+    </div>
+    <div class="page-tabs mobile-hide" id="page-tabs-desktop" style="margin-left:16px;">
+      <button class="page-tab active" onclick="showPage('calendar')">Calendar</button>
+      <button class="page-tab" onclick="showPage('project')">Project</button>
+      <button class="page-tab" onclick="showPage('sports')">Sports</button>
+      <button class="page-tab" onclick="showPage('review')">Report</button>
+    </div>
   </div>
 
-  <!-- Page tabs — hidden on mobile, shown via bottom nav instead -->
-  <div class="page-tabs" id="page-tabs-desktop">
-    <button class="page-tab active" onclick="showPage('calendar')">Calendar</button>
-    <button class="page-tab" onclick="showPage('project')">Project</button>
-    <button class="page-tab" onclick="showPage('sports')">Sports</button>
-    <button class="page-tab" onclick="showPage('review')">Report</button>
-  </div>
+  <!-- Row 2: left = view/nav, right = action buttons + settings -->
+  <div class="header-controls-row">
 
-  <!-- Right side controls -->
-  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;">
-
-    <!-- Calendar controls -->
-    <div id="cal-controls" style="display:flex;align-items:center;gap:6px;">
-      <!-- Desktop: button tabs -->
-      <div class="view-tabs mobile-hide">
+    <!-- Left side: view switcher + date nav -->
+    <div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;">
+      <!-- Calendar: desktop tabs -->
+      <div id="cal-view-tabs" class="view-tabs mobile-hide">
         <button class="view-tab active" onclick="switchView('daily')">Day</button>
         <button class="view-tab" onclick="switchView('weekly')">Week</button>
         <button class="view-tab" onclick="switchView('monthly')">Month</button>
       </div>
-      <!-- Mobile: compact dropdown -->
-      <select id="view-select-mobile" class="desktop-hide" onchange="switchView(this.value)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:.68rem;padding:5px 8px;border-radius:4px;outline:none;cursor:pointer;">
+      <!-- Calendar: mobile dropdown -->
+      <select id="view-select-mobile" class="desktop-hide" onchange="switchView(this.value)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:.68rem;padding:4px 7px;border-radius:4px;outline:none;cursor:pointer;flex-shrink:0;">
         <option value="daily">Day</option>
         <option value="weekly">Week</option>
         <option value="monthly">Month</option>
       </select>
-      <div class="header-nav">
+      <!-- Date nav (calendar only) -->
+      <div id="cal-date-nav" class="header-nav">
         <button class="nav-arrow" onclick="navigate(-1)">←</button>
         <div class="period-label" id="period-label"></div>
         <button class="nav-arrow" onclick="navigate(1)">→</button>
       </div>
-      <button class="btn-primary" onclick="openEventModal()">+ Event</button>
+      <!-- Other page labels (desktop) -->
+      <span id="proj-label" class="mobile-hide" style="display:none;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;">Project</span>
+      <span id="sports-label" class="mobile-hide" style="display:none;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;">Sports</span>
+      <span id="review-label" class="mobile-hide" style="display:none;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;">Report</span>
     </div>
 
-    <!-- Project controls -->
-    <div id="proj-controls" style="display:none;align-items:center;gap:6px;">
-      <button class="btn-primary" onclick="openTaskModal()">+ Task</button>
-      <button class="btn-secondary" onclick="openPhaseModal()">+ Phase</button>
-    </div>
+    <!-- Right side: action buttons + settings -->
+    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+      <div id="cal-controls" style="display:flex;align-items:center;gap:6px;">
+        <button class="btn-primary" onclick="openEventModal()">+ Event</button>
+      </div>
+      <div id="proj-controls" style="display:none;align-items:center;gap:6px;">
+        <button class="btn-primary" onclick="openTaskModal()">+ Task</button>
+        <button class="btn-secondary mobile-hide" onclick="openPhaseModal()">+ Phase</button>
+      </div>
+      <div id="sports-controls" style="display:none;align-items:center;gap:6px;">
+        <button class="btn-primary" onclick="openSportModal()">+ Sport</button>
+        <button class="btn-secondary mobile-hide" onclick="openRaceModal()">+ Race</button>
+        <button class="btn-secondary mobile-hide" onclick="openGoalModal()">+ Goal</button>
+      </div>
+      <div id="review-controls" style="display:none;align-items:center;gap:6px;"></div>
 
-    <!-- Sports controls -->
-    <div id="sports-controls" style="display:none;align-items:center;gap:6px;">
-      <button class="btn-primary" onclick="openSportModal()">+ Sport</button>
-      <button class="btn-secondary mobile-hide" onclick="openRaceModal()">+ Race</button>
-      <button class="btn-secondary mobile-hide" onclick="openGoalModal()">+ Goal</button>
-    </div>
-
-    <!-- Review controls -->
-    <div id="review-controls" style="display:none;align-items:center;gap:6px;">
-      <span class="mobile-hide" style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;">Weekly Report</span>
-    </div>
-
-    <!-- Settings -->
-    <div style="flex-shrink:0;position:relative;">
-      <button class="btn-secondary" id="settings-btn" style="padding:7px 11px;font-size:.92rem;" title="Settings & account">⚙</button>
-      <div id="settings-menu">
-        <div id="settings-user-email" style="display:none;padding:5px 10px 7px;font-size:.68rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;"></div>
-        <div class="set-section">Account</div>
-        <button class="set-item" id="s-login-btn">🔑 Log in / Register</button>
-        <button class="set-item" id="s-logout-btn" style="display:none;">↩ Log out</button>
-        <hr class="set-sep">
-        <div class="set-section">Google Calendar</div>
-        <button class="set-item" id="gcal-connect-btn">📅 Connect Google Calendar</button>
-        <button class="set-item" id="gcal-disconnect-btn" style="display:none;">✕ Disconnect Google Calendar</button>
-        <button class="set-item" id="gcal-sync-menu-btn" style="display:none;">⟳ Sync now</button>
-        <button class="set-item" id="gcal-sync-btn" style="display:none;">⟳ Sync Google Cal</button>
-        <hr class="set-sep">
-        <div class="set-section">Calendar</div>
-        <button class="set-item" id="s-wake-btn">⏰ Set wake / sleep time</button>
-        <hr class="set-sep">
-        <div class="set-section">Data</div>
-        <button class="set-item" id="s-push-btn">⬆ Push to server</button>
-        <button class="set-item" id="s-pull-btn">⬇ Pull from server</button>
-        <hr class="set-sep">
-        <button class="set-item" id="s-export-btn">💾 Export backup</button>
-        <label class="set-item" id="s-import-label">📂 Import backup<input type="file" id="s-import-file" accept=".json" style="display:none"></label>
-        <label class="set-item" id="s-import-projects-label" title="Only restores phases, tasks & sessions — leaves everything else untouched">📁 Import projects only<input type="file" id="s-import-projects-file" accept=".json" style="display:none"></label>
+      <!-- Settings -->
+      <div style="flex-shrink:0;position:relative;">
+        <button class="btn-secondary" id="settings-btn" style="padding:6px 10px;font-size:.88rem;" title="Settings & account">⚙</button>
+        <div id="settings-menu">
+          <div id="settings-user-email" style="display:none;padding:5px 10px 7px;font-size:.68rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;"></div>
+          <div class="set-section">Account</div>
+          <button class="set-item" id="s-login-btn">🔑 Log in / Register</button>
+          <button class="set-item" id="s-logout-btn" style="display:none;">↩ Log out</button>
+          <hr class="set-sep">
+          <div class="set-section">Google Calendar</div>
+          <button class="set-item" id="gcal-connect-btn">📅 Connect Google Calendar</button>
+          <button class="set-item" id="gcal-disconnect-btn" style="display:none;">✕ Disconnect Google Calendar</button>
+          <button class="set-item" id="gcal-sync-menu-btn" style="display:none;">⟳ Sync now</button>
+          <button class="set-item" id="gcal-sync-btn" style="display:none;">⟳ Sync Google Cal</button>
+          <hr class="set-sep">
+          <div class="set-section">Calendar</div>
+          <button class="set-item" id="s-wake-btn">⏰ Set wake / sleep time</button>
+          <hr class="set-sep">
+          <div class="set-section">Data</div>
+          <button class="set-item" id="s-push-btn">⬆ Push to server</button>
+          <button class="set-item" id="s-pull-btn">⬇ Pull from server</button>
+          <hr class="set-sep">
+          <button class="set-item" id="s-export-btn">💾 Export backup</button>
+          <label class="set-item" id="s-import-label">📂 Import backup<input type="file" id="s-import-file" accept=".json" style="display:none"></label>
+          <label class="set-item" id="s-import-projects-label" title="Only restores phases, tasks & sessions — leaves everything else untouched">📁 Import projects only<input type="file" id="s-import-projects-file" accept=".json" style="display:none"></label>
+        </div>
       </div>
     </div>
   </div>
@@ -1291,6 +1294,15 @@ function showPage(p){
   document.getElementById('proj-controls').style.display=p==='project'?'flex':'none';
   document.getElementById('sports-controls').style.display=p==='sports'?'flex':'none';
   document.getElementById('review-controls').style.display=p==='review'?'flex':'none';
+  // show/hide date nav + view switcher (only on calendar)
+  const calNav=document.getElementById('cal-date-nav');
+  const calVT=document.getElementById('cal-view-tabs');
+  const vmob=document.getElementById('view-select-mobile');
+  if(calNav) calNav.style.display=p==='calendar'?'flex':'none';
+  if(calVT)  calVT.style.display=p==='calendar'?'flex':'none';
+  if(vmob)   vmob.style.display=p==='calendar'?'':'none';
+  // page labels
+  ['proj','sports','review'].forEach(k=>{const el=document.getElementById(k+'-label');if(el)el.style.display=p===({'proj':'project','sports':'sports','review':'review'}[k])?'':'none';});
   document.querySelectorAll('.page-tab').forEach((t,i)=>t.classList.toggle('active',pages[i]===p));
   document.querySelectorAll('.mob-tab').forEach(t=>t.classList.toggle('active',t.dataset.page===p));
   if(p==='project')renderGantt();
