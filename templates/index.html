@@ -229,32 +229,56 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 /* Hide on mobile */
 @media(max-width: 640px) {
   .mobile-hide { display: none !important; }
+  .desktop-hide { display: none; }
   #page-tabs-desktop { display: none !important; }
   #mobile-bottom-nav { display: grid !important; }
-  /* Push content up so bottom nav doesn't cover it */
   .app-body { padding-bottom: 60px; }
-  /* Tighter header */
   header { padding: 8px 12px; gap: 6px; }
   .logo { font-size: 1.1rem !important; }
-  .period-label { font-size: .7rem; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .view-tabs { gap: 1px; }
-  .view-tab { padding: 4px 8px; font-size: .62rem; }
-  .btn-primary { padding: 6px 10px; font-size: .7rem; }
-  .btn-secondary { padding: 6px 10px; font-size: .7rem; }
+  .period-label { font-size: .7rem; max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .nav-arrow { width: 26px; height: 26px; font-size: .8rem; }
-  /* Settings menu opens downward on mobile */
+  .btn-primary { padding: 6px 10px; font-size: .7rem; }
+  .btn-secondary { padding: 6px 8px; font-size: .7rem; }
   #settings-menu { bottom: auto; top: calc(100% + 6px); right: 0; left: auto; max-height: 70vh; overflow-y: auto; }
 
-  /* Monthly view on mobile — show Month tab, compact cells */
-  .view-tab.mobile-hide { display: inline-block !important; }
-  .month-grid { gap: 0; border-radius: 0; border-left: none; border-right: none; }
-  .month-day-header { padding: 5px 2px; font-size: .58rem; letter-spacing: 0; }
-  .month-cell { min-height: 52px; padding: 3px 2px; }
-  .month-day-num { font-size: .7rem; width: 18px; height: 18px; }
-  .month-event { font-size: .55rem; padding: 1px 3px; white-space: nowrap; overflow: hidden; }
-  .month-more { font-size: .55rem; color: var(--muted); padding: 0 2px; }
+  /* Monthly view — Google Calendar style */
+  .month-grid {
+    display: grid; grid-template-columns: repeat(7,1fr);
+    gap: 0; background: var(--bg); border: none; border-radius: 0;
+    height: 100%; 
+  }
+  .month-day-header {
+    padding: 4px 0; font-size: .58rem; letter-spacing: 0;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+  .month-cell {
+    min-height: 0; flex: 1;
+    padding: 4px 2px 2px;
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    cursor: pointer; overflow: hidden;
+  }
+  .month-cell:nth-child(7n) { border-right: none; }
+  .month-cell.other-month { opacity: .3; }
+  .month-cell.today .month-day-num { background: var(--accent); color: #070d0e; }
+  .month-day-num {
+    font-size: .72rem; width: 20px; height: 20px; margin-bottom: 0;
+    display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  /* Event dots instead of text labels */
+  .month-event {
+    display: none !important;
+  }
+  .month-more { display: none !important; }
+  /* Dot container injected per cell */
+  .month-dots { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; max-width: 28px; }
+  .month-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
 
-  /* Review page — single column stacked layout */
+  /* Review page mobile */
   .review-layout { display: flex; flex-direction: column; gap: 0; height: auto; }
   .review-sidebar { display: flex !important; flex-direction: row; overflow-x: auto; gap: 6px; padding: 10px 12px;
     border-bottom: 1px solid var(--border); flex-shrink: 0; scrollbar-width: none; }
@@ -268,10 +292,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   .rv-stat { padding: 7px 4px; }
   .rv-stat-num { font-size: 1rem; }
   .rv-stat-lbl { font-size: .58rem; }
-  .rv-sport-row { flex-wrap: wrap; gap: 4px; }
   .rv-bar-wrap { width: 100%; max-width: 100% !important; order: 10; }
-  /* Review two-column text → single column */
   .rv-card div[style*="grid-template-columns:1fr 1fr"] { display: flex !important; flex-direction: column !important; gap: 10px !important; }
+}
+@media(min-width: 641px) {
+  .desktop-hide { display: none !important; }
 }
 .sports-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;}
 .sports-card-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
@@ -435,11 +460,18 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 
     <!-- Calendar controls -->
     <div id="cal-controls" style="display:flex;align-items:center;gap:6px;">
-      <div class="view-tabs">
+      <!-- Desktop: button tabs -->
+      <div class="view-tabs mobile-hide">
         <button class="view-tab active" onclick="switchView('daily')">Day</button>
         <button class="view-tab" onclick="switchView('weekly')">Week</button>
-        <button class="view-tab mobile-hide" onclick="switchView('monthly')">Month</button>
+        <button class="view-tab" onclick="switchView('monthly')">Month</button>
       </div>
+      <!-- Mobile: compact dropdown -->
+      <select id="view-select-mobile" class="desktop-hide" onchange="switchView(this.value)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:.68rem;padding:5px 8px;border-radius:4px;outline:none;cursor:pointer;">
+        <option value="daily">Day</option>
+        <option value="weekly">Week</option>
+        <option value="monthly">Month</option>
+      </select>
       <div class="header-nav">
         <button class="nav-arrow" onclick="navigate(-1)">←</button>
         <div class="period-label" id="period-label"></div>
@@ -1272,6 +1304,7 @@ function showPage(p){
 function switchView(v){
   currentView=v;
   document.querySelectorAll('.view-tab').forEach((t,i)=>t.classList.toggle('active',['daily','weekly','monthly'][i]===v));
+  const sel=document.getElementById('view-select-mobile');if(sel)sel.value=v;
   render();
 }
 function navigate(d){
@@ -1303,6 +1336,7 @@ function render(){
   else renderMonthly(main);
 }
 function evCls(cat){return`cat-${cat}`;}
+function evColor(cat){const m={work:'#2dd4bf',sports:'#3ecf8e',social:'#f59e0b',personal:'#a78bfa'};return m[cat]||'#4e9af1';}
 
 // ══════════════════════════════════════════════════
 // COLLISION LAYOUT
@@ -1484,8 +1518,9 @@ function renderMonthly(main){
   const yr=currentDate.getFullYear(),mo=currentDate.getMonth();
   const first=new Date(yr,mo,1),last=new Date(yr,mo+1,0);
   const td=today0();
+  const isMobile=window.innerWidth<=640;
   let h='<div class="month-grid">';
-  DS.forEach(d=>{h+=`<div class="month-day-header">${d}</div>`;});
+  DS.forEach(d=>{h+=`<div class="month-day-header">${isMobile?d[0]:d}</div>`;});
   const pad=first.getDay();
   for(let i=0;i<pad;i++){const d=new Date(first);d.setDate(d.getDate()-(pad-i));h+=mCell(d,true,td);}
   for(let d=1;d<=last.getDate();d++)h+=mCell(new Date(yr,mo,d),false,td);
@@ -1496,31 +1531,62 @@ function renderMonthly(main){
   main.querySelectorAll('.month-cell[data-date]').forEach(cell=>{
     const ds=cell.dataset.date;
     const dayEvs=allEventsForRender().filter(e=>e.date===ds);
-    dayEvs.slice(0,3).forEach(ev=>{
-      const daySess=ev.cat==='work'?sessionsOnDate(ds):[];
-      const hasOv=daySess.some(s=>{const t=tasks.find(x=>x.id===s.taskId);return t&&isOverdue(t);});
-      const el=document.createElement('div');
-      el.className=`month-event ${evCls(ev.cat)}`;
-      if(hasOv)el.style.boxShadow='0 0 0 1.5px var(--danger)';
-      el.textContent=(ev.start?ev.start+' ':'')+ev.title;
-      el.draggable=true;
-      el.addEventListener('dragstart',e=>{dragEvId=ev.id;e.dataTransfer.effectAllowed='move';});
-      el.addEventListener('click',()=>clickEvent(ev,ds));
-      cell.appendChild(el);
-    });
-    if(dayEvs.length>3){const m=document.createElement('div');m.className='month-more';m.textContent=`+${dayEvs.length-3} more`;cell.appendChild(m);}
-    cell.addEventListener('dragover',e=>e.preventDefault());
-    cell.addEventListener('click',e=>{
-      if(e.target===cell||e.target.classList.contains('month-day-num'))
-        openEventModal(null,null,null,ds);
-    });
-    cell.addEventListener('drop',e=>{
-      if(!dragEvId)return;
-      const idx=events.findIndex(ev=>ev.id===dragEvId);
-      if(idx!==-1){events[idx].date=ds;persist('pl3_events',events);}
-      dragEvId=null;render();
-    });
+    if(isMobile){
+      // Google Calendar style: coloured dots, tap = go to day view
+      if(dayEvs.length){
+        const dotsEl=document.createElement('div');
+        dotsEl.className='month-dots';
+        // max 3 dots
+        dayEvs.slice(0,3).forEach(ev=>{
+          const dot=document.createElement('div');
+          dot.className='month-dot';
+          dot.style.background=evColor(ev.cat);
+          dotsEl.appendChild(dot);
+        });
+        cell.appendChild(dotsEl);
+      }
+      cell.addEventListener('click',()=>{
+        currentDate=parseD(ds)||currentDate;
+        switchView('daily');
+      });
+    } else {
+      // Desktop: text event labels
+      dayEvs.slice(0,3).forEach(ev=>{
+        const daySess=ev.cat==='work'?sessionsOnDate(ds):[];
+        const hasOv=daySess.some(s=>{const t=tasks.find(x=>x.id===s.taskId);return t&&isOverdue(t);});
+        const el=document.createElement('div');
+        el.className=`month-event ${evCls(ev.cat)}`;
+        if(hasOv)el.style.boxShadow='0 0 0 1.5px var(--danger)';
+        el.textContent=(ev.start?ev.start+' ':'')+ev.title;
+        el.draggable=true;
+        el.addEventListener('dragstart',e=>{dragEvId=ev.id;e.dataTransfer.effectAllowed='move';});
+        el.addEventListener('click',()=>clickEvent(ev,ds));
+        cell.appendChild(el);
+      });
+      if(dayEvs.length>3){const m=document.createElement('div');m.className='month-more';m.textContent=`+${dayEvs.length-3} more`;cell.appendChild(m);}
+      cell.addEventListener('dragover',e=>e.preventDefault());
+      cell.addEventListener('click',e=>{
+        if(e.target===cell||e.target.classList.contains('month-day-num'))
+          openEventModal(null,null,null,ds);
+      });
+      cell.addEventListener('drop',e=>{
+        if(!dragEvId)return;
+        const idx=events.findIndex(ev=>ev.id===dragEvId);
+        if(idx!==-1){events[idx].date=ds;persist('pl3_events',events);}
+        dragEvId=null;render();
+      });
+    }
   });
+  // Make month grid fill full height on mobile
+  if(isMobile){
+    const grid=main.querySelector('.month-grid');
+    if(grid){
+      const rows=Math.ceil((pad+last.getDate()+(6-last.getDay()))/7)+1; // +1 for header row
+      grid.style.height='100%';
+      const cells=grid.querySelectorAll('.month-cell');
+      cells.forEach(c=>c.style.height=`calc((100vh - 120px) / ${rows-1})`);
+    }
+  }
 }
 function mCell(day,other,td){
   const ds=fmtD(day);
