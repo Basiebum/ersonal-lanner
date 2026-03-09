@@ -30,6 +30,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .nav-arrow{background:var(--surface2);border:1px solid var(--border);color:var(--text);width:30px;height:30px;border-radius:4px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:border-color .2s,color .2s;font-family:'IBM Plex Mono',monospace;}
 .nav-arrow:hover{border-color:var(--accent);color:var(--accent);}
 .period-label{font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:.78rem;min-width:136px;text-align:center;letter-spacing:.06em;color:var(--text);}
+@media(max-width:640px){.period-label{min-width:0;font-size:.72rem;}}
 .btn-primary{background:var(--accent);color:#070d0e;border:none;padding:7px 14px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.68rem;cursor:pointer;transition:background .2s;white-space:nowrap;letter-spacing:.08em;text-transform:uppercase;}
 .btn-primary:hover{background:#38e8d0;}
 .btn-secondary{background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:.68rem;cursor:pointer;transition:border-color .2s,color .2s;white-space:nowrap;letter-spacing:.08em;text-transform:uppercase;}
@@ -1316,14 +1317,19 @@ function navigate(d){
 function updateLabel(){
   const el=document.getElementById('period-label');
   const td=today0();
+  const mob=window.innerWidth<=640;
   if(currentView==='daily'){
-    el.textContent=currentDate.getTime()===td.getTime()?'Today':`${DS[currentDate.getDay()]}, ${currentDate.getDate()} ${MN[currentDate.getMonth()].slice(0,3)}`;
+    if(currentDate.getTime()===td.getTime()) el.textContent='Today';
+    else if(mob) el.textContent=`${currentDate.getDate()} ${MN[currentDate.getMonth()].slice(0,3)}`;
+    else el.textContent=`${DS[currentDate.getDay()]}, ${currentDate.getDate()} ${MN[currentDate.getMonth()].slice(0,3)}`;
   }else if(currentView==='weekly'){
     const ws=wkStart(new Date(currentDate));
     const we=new Date(ws);we.setDate(we.getDate()+6);
-    el.textContent=`${ws.getDate()} ${MN[ws.getMonth()].slice(0,3)} – ${we.getDate()} ${MN[we.getMonth()].slice(0,3)}`;
+    if(mob) el.textContent=`${ws.getDate()}–${we.getDate()} ${MN[we.getMonth()].slice(0,3)}`;
+    else el.textContent=`${ws.getDate()} ${MN[ws.getMonth()].slice(0,3)} – ${we.getDate()} ${MN[we.getMonth()].slice(0,3)}`;
   }else{
-    el.textContent=`${MN[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+    if(mob) el.textContent=`${MN[currentDate.getMonth()].slice(0,3)} ${String(currentDate.getFullYear()).slice(2)}`;
+    else el.textContent=`${MN[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
   }
 }
 function wkStart(d){const s=new Date(d);s.setDate(s.getDate()-s.getDay());s.setHours(0,0,0,0);return s;}
