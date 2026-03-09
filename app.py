@@ -21,16 +21,26 @@ else:
 
 @app.route("/")
 def home():
-    # Always show the personal website landing page
+    # Always show personal website
     return render_template('landing.html')
+
+
+@app.route('/login')
+def login_page():
+    # If already logged in go straight to planner
+    if session.get('user_id'):
+        from flask import redirect, url_for
+        return redirect('/planner')
+    return render_template('login.html')
 
 
 @app.route('/app')
 @app.route('/planner')
 def app_page():
-    # Planner app — redirect to login page if not authenticated
+    # Planner — redirect to login if not authenticated
     if not session.get('user_id'):
-        return render_template('index.html')  # index handles its own login modal
+        from flask import redirect
+        return redirect('/login')
     return render_template('index.html')
 
 
