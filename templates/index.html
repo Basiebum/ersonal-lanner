@@ -201,6 +201,45 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 /* ── SPORTS PAGE ── */
 .sports-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px;}
 @media(max-width:700px){.sports-grid{grid-template-columns:1fr;}}
+
+/* Mobile bottom nav */
+#mobile-bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+  display: none;
+  grid-template-columns: repeat(4, 1fr);
+}
+.mob-tab {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: none; border: none; cursor: pointer;
+  padding: 4px 0; color: var(--muted); transition: color .2s;
+}
+.mob-tab.active { color: var(--accent); }
+.mob-tab-icon { font-size: 1.15rem; line-height: 1; }
+.mob-tab-label { font-family: 'IBM Plex Mono', monospace; font-size: .55rem; letter-spacing: .08em; text-transform: uppercase; }
+
+/* Hide on mobile */
+@media(max-width: 640px) {
+  .mobile-hide { display: none !important; }
+  #page-tabs-desktop { display: none !important; }
+  #mobile-bottom-nav { display: grid !important; }
+  /* Push content up so bottom nav doesn't cover it */
+  .app-body { padding-bottom: 60px; }
+  /* Tighter header */
+  header { padding: 8px 12px; gap: 6px; }
+  .logo { font-size: 1.1rem !important; }
+  .period-label { font-size: .7rem; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .view-tabs { gap: 1px; }
+  .view-tab { padding: 4px 8px; font-size: .62rem; }
+  .btn-primary { padding: 6px 10px; font-size: .7rem; }
+  .btn-secondary { padding: 6px 10px; font-size: .7rem; }
+  .nav-arrow { width: 26px; height: 26px; font-size: .8rem; }
+  /* Settings menu opens upward on mobile */
+  #settings-menu { bottom: auto; top: calc(100% + 6px); right: 0; left: auto; max-height: 70vh; overflow-y: auto; }
+}
 .sports-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;}
 .sports-card-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
 .sports-card-icon{font-size:1.4rem;line-height:1;}
@@ -344,66 +383,105 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <body>
 
 <header>
+  <!-- Logo -->
   <div style="display:flex;align-items:center;gap:0;flex-shrink:0;">
     <div class="logo" style="color:var(--text);">wig<span style="color:var(--accent);">bo</span></div>
     <span id="sync-dot" title="Sync status"></span>
   </div>
-  <div class="page-tabs">
+
+  <!-- Page tabs — hidden on mobile, shown via bottom nav instead -->
+  <div class="page-tabs" id="page-tabs-desktop">
     <button class="page-tab active" onclick="showPage('calendar')">Calendar</button>
     <button class="page-tab" onclick="showPage('project')">Project</button>
     <button class="page-tab" onclick="showPage('sports')">Sports</button>
     <button class="page-tab" onclick="showPage('review')">Report</button>
   </div>
-  <div id="cal-controls" style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-left:auto;">
-    <div class="view-tabs">
-      <button class="view-tab active" onclick="switchView('daily')">Day</button>
-      <button class="view-tab" onclick="switchView('weekly')">Week</button>
-      <button class="view-tab" onclick="switchView('monthly')">Month</button>
+
+  <!-- Right side controls -->
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;">
+
+    <!-- Calendar controls -->
+    <div id="cal-controls" style="display:flex;align-items:center;gap:6px;">
+      <div class="view-tabs">
+        <button class="view-tab active" onclick="switchView('daily')">Day</button>
+        <button class="view-tab" onclick="switchView('weekly')">Week</button>
+        <button class="view-tab mobile-hide" onclick="switchView('monthly')">Month</button>
+      </div>
+      <div class="header-nav">
+        <button class="nav-arrow" onclick="navigate(-1)">←</button>
+        <div class="period-label" id="period-label"></div>
+        <button class="nav-arrow" onclick="navigate(1)">→</button>
+      </div>
+      <button class="btn-primary" onclick="openEventModal()">+ Event</button>
     </div>
-    <div class="header-nav">
-      <button class="nav-arrow" onclick="navigate(-1)">←</button>
-      <div class="period-label" id="period-label"></div>
-      <button class="nav-arrow" onclick="navigate(1)">→</button>
+
+    <!-- Project controls -->
+    <div id="proj-controls" style="display:none;align-items:center;gap:6px;">
+      <button class="btn-primary" onclick="openTaskModal()">+ Task</button>
+      <button class="btn-secondary" onclick="openPhaseModal()">+ Phase</button>
     </div>
-    <button class="btn-primary" onclick="openEventModal()">+ Event</button>
-    <button class="btn-secondary" id="btn-wake-time" onclick="openWakeModal()" style="padding:7px 11px;font-size:.76rem;" title="Set wake time for today">⏰</button>
-  </div>
-  <div id="proj-controls" style="display:none;align-items:center;gap:9px;margin-left:auto;">
-    <button class="btn-primary" onclick="openTaskModal()">+ Task</button>
-    <button class="btn-secondary" onclick="openPhaseModal()">+ Phase</button>
-  </div>
-  <div id="sports-controls" style="display:none;align-items:center;gap:9px;margin-left:auto;">
-    <button class="btn-primary" onclick="openSportModal()">+ Sport</button>
-    <button class="btn-secondary" onclick="openRaceModal()">+ Race</button>
-    <button class="btn-secondary" onclick="openGoalModal()">+ Goal</button>
-  </div>
-  <div id="review-controls" style="display:none;align-items:center;gap:9px;margin-left:auto;">
-    <span style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;">Weekly Report</span>
-  </div>
-  <!-- Google Calendar sync button in header -->
-  <button class="btn-secondary" id="gcal-sync-btn" style="display:none;padding:7px 11px;font-size:.8rem;" title="Sync with Google Calendar">⟳ Google Cal</button>
-  <div style="flex-shrink:0;margin-left:4px;position:relative;">
-    <button class="btn-secondary" id="settings-btn" style="padding:7px 11px;font-size:.92rem;" title="Settings & account">⚙</button>
-    <div id="settings-menu">
-      <div id="settings-user-email" style="display:none;padding:5px 10px 7px;font-size:.68rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;"></div>
-      <div class="set-section">Account</div>
-      <button class="set-item" id="s-login-btn">🔑 Log in / Register</button>
-      <button class="set-item" id="s-logout-btn" style="display:none;">↩ Log out</button>
-      <hr class="set-sep">
-      <div class="set-section">Google Calendar</div>
-      <button class="set-item" id="gcal-connect-btn">📅 Connect Google Calendar</button>
-      <button class="set-item" id="gcal-disconnect-btn" style="display:none;">✕ Disconnect Google Calendar</button>
-      <button class="set-item" id="gcal-sync-menu-btn" style="display:none;">⟳ Sync now</button>
-      <hr class="set-sep">
-      <div class="set-section">Data</div>
-      <button class="set-item" id="s-push-btn">⬆ Push to server</button>
-      <button class="set-item" id="s-pull-btn">⬇ Pull from server</button>
-      <hr class="set-sep">
-      <button class="set-item" id="s-export-btn">💾 Export backup</button>
-      <label class="set-item" id="s-import-label">📂 Import backup<input type="file" id="s-import-file" accept=".json" style="display:none"></label>
+
+    <!-- Sports controls -->
+    <div id="sports-controls" style="display:none;align-items:center;gap:6px;">
+      <button class="btn-primary" onclick="openSportModal()">+ Sport</button>
+      <button class="btn-secondary mobile-hide" onclick="openRaceModal()">+ Race</button>
+      <button class="btn-secondary mobile-hide" onclick="openGoalModal()">+ Goal</button>
+    </div>
+
+    <!-- Review controls -->
+    <div id="review-controls" style="display:none;align-items:center;gap:6px;">
+      <span class="mobile-hide" style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;">Weekly Report</span>
+    </div>
+
+    <!-- Settings -->
+    <div style="flex-shrink:0;position:relative;">
+      <button class="btn-secondary" id="settings-btn" style="padding:7px 11px;font-size:.92rem;" title="Settings & account">⚙</button>
+      <div id="settings-menu">
+        <div id="settings-user-email" style="display:none;padding:5px 10px 7px;font-size:.68rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;"></div>
+        <div class="set-section">Account</div>
+        <button class="set-item" id="s-login-btn">🔑 Log in / Register</button>
+        <button class="set-item" id="s-logout-btn" style="display:none;">↩ Log out</button>
+        <hr class="set-sep">
+        <div class="set-section">Google Calendar</div>
+        <button class="set-item" id="gcal-connect-btn">📅 Connect Google Calendar</button>
+        <button class="set-item" id="gcal-disconnect-btn" style="display:none;">✕ Disconnect Google Calendar</button>
+        <button class="set-item" id="gcal-sync-menu-btn" style="display:none;">⟳ Sync now</button>
+        <button class="set-item" id="gcal-sync-btn" style="display:none;">⟳ Sync Google Cal</button>
+        <hr class="set-sep">
+        <div class="set-section">Calendar</div>
+        <button class="set-item" id="s-wake-btn">⏰ Set wake / sleep time</button>
+        <hr class="set-sep">
+        <div class="set-section">Data</div>
+        <button class="set-item" id="s-push-btn">⬆ Push to server</button>
+        <button class="set-item" id="s-pull-btn">⬇ Pull from server</button>
+        <hr class="set-sep">
+        <button class="set-item" id="s-export-btn">💾 Export backup</button>
+        <label class="set-item" id="s-import-label">📂 Import backup<input type="file" id="s-import-file" accept=".json" style="display:none"></label>
+        <label class="set-item" id="s-import-projects-label" title="Only restores phases, tasks & sessions — leaves everything else untouched">📁 Import projects only<input type="file" id="s-import-projects-file" accept=".json" style="display:none"></label>
+      </div>
     </div>
   </div>
 </header>
+
+<!-- Mobile bottom nav -->
+<nav id="mobile-bottom-nav">
+  <button class="mob-tab active" onclick="showPage('calendar')" data-page="calendar">
+    <span class="mob-tab-icon">📅</span>
+    <span class="mob-tab-label">Calendar</span>
+  </button>
+  <button class="mob-tab" onclick="showPage('project')" data-page="project">
+    <span class="mob-tab-icon">📋</span>
+    <span class="mob-tab-label">Project</span>
+  </button>
+  <button class="mob-tab" onclick="showPage('sports')" data-page="sports">
+    <span class="mob-tab-icon">🏃</span>
+    <span class="mob-tab-label">Sports</span>
+  </button>
+  <button class="mob-tab" onclick="showPage('review')" data-page="review">
+    <span class="mob-tab-icon">📊</span>
+    <span class="mob-tab-label">Report</span>
+  </button>
+</nav>
 
 <div id="toast"></div>
 
@@ -496,6 +574,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <div class="modal-actions">
       <button class="btn-delete" id="ev-del-btn" style="display:none" onclick="deleteEvent()">Delete</button>
       <button class="btn-delete" id="ev-del-series-btn" style="display:none;background:rgba(255,60,60,.07);" onclick="deleteEventSeries()">Delete all in series</button>
+      <button class="btn-secondary" onclick="closeModal('ev-modal');openWakeModal()" style="margin-right:auto;">⏰ Wake time</button>
       <button class="btn-cancel" onclick="closeModal('ev-modal')">Cancel</button>
       <button class="btn-save" onclick="saveEvent()">Save</button>
     </div>
@@ -1151,6 +1230,7 @@ function showPage(p){
   document.getElementById('sports-controls').style.display=p==='sports'?'flex':'none';
   document.getElementById('review-controls').style.display=p==='review'?'flex':'none';
   document.querySelectorAll('.page-tab').forEach((t,i)=>t.classList.toggle('active',pages[i]===p));
+  document.querySelectorAll('.mob-tab').forEach(t=>t.classList.toggle('active',t.dataset.page===p));
   if(p==='project')renderGantt();
   else if(p==='sports')renderSports();
   else if(p==='review')renderReview();
@@ -3172,7 +3252,34 @@ function importData(e){
   e.target.value=''; // reset so same file can be re-imported
 }
 
-// ── SYNC WITH SERVER (Flask + Supabase)
+// ── IMPORT PROJECTS ONLY ── restores phases/tasks/sessions/subtasks, nothing else
+function importProjectsOnly(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      let imported=[];
+      if(data.pl3_phases)  {phases=data.pl3_phases;    persist('pl3_phases',phases);   imported.push('phases');}
+      if(data.pl3_tasks)   {tasks=data.pl3_tasks;      persist('pl3_tasks',tasks);     imported.push('tasks');}
+      if(data.pl3_sessions){sessions=data.pl3_sessions;persist('pl3_sessions',sessions);imported.push('sessions');}
+      if(data.pl3_subtasks){subtasks=data.pl3_subtasks;persist('pl3_subtasks',subtasks);imported.push('subtasks');}
+      if(!imported.length){
+        showToast('No project data found in this backup');
+        return;
+      }
+      render();
+      if(currentPage==='project')renderGantt();
+      showToast('Projects imported ✓ ('+imported.join(', ')+')');
+    }catch(err){
+      alert('Import failed — make sure you select a valid backup JSON file.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+
 async function syncSave(manual=false){
   setSyncDot('syncing');
   try{
@@ -3279,8 +3386,11 @@ function _initSettings(){
   item('s-push-btn',          ()=>syncSave(true));
   item('s-pull-btn',          ()=>syncLoad(true));
   item('s-export-btn',        ()=>exportData());
+  item('s-wake-btn',          ()=>openWakeModal());
   const imp = document.getElementById('s-import-file');
   if(imp) imp.onchange = function(e){ menu.classList.remove('open'); importData(e); };
+  const impProj = document.getElementById('s-import-projects-file');
+  if(impProj) impProj.onchange = function(e){ menu.classList.remove('open'); importProjectsOnly(e); };
 }
 function attachEventListeners(){
   // Page tabs
