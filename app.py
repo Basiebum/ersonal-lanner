@@ -1,6 +1,5 @@
 import os
 import logging
-from datetime import timedelta
 from flask import Flask, render_template, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from supabase import create_client
@@ -8,12 +7,6 @@ from supabase import create_client
 app = Flask(__name__, template_folder="templates")
 # secret for Flask session cookies; set SECRET_KEY in production
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret')
-
-# Keep users logged in for 90 days — fixes iOS webapp session drop
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=90)
-app.config['SESSION_COOKIE_SECURE'] = True     # HTTPS only (Render is HTTPS)
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Required for iOS home screen webapps
-app.config['SESSION_COOKIE_HTTPONLY'] = True
 
 # Configure Supabase client using environment variables
 # Set SUPABASE_URL and SUPABASE_SERVICE_KEY (service_role) in your host environment
@@ -28,17 +21,16 @@ else:
 
 @app.route("/")
 def home():
-    # Landing page — if authenticated redirect to app, else show landing
-    if session.get('user_id'):
-        return render_template('index.html')
+    # Always show the personal website landing page
     return render_template('landing.html')
 
 
 @app.route('/app')
+@app.route('/planner')
 def app_page():
-    # serve the single-page app; require authentication
+    # Planner app — redirect to login page if not authenticated
     if not session.get('user_id'):
-        return render_template('landing.html')
+        return render_template('index.html')  # index handles its own login modal
     return render_template('index.html')
 
 
@@ -124,7 +116,6 @@ def api_register():
             logging.error('Supabase insert user error: %s', ins.error)
             return jsonify({'error': str(ins.error)}), 500
         user = ins.data[0]
-        session.permanent = True
         session['user_id'] = user.get('id') or user.get('email')
         return jsonify({'data': {'user_id': session['user_id'], 'email': email}}), 200
     except Exception:
@@ -149,7 +140,6 @@ def api_login():
         pwd_hash = user.get('password_hash')
         if not pwd_hash or not check_password_hash(pwd_hash, password):
             return jsonify({'error': 'invalid credentials'}), 400
-        session.permanent = True
         session['user_id'] = user.get('id') or user.get('email')
         return jsonify({'data': {'user_id': session['user_id'], 'email': user.get('email')}}), 200
     except Exception:
