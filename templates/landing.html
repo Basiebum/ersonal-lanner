@@ -9,6 +9,131 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
+/* ── CUSTOM CURSOR ── */
+.cursor-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--navy); position: fixed; pointer-events: none;
+  z-index: 9999; transform: translate(-50%,-50%);
+  transition: transform .1s, background .3s;
+}
+.cursor-ring {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1.5px solid var(--navy); position: fixed; pointer-events: none;
+  z-index: 9998; transform: translate(-50%,-50%);
+  transition: width .3s, height .3s, border-color .3s, opacity .3s;
+  opacity: .45;
+}
+.cursor-ring.expanded { width: 56px; height: 56px; opacity: .2; }
+.cursor-ring.sport { border-color: #2d8c5e; opacity: .5; }
+.cursor-dot.sport { background: #2d8c5e; }
+body { cursor: none; }
+a, button { cursor: none; }
+@media (pointer: coarse) { .cursor-dot, .cursor-ring { display: none; } body, a, button { cursor: auto; } }
+
+/* ── TYPEWRITER ── */
+.hero-tag-text { display: inline; }
+.hero-tag-cursor {
+  display: inline-block; width: 2px; height: .9em;
+  background: var(--navy); margin-left: 2px;
+  vertical-align: middle; animation: blink .7s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+/* ── FILTER TABS ── */
+.filter-tabs {
+  display: flex; gap: 2px; margin-bottom: 36px;
+}
+.filter-tab {
+  font-family: var(--mono); font-size: .63rem; letter-spacing: .14em;
+  text-transform: uppercase; padding: 9px 20px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--muted); cursor: none; transition: all .2s;
+}
+.filter-tab.active {
+  background: var(--navy); color: var(--bg); border-color: var(--navy);
+}
+.filter-tab:hover:not(.active) { border-color: var(--navy); color: var(--navy); }
+.project-card {
+  transition: background .25s, opacity .4s, transform .4s;
+}
+.project-card.hidden { opacity: 0; transform: scale(.97); pointer-events: none; }
+
+/* ── BEYOND CARD INTERACTIVE ── */
+.activity-viz {
+  height: 56px; margin-top: 16px; position: relative; overflow: hidden;
+}
+.run-track {
+  height: 3px; background: var(--border);
+  border-radius: 2px; margin-top: 26px; position: relative;
+}
+.run-progress {
+  height: 100%; background: var(--navy);
+  border-radius: 2px; width: 0%;
+  transition: width 2s cubic-bezier(.25,.1,.25,1);
+}
+.run-runner {
+  position: absolute; top: -10px; font-size: 14px;
+  transition: left 2s cubic-bezier(.25,.1,.25,1);
+  left: 0%;
+}
+.run-labels {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: .55rem;
+  letter-spacing: .08em; color: var(--muted); margin-top: 6px;
+}
+.cadence-ring {
+  display: flex; align-items: center; justify-content: center;
+  gap: 18px; padding: 8px 0;
+}
+.cadence-circle {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 2px solid var(--border); position: relative;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: .65rem; color: var(--navy);
+  transition: border-color .3s;
+}
+.cadence-circle.spin { animation: spinRim 1.8s linear infinite; border-color: var(--navy); }
+@keyframes spinRim {
+  0%   { box-shadow: 2px 0 0 0 var(--navy); }
+  25%  { box-shadow: 0 2px 0 0 var(--navy); }
+  50%  { box-shadow: -2px 0 0 0 var(--navy); }
+  75%  { box-shadow: 0 -2px 0 0 var(--navy); }
+  100% { box-shadow: 2px 0 0 0 var(--navy); }
+}
+.cadence-label {
+  font-family: var(--mono); font-size: .6rem;
+  letter-spacing: .1em; color: var(--muted); text-transform: uppercase;
+}
+.race-dots {
+  display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap;
+}
+.race-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  border: 1.5px solid var(--border); background: transparent;
+  transition: background .15s, border-color .15s;
+}
+.race-dot.on { background: var(--navy); border-color: var(--navy); }
+
+/* ── MAGNETIC BUTTON ── */
+.btn-magnetic { transition: transform .2s cubic-bezier(.25,.46,.45,.94), background .2s; display: inline-block; }
+
+/* ── SCROLL PROGRESS ── */
+.scroll-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--navy); z-index: 200; width: 0%;
+  transition: width .1s linear;
+}
+
+/* ── SKILL BAR ANIMATION ── */
+.skill-bar-wrap {
+  height: 2px; background: var(--border); margin-top: 8px; overflow: hidden;
+}
+.skill-bar {
+  height: 100%; background: var(--navy); width: 0%;
+  transition: width 1.2s cubic-bezier(.25,.1,.25,1);
+}
+.skill-item.visible .skill-bar { width: var(--skill-w); }
+
 :root {
   --bg:        #f3ede4;
   --surface:   #ece5db;
@@ -665,6 +790,10 @@ footer {
 </head>
 <body>
 
+<div class="scroll-bar" id="scrollBar"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
 <nav id="nav">
   <div class="nav-logo">B.Wigboldus — AE</div>
   <ul class="nav-links">
@@ -691,7 +820,7 @@ footer {
 <!-- ── HERO ── -->
 <section class="hero" id="home">
   <div class="hero-left">
-    <div class="hero-tag">Automotive Engineer</div>
+    <div class="hero-tag"><span class="hero-tag-text" id="heroTagText"></span><span class="hero-tag-cursor"></span></div>
     <h1 class="hero-name">Bastiaan<br><span>Wigboldus</span></h1>
     <p class="hero-intro">
       Final-year Automotive Engineering student and maker, currently completing my thesis internship at <strong>Hyster-Yale</strong>. I specialize in <strong>mechanical design and simulation</strong>, complemented by <strong>practical, hands-on experience</strong> in the workshop. I'm always motivated to get involved in projects where I can see a design through from the screen to the finished build.
@@ -752,29 +881,35 @@ footer {
   <div>
     <div class="section-label reveal" data-num="">Core Skills</div>
     <div class="skills-grid reveal reveal-delay-1">
-      <div class="skill-item">
+      <div class="skill-item reveal" style="--skill-w:90%">
         <div class="skill-item-name">CAD</div>
         <div class="skill-item-sub">SolidWorks · NX</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
       </div>
-      <div class="skill-item">
+      <div class="skill-item reveal" style="--skill-w:85%">
         <div class="skill-item-name">FEM / FEA</div>
         <div class="skill-item-sub">Structural Analysis</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
       </div>
-      <div class="skill-item">
+      <div class="skill-item reveal" style="--skill-w:75%">
         <div class="skill-item-name">CFD</div>
         <div class="skill-item-sub">Flow Simulation</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
       </div>
-      <div class="skill-item">
+      <div class="skill-item reveal" style="--skill-w:80%">
         <div class="skill-item-name">Mechanic</div>
         <div class="skill-item-sub">Classic / Modern Cars · Hands-on</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
       </div>
-      <div class="skill-item">
+      <div class="skill-item reveal" style="--skill-w:65%">
         <div class="skill-item-name">Programming</div>
         <div class="skill-item-sub">Python · C · HTML · SQL</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
       </div>
-      <div class="skill-item">
+      <div class="skill-item reveal" style="--skill-w:88%">
         <div class="skill-item-name">Formula Student</div>
         <div class="skill-item-sub">2 Years · Chief Chassis & Bodywork</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
       </div>
     </div>
   </div>
@@ -803,29 +938,41 @@ footer {
 
   <div class="beyond-grid">
 
-        <!-- CARD 1: SPORTS -->
-    <div class="beyond-card reveal reveal-delay-2">
+    <!-- CARD 1: SPORTS -->
+    <div class="beyond-card reveal reveal-delay-2" id="sportCard">
       <div class="beyond-card-img">
         <img src="/static/images/Bike.jpg" alt="Bike picture">
       </div>
       <div class="beyond-card-body">
-        <div class="beyond-card-tag">Sport · Goal</div>
-        <div class="beyond-card-title">Sports</div>
-        <div class="beyond-card-desc">I love all sports and try to stay active year-round. Whether it's running, cycling, or team sports, I find that physical activity helps me stay focused and energized.</div>
-        <div class="beyond-card-stat">🎯 Being the best version of myself</div>
+        <div class="beyond-card-tag">Endurance · Goal</div>
+        <div class="beyond-card-title">Running & Cycling</div>
+        <div class="beyond-card-desc">Completed the Rome Marathon and training year-round. Running, cycling, and rowing — endurance sports taught me that the process matters as much as the result. Same principle applies in engineering.</div>
+        <div class="activity-viz" id="runViz">
+          <div class="run-track">
+            <div class="run-progress" id="runProgress"></div>
+            <div class="run-runner" id="runRunner">🏃</div>
+          </div>
+          <div class="run-labels">
+            <span>0 km</span><span>Rome Marathon — 42.2 km ✓</span>
+          </div>
+        </div>
+        <div class="beyond-card-stat">🎯 Rome Marathon finisher · Triathlon next</div>
       </div>
     </div>
 
     <!-- CARD 2: SIM RACING -->
-    <div class="beyond-card reveal">
+    <div class="beyond-card reveal" id="simCard">
       <div class="beyond-card-img">
         <img src="/static/images/Simracing.jpg" alt="Sim Racing LAN">
-        </div>
       </div>
       <div class="beyond-card-body">
         <div class="beyond-card-tag">Motorsport · Competition</div>
         <div class="beyond-card-title">Sim Racing</div>
         <div class="beyond-card-desc">Competing at national and international level in sim racing — 4th in the Netherlands overall championship, and LAN events abroad. Motorsport when you can't afford the real thing.</div>
+        <div class="activity-viz">
+          <div class="cadence-label" style="margin-bottom:6px;">NL Championship — Grid Position</div>
+          <div class="race-dots" id="raceDots"></div>
+        </div>
         <div class="beyond-card-stat">🏆 4th of The Netherlands · International LAN Events</div>
       </div>
     </div>
@@ -856,8 +1003,15 @@ footer {
     <div class="projects-count">04 PROJECTS</div>
   </div>
 
+  <div class="filter-tabs reveal">
+    <button class="filter-tab active" data-filter="all">All</button>
+    <button class="filter-tab" data-filter="fem">FEM / Structural</button>
+    <button class="filter-tab" data-filter="aero">Aero / CFD</button>
+    <button class="filter-tab" data-filter="software">Software</button>
+  </div>
+
   <div class="projects-grid">
-    <a href="/projects/hyster-yale-test-bench" class="project-card reveal">
+    <a href="/projects/hyster-yale-test-bench" class="project-card reveal" data-category="fem">
       <div class="project-card-top">
         <div class="project-num">01 · 2026</div>
         <div class="project-name">Hyster-Yale Test Bench</div>
@@ -871,7 +1025,7 @@ footer {
       <div class="project-arrow">↗</div>
     </a>
 
-    <a href="/projects/formula-student-front-wing" class="project-card reveal reveal-delay-1">
+    <a href="/projects/formula-student-front-wing" class="project-card reveal reveal-delay-1" data-category="aero">
       <div class="project-card-top">
         <div class="project-num">02 · 2025</div>
         <div class="project-name">Formula Student Front Wing</div>
@@ -885,7 +1039,7 @@ footer {
       <div class="project-arrow">↗</div>
     </a>
 
-    <a href="/projects/formula-student-chassis" class="project-card reveal reveal-delay-1">
+    <a href="/projects/formula-student-chassis" class="project-card reveal reveal-delay-1" data-category="fem">
       <div class="project-card-top">
         <div class="project-num">03 · 2024</div>
         <div class="project-name">Formula Student Chassis</div>
@@ -899,7 +1053,7 @@ footer {
       <div class="project-arrow">↗</div>
     </a>
 
-    <a href="/projects/cs50-final-project" class="project-card reveal reveal-delay-2">
+    <a href="/projects/cs50-final-project" class="project-card reveal reveal-delay-2" data-category="software">
       <div class="project-card-top">
         <div class="project-num">04 · 2023</div>
         <div class="project-name">CS50 Final Project</div>
@@ -1014,40 +1168,102 @@ footer {
 </footer>
 
 <script>
+/* ── CUSTOM CURSOR ── */
+const dot = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx = -200, my = -200, rx = -200, ry = -200;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function animCursor() {
+  rx += (mx - rx) * .12; ry += (my - ry) * .12;
+  dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animCursor);
+})();
+document.querySelectorAll('a, button, .project-card, .skill-item').forEach(el => {
+  el.addEventListener('mouseenter', () => ring.classList.add('expanded'));
+  el.addEventListener('mouseleave', () => ring.classList.remove('expanded'));
+});
+document.querySelectorAll('.beyond-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { ring.classList.add('sport'); dot.classList.add('sport'); });
+  el.addEventListener('mouseleave', () => { ring.classList.remove('sport'); dot.classList.remove('sport'); });
+});
+
+/* ── SCROLL PROGRESS BAR ── */
+const scrollBar = document.getElementById('scrollBar');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  scrollBar.style.width = pct + '%';
+});
+
+/* ── TYPEWRITER ── */
+const phrases = ['Automotive Engineer', 'Endurance Runner', 'Formula Student Alumni', 'Classic Car Mechanic', 'Maker & Builder'];
+let pIdx = 0, cIdx = 0, deleting = false;
+const tagEl = document.getElementById('heroTagText');
+function typewriter() {
+  const phrase = phrases[pIdx];
+  if (!deleting) {
+    tagEl.textContent = phrase.slice(0, ++cIdx);
+    if (cIdx === phrase.length) { deleting = true; setTimeout(typewriter, 1800); return; }
+  } else {
+    tagEl.textContent = phrase.slice(0, --cIdx);
+    if (cIdx === 0) { deleting = false; pIdx = (pIdx + 1) % phrases.length; setTimeout(typewriter, 300); return; }
+  }
+  setTimeout(typewriter, deleting ? 40 : 70);
+}
+setTimeout(typewriter, 900);
+
+/* ── PROJECT FILTER ── */
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const filter = tab.dataset.filter;
+    document.querySelectorAll('.project-card').forEach(card => {
+      if (filter === 'all' || card.dataset.category === filter) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+  });
+});
+
+/* ── NAV SCROLL ── */
 const nav = document.getElementById('nav');
 const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobileMenu');
-
-// Nav scroll
 window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', window.scrollY > 60);
 });
-
-// Hamburger toggle
 hamburger.addEventListener('click', () => {
   hamburger.classList.toggle('open');
   mobileMenu.classList.toggle('open');
 });
-
 function closeMobile() {
   hamburger.classList.remove('open');
   mobileMenu.classList.remove('open');
 }
-
-// Close on outside click
 document.addEventListener('click', e => {
   if (!nav.contains(e.target) && !mobileMenu.contains(e.target)) closeMobile();
 });
 
-// Scroll reveal
+/* ── SCROLL REVEAL ── */
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(el => {
-    if (el.isIntersecting) { el.target.classList.add('visible'); observer.unobserve(el.target); }
+    if (el.isIntersecting) {
+      el.target.classList.add('visible');
+      observer.unobserve(el.target);
+      /* skill bars */
+      if (el.target.classList.contains('skill-item')) {
+        const bar = el.target.querySelector('.skill-bar');
+        if (bar) bar.style.width = el.target.style.getPropertyValue('--skill-w');
+      }
+    }
   });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// Active nav highlight
+/* ── ACTIVE NAV HIGHLIGHT ── */
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-links a:not(.nav-cv)');
 window.addEventListener('scroll', () => {
@@ -1056,6 +1272,58 @@ window.addEventListener('scroll', () => {
   navLinks.forEach(a => {
     a.style.color = a.getAttribute('href') === '#' + current ? 'var(--navy)' : '';
   });
+});
+
+/* ── RUN TRACKER ANIMATION ── */
+const runObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      setTimeout(() => {
+        document.getElementById('runProgress').style.width = '100%';
+        document.getElementById('runRunner').style.left = 'calc(100% - 16px)';
+      }, 400);
+      runObs.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+const runViz = document.getElementById('runViz');
+if (runViz) runObs.observe(runViz);
+
+/* ── RACE DOTS ANIMATION ── */
+const dotsContainer = document.getElementById('raceDots');
+if (dotsContainer) {
+  const total = 20;
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'race-dot';
+    dotsContainer.appendChild(d);
+  }
+  const dotsObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const dots = dotsContainer.querySelectorAll('.race-dot');
+        // light up from last to 4th (position = 4th out of 20)
+        let i = total - 1;
+        const interval = setInterval(() => {
+          if (i >= total - 4) { dots[i].classList.add('on'); }
+          if (--i < total - 4) clearInterval(interval);
+        }, 60);
+        dotsObs.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  dotsObs.observe(dotsContainer);
+}
+
+/* ── MAGNETIC BUTTONS ── */
+document.querySelectorAll('.btn-dark, .btn-outline, .nav-cv').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const r = btn.getBoundingClientRect();
+    const x = (e.clientX - r.left - r.width/2) * .25;
+    const y = (e.clientY - r.top - r.height/2) * .25;
+    btn.style.transform = `translate(${x}px, ${y}px)`;
+  });
+  btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
 });
 </script>
 </body>
