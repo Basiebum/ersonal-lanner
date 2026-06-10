@@ -3,1327 +3,576 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bastiaan Wigboldus — Automotive Engineer</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Bastiaan Wigboldus</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+:root{
+  --bg:#f3ede4;
+  --surface:#ece5db;
+  --dark:#12181f;
+  --navy:#1e3a5f;
+  --navy-mid:#2a4f80;
+  --text:#12181f;
+  --muted:#7a7268;
+  --border:#d0c8bc;
+  --mono:'IBM Plex Mono',monospace;
+  --display:'Bebas Neue',sans-serif;
+  --body:'DM Sans',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-weight:300;overflow-x:hidden;cursor:none;}
+a{cursor:none;}
+button{cursor:none;}
+@media(pointer:coarse){body,a,button{cursor:auto;}.cursor-dot,.cursor-ring{display:none!important;}}
 
-/* ── CUSTOM CURSOR ── */
-.cursor-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--navy); position: fixed; pointer-events: none;
-  z-index: 9999; transform: translate(-50%,-50%);
-  transition: transform .1s, background .3s;
-}
-.cursor-ring {
-  width: 34px; height: 34px; border-radius: 50%;
-  border: 1.5px solid var(--navy); position: fixed; pointer-events: none;
-  z-index: 9998; transform: translate(-50%,-50%);
-  transition: width .3s, height .3s, border-color .3s, opacity .3s;
-  opacity: .45;
-}
-.cursor-ring.expanded { width: 56px; height: 56px; opacity: .2; }
-.cursor-ring.sport { border-color: #2d8c5e; opacity: .5; }
-.cursor-dot.sport { background: #2d8c5e; }
-body { cursor: none; }
-a, button { cursor: none; }
-@media (pointer: coarse) { .cursor-dot, .cursor-ring { display: none; } body, a, button { cursor: auto; } }
+/* ── CURSOR ── */
+.cursor-dot{width:7px;height:7px;border-radius:50%;background:var(--navy);position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:background .3s;}
+.cursor-ring{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--navy);position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:.4;transition:width .25s,height .25s,opacity .25s;}
+.cursor-ring.big{width:54px;height:54px;opacity:.15;}
 
-/* ── TYPEWRITER ── */
-.hero-tag-text { display: inline; }
-.hero-tag-cursor {
-  display: inline-block; width: 2px; height: .9em;
-  background: var(--navy); margin-left: 2px;
-  vertical-align: middle; animation: blink .7s step-end infinite;
+/* ── ENTRY SCREEN ── */
+#entry{
+  position:fixed;inset:0;z-index:1000;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  transition:opacity .9s ease, transform .9s ease;
 }
-@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+#entry.leaving{opacity:0;transform:scale(1.04);}
+.entry-grid-bg{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(30,58,95,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(30,58,95,.018) 1px,transparent 1px);
+  background-size:64px 64px;
+  pointer-events:none;
+}
+.entry-name{
+  font-family:var(--display);
+  font-size:clamp(5rem,16vw,14rem);
+  line-height:.88;
+  letter-spacing:.02em;
+  color:var(--dark);
+  text-align:center;
+  opacity:0;
+  transform:translateY(30px);
+  animation:fadeUp .8s ease .3s forwards;
+}
+.entry-name span{color:var(--navy);}
+.entry-line{
+  width:60px;height:1px;background:var(--border);
+  margin:36px auto 32px;
+  opacity:0;animation:fadeUp .6s ease .7s forwards;
+}
+.entry-sub{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.2em;
+  color:var(--muted);text-transform:uppercase;text-align:center;
+  margin-bottom:56px;
+  opacity:0;animation:fadeUp .6s ease .8s forwards;
+}
+.entry-btn{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--bg);
+  background:var(--navy);border:none;
+  padding:16px 44px;
+  opacity:0;animation:fadeUp .6s ease 1s forwards;
+  transition:background .2s,transform .2s;
+  position:relative;overflow:hidden;
+}
+.entry-btn::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(255,255,255,.08);
+  transform:translateX(-100%);transition:transform .3s;
+}
+.entry-btn:hover::after{transform:translateX(0);}
+.entry-btn:hover{background:var(--navy-mid);}
 
-/* ── FILTER TABS ── */
-.filter-tabs {
-  display: flex; gap: 2px; margin-bottom: 36px;
+/* ── MAIN SITE ── */
+#site{
+  opacity:0;transform:translateY(16px);
+  transition:opacity .8s ease .2s, transform .8s ease .2s;
+  pointer-events:none;
 }
-.filter-tab {
-  font-family: var(--mono); font-size: .63rem; letter-spacing: .14em;
-  text-transform: uppercase; padding: 9px 20px;
-  border: 1px solid var(--border); background: transparent;
-  color: var(--muted); cursor: none; transition: all .2s;
-}
-.filter-tab.active {
-  background: var(--navy); color: var(--bg); border-color: var(--navy);
-}
-.filter-tab:hover:not(.active) { border-color: var(--navy); color: var(--navy); }
-.project-card {
-  transition: background .25s, opacity .4s, transform .4s;
-}
-.project-card.hidden { opacity: 0; transform: scale(.97); pointer-events: none; }
+#site.visible{opacity:1;transform:none;pointer-events:all;}
 
-/* ── BEYOND CARD INTERACTIVE ── */
-.activity-viz {
-  height: 56px; margin-top: 16px; position: relative; overflow: hidden;
+/* ── CHAPTER PROGRESS ── */
+.chapter-bar{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:2px;background:var(--border);
 }
-.run-track {
-  height: 3px; background: var(--border);
-  border-radius: 2px; margin-top: 26px; position: relative;
+.chapter-bar-fill{height:100%;background:var(--navy);width:0%;transition:width .15s linear;}
+.chapter-label{
+  position:fixed;top:14px;right:24px;z-index:500;
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;
+  color:var(--muted);text-transform:uppercase;
+  opacity:0;transition:opacity .3s;
 }
-.run-progress {
-  height: 100%; background: var(--navy);
-  border-radius: 2px; width: 0%;
-  transition: width 2s cubic-bezier(.25,.1,.25,1);
-}
-.run-runner {
-  position: absolute; top: -10px; font-size: 14px;
-  transition: left 2s cubic-bezier(.25,.1,.25,1);
-  left: 0%;
-}
-.run-labels {
-  display: flex; justify-content: space-between;
-  font-family: var(--mono); font-size: .55rem;
-  letter-spacing: .08em; color: var(--muted); margin-top: 6px;
-}
-.cadence-ring {
-  display: flex; align-items: center; justify-content: center;
-  gap: 18px; padding: 8px 0;
-}
-.cadence-circle {
-  width: 40px; height: 40px; border-radius: 50%;
-  border: 2px solid var(--border); position: relative;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: .65rem; color: var(--navy);
-  transition: border-color .3s;
-}
-.cadence-circle.spin { animation: spinRim 1.8s linear infinite; border-color: var(--navy); }
-@keyframes spinRim {
-  0%   { box-shadow: 2px 0 0 0 var(--navy); }
-  25%  { box-shadow: 0 2px 0 0 var(--navy); }
-  50%  { box-shadow: -2px 0 0 0 var(--navy); }
-  75%  { box-shadow: 0 -2px 0 0 var(--navy); }
-  100% { box-shadow: 2px 0 0 0 var(--navy); }
-}
-.cadence-label {
-  font-family: var(--mono); font-size: .6rem;
-  letter-spacing: .1em; color: var(--muted); text-transform: uppercase;
-}
-.race-dots {
-  display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap;
-}
-.race-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  border: 1.5px solid var(--border); background: transparent;
-  transition: background .15s, border-color .15s;
-}
-.race-dot.on { background: var(--navy); border-color: var(--navy); }
-
-/* ── MAGNETIC BUTTON ── */
-.btn-magnetic { transition: transform .2s cubic-bezier(.25,.46,.45,.94), background .2s; display: inline-block; }
-
-/* ── SCROLL PROGRESS ── */
-.scroll-bar {
-  position: fixed; top: 0; left: 0; height: 2px;
-  background: var(--navy); z-index: 200; width: 0%;
-  transition: width .1s linear;
-}
-
-/* ── SKILL BAR ANIMATION ── */
-.skill-bar-wrap {
-  height: 2px; background: var(--border); margin-top: 8px; overflow: hidden;
-}
-.skill-bar {
-  height: 100%; background: var(--navy); width: 0%;
-  transition: width 1.2s cubic-bezier(.25,.1,.25,1);
-}
-.skill-item.visible .skill-bar { width: var(--skill-w); }
-
-:root {
-  --bg:        #f3ede4;
-  --surface:   #ece5db;
-  --surface2:  #e4dcd0;
-  --dark:      #12181f;
-  --navy:      #1e3a5f;
-  --navy-mid:  #2a4f80;
-  --navy-dim:  rgba(30,58,95,.08);
-  --navy-dim2: rgba(30,58,95,.14);
-  --text:      #12181f;
-  --muted:     #7a7268;
-  --border:    #d0c8bc;
-  --mono:      'IBM Plex Mono', monospace;
-  --display:   'Bebas Neue', sans-serif;
-  --body:      'DM Sans', sans-serif;
-}
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--body);
-  font-weight: 300;
-  overflow-x: hidden;
-}
-
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(rgba(30,58,95,.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(30,58,95,.018) 1px, transparent 1px);
-  background-size: 64px 64px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-section, nav, footer { position: relative; z-index: 1; }
+.chapter-label.show{opacity:1;}
 
 /* ── NAV ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 22px 56px;
-  border-bottom: 1px solid transparent;
-  transition: border-color .3s, background .3s;
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:400;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 56px;
+  border-bottom:1px solid transparent;
+  transition:border-color .3s,background .3s;
 }
-nav.scrolled {
-  border-color: var(--border);
-  background: rgba(243,237,228,.93);
-  backdrop-filter: blur(14px);
+nav.scrolled{border-color:var(--border);background:rgba(243,237,228,.93);backdrop-filter:blur(14px);}
+.nav-logo{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;color:var(--navy);text-transform:uppercase;}
+.nav-links{display:flex;gap:36px;list-style:none;align-items:center;}
+.nav-links a{
+  font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;
+  color:var(--muted);text-decoration:none;text-transform:uppercase;
+  transition:color .2s;position:relative;
 }
-.nav-logo {
-  font-family: var(--mono); font-size: .72rem;
-  letter-spacing: .16em; color: var(--navy); text-transform: uppercase;
-}
-.nav-links { display: flex; gap: 36px; list-style: none; align-items: center; }
-.nav-links a {
-  font-family: var(--mono); font-size: .67rem;
-  letter-spacing: .12em; color: var(--muted);
-  text-decoration: none; text-transform: uppercase;
-  transition: color .2s; position: relative;
-}
-.nav-links a::after {
-  content: ''; position: absolute; bottom: -3px; left: 0; right: 0;
-  height: 1px; background: var(--navy);
-  transform: scaleX(0); transform-origin: left; transition: transform .25s;
-}
-.nav-links a:hover { color: var(--navy); }
-.nav-links a:hover::after { transform: scaleX(1); }
-.nav-cv {
-  background: var(--navy) !important; color: var(--bg) !important;
-  padding: 9px 20px; font-family: var(--mono) !important;
-  font-size: .65rem !important; letter-spacing: .12em !important;
-  text-transform: uppercase; text-decoration: none; transition: background .2s !important;
-}
-.nav-cv:hover { background: var(--navy-mid) !important; }
-.nav-cv::after { display: none !important; }
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:1px;background:var(--navy);transform:scaleX(0);transform-origin:left;transition:transform .25s;}
+.nav-links a:hover{color:var(--navy);}
+.nav-links a:hover::after{transform:scaleX(1);}
+.nav-cv{background:var(--navy)!important;color:var(--bg)!important;padding:9px 20px;font-family:var(--mono)!important;font-size:.63rem!important;letter-spacing:.12em!important;text-transform:uppercase;text-decoration:none;transition:background .2s!important;}
+.nav-cv:hover{background:var(--navy-mid)!important;}
+.nav-cv::after{display:none!important;}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:none;padding:4px;background:none;border:none;}
+.nav-hamburger span{display:block;width:24px;height:2px;background:var(--navy);transition:all .3s;}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-hamburger.open span:nth-child(2){opacity:0;}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.nav-mobile{display:none;position:fixed;top:65px;left:0;right:0;background:rgba(243,237,228,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);flex-direction:column;padding:8px 0 20px;z-index:399;}
+.nav-mobile.open{display:flex;}
+.nav-mobile a{font-family:var(--mono);font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:14px 28px;border-bottom:1px solid var(--border);transition:color .2s;}
+.nav-mobile a:hover{color:var(--navy);}
+.nav-mobile .nav-cv-mobile{margin:12px 28px 0;background:var(--navy);color:var(--bg)!important;text-align:center;padding:14px!important;border:none!important;}
 
-/* ── HERO ── */
-.hero {
-  min-height: 100vh;
-  display: grid; grid-template-columns: 1fr 1fr;
-  padding: 0 56px; padding-top: 90px; gap: 0;
-}
-.hero-left {
-  display: flex; flex-direction: column; justify-content: center;
-  padding-bottom: 80px; padding-right: 60px;
-}
-.hero-tag {
-  font-family: var(--mono); font-size: .68rem;
-  letter-spacing: .2em; color: var(--navy); text-transform: uppercase;
-  margin-bottom: 28px; display: flex; align-items: center; gap: 14px;
-  opacity: 0; animation: fadeUp .7s ease .1s forwards;
-}
-.hero-tag::before { content: ''; width: 36px; height: 1px; background: var(--navy); flex-shrink: 0; }
-.hero-name {
-  font-family: var(--display);
-  font-size: clamp(5.5rem, 11vw, 10rem);
-  line-height: .92; letter-spacing: .02em; color: var(--dark);
-  margin-bottom: 28px;
-  opacity: 0; animation: fadeUp .8s ease .2s forwards;
-}
-.hero-name span { color: var(--navy); }
-.hero-intro {
-  font-size: 1rem; font-weight: 300; line-height: 1.8; color: var(--muted);
-  max-width: 460px; margin-bottom: 44px;
-  opacity: 0; animation: fadeUp .7s ease .35s forwards;
-}
-.hero-intro strong { color: var(--text); font-weight: 500; }
-.hero-cta {
-  display: flex; gap: 14px; flex-wrap: wrap;
-  opacity: 0; animation: fadeUp .7s ease .45s forwards;
-}
-.btn-dark {
-  background: var(--navy); color: var(--bg);
-  padding: 14px 32px; font-family: var(--mono); font-size: .7rem;
-  letter-spacing: .12em; text-transform: uppercase; text-decoration: none;
-  transition: background .2s;
-}
-.btn-dark:hover { background: var(--navy-mid); }
-.btn-outline {
-  border: 1.5px solid var(--border); color: var(--muted);
-  padding: 14px 32px; font-family: var(--mono); font-size: .7rem;
-  letter-spacing: .12em; text-transform: uppercase; text-decoration: none;
-  transition: all .2s;
-}
-.btn-outline:hover { border-color: var(--navy); color: var(--navy); }
+/* ── CHAPTERS ── */
+.chapter{padding:100px 10%;max-width:1300px;margin:0 auto;}
+.chapter-eyebrow{font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;color:var(--navy);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.chapter-eyebrow::before{content:'';width:28px;height:1px;background:var(--navy);flex-shrink:0;}
+.chapter-h{font-family:var(--display);font-size:clamp(3.5rem,7vw,6.5rem);line-height:.9;letter-spacing:.02em;color:var(--dark);margin-bottom:32px;}
+.chapter-h span{color:var(--navy);}
+.chapter-body{font-size:1rem;line-height:1.85;color:var(--muted);max-width:640px;}
+.chapter-body strong{color:var(--text);font-weight:500;}
+.chapter-divider{height:1px;background:var(--border);margin:0 10%;}
 
-/* hero right */
-.hero-right {
-  display: flex; flex-direction: column; justify-content: flex-end;
-  padding-bottom: 80px; padding-left: 60px;
-  border-left: 1px solid var(--border);
-  opacity: 0; animation: fadeUp .8s ease .3s forwards;
-}
+/* ── CHAPTER: ENGINEER ── */
+.eng-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;margin-top:60px;}
+.skill-list{display:flex;flex-direction:column;gap:2px;}
+.skill-row{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--surface);border:1px solid var(--border);transition:border-color .2s;}
+.skill-row:hover{border-color:var(--navy);}
+.skill-name{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;color:var(--dark);text-transform:uppercase;}
+.skill-bar-wrap{flex:1;height:2px;background:var(--border);margin:0 20px;overflow:hidden;}
+.skill-bar{height:100%;background:var(--navy);width:0%;transition:width 1.2s cubic-bezier(.25,.1,.25,1);}
+.skill-row.visible .skill-bar{width:var(--w);}
+.skill-pct{font-family:var(--mono);font-size:.6rem;color:var(--muted);}
 
-/* portrait photo */
-.hero-photo {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  max-width: 400px; /* Limits width on large screens so it doesn't get huge */
-  max-height: 500px; /* Limits height to prevent awkward stretching */
-  object-fit: cover;
-  border: 1px solid var(--border);
-  margin-bottom: 28px;
-  background: var(--surface);
-  display: block; /* Changed from flex */
-  overflow: hidden;
-  position: relative;
-  margin-left: auto; /* Centers the image in the right column */
-  margin-right: auto;
-}
-.hero-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* Adjust this percentage to keep your face in frame! */
-  /* 50% 20% means: center horizontally, 20% from the top */
-  object-position: 50% 20%; 
-}
-.photo-placeholder {
-  width: 100%; aspect-ratio: 3/4; max-height: 340px;
-  background: var(--surface); border: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 10px;
-  margin-bottom: 28px; position: relative;
-}
-.photo-placeholder::before {
-  content: 'ADD PORTRAIT PHOTO HERE';
-  font-family: var(--mono); font-size: .6rem;
-  letter-spacing: .16em; color: var(--border); text-align: center;
-  padding: 0 20px;
-}
-.photo-placeholder-icon { font-size: 2rem; opacity: .2; }
+/* ── CHAPTER: MAKER ── */
+.maker-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);margin-top:48px;}
+.maker-card{background:var(--bg);padding:32px 28px;transition:background .2s;}
+.maker-card:hover{background:var(--surface);}
+.maker-icon{font-size:1.4rem;margin-bottom:16px;}
+.maker-title{font-family:var(--display);font-size:1.5rem;letter-spacing:.04em;color:var(--dark);margin-bottom:10px;}
+.maker-desc{font-size:.84rem;line-height:1.7;color:var(--muted);}
+.maker-tag{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;color:var(--navy);text-transform:uppercase;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
 
-/* spec box */
-.spec-box {
-  border: 1px solid var(--border);
-  position: relative;
-}
-.spec-box::before {
-  content: 'FIG. 01 — SPEC SHEET';
-  position: absolute; top: -10px; left: 16px;
-  font-family: var(--mono); font-size: .58rem;
-  letter-spacing: .14em; color: var(--navy);
-  background: var(--bg); padding: 0 6px;
-}
-.spec-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 11px 20px; border-bottom: 1px solid var(--border);
-  font-family: var(--mono); font-size: .67rem;
-}
-.spec-row:last-child { border-bottom: none; }
-.spec-key { color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-size: .6rem; }
-.spec-val { color: var(--dark); font-weight: 500; text-align: right; }
-.spec-val.avail { color: #2d8c5e; }
+/* ── CHAPTER: ATHLETE ── */
+.athlete-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-top:48px;align-items:start;}
+.stat-big{margin-bottom:40px;}
+.stat-number{font-family:var(--display);font-size:clamp(4rem,9vw,8rem);line-height:.85;letter-spacing:.02em;color:var(--dark);}
+.stat-number span{color:var(--navy);}
+.stat-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:8px;}
+.timeline-mini{display:flex;flex-direction:column;gap:0;}
+.tl-item{display:flex;gap:20px;padding:16px 0;border-bottom:1px solid var(--border);position:relative;}
+.tl-item:last-child{border-bottom:none;}
+.tl-dot{width:8px;height:8px;border:1.5px solid var(--navy);transform:rotate(45deg);flex-shrink:0;margin-top:4px;}
+.tl-year{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;color:var(--muted);min-width:40px;}
+.tl-text{font-size:.86rem;line-height:1.6;color:var(--text);}
 
-/* ── ABOUT ── */
-.about {
-  padding: 100px 56px;
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 80px; max-width: 1300px; margin: 0 auto;
-}
-.section-label {
-  font-family: var(--mono); font-size: .64rem;
-  letter-spacing: .2em; color: var(--navy); text-transform: uppercase;
-  margin-bottom: 28px; display: flex; align-items: center; gap: 12px;
-}
-.section-label::before { content: attr(data-num); color: var(--muted); }
-.about-heading {
-  font-family: var(--display); font-size: clamp(3rem, 5vw, 4.5rem);
-  line-height: 1; letter-spacing: .03em; color: var(--dark); margin-bottom: 28px;
-}
-.about-heading span { color: var(--navy); }
-.about-text {
-  font-size: .95rem; line-height: 1.85; color: var(--muted); margin-bottom: 20px;
-}
-.about-text strong { color: var(--text); font-weight: 500; }
-.personal-aside {
-  background: var(--surface); border-left: 3px solid var(--navy);
-  padding: 18px 22px; margin-top: 28px;
-}
-.personal-aside p { font-size: .88rem; line-height: 1.75; color: var(--muted); font-style: italic; }
-.personal-aside strong { color: var(--text); font-style: normal; font-weight: 500; }
-
-.skills-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 8px;
-}
-.skill-item {
-  background: var(--surface); border: 1px solid var(--border);
-  padding: 16px 18px; transition: border-color .2s, background .2s; cursor: default;
-}
-.skill-item:hover { border-color: var(--navy); background: var(--navy-dim); }
-.skill-item-name {
-  font-family: var(--mono); font-size: .7rem; letter-spacing: .08em;
-  color: var(--dark); margin-bottom: 4px; text-transform: uppercase; font-weight: 500;
-}
-.skill-item-sub { font-size: .72rem; color: var(--muted); }
-
-/* ── FORMULA STUDENT PHOTO STRIP ── */
-.photo-strip {
-  border-top: 1px solid var(--border)
-  border-bottom: 1px solid var(--border);
-  display: grid; grid-template-columns: 1fr 1fr ;
-  gap: 2px; background: var(--border);
-  overflow: hidden;
-}
-.photo-strip-item {
-  background: var(--surface);
-  aspect-ratio: 16/9;
-  position: relative; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.photo-strip-item:first-child { aspect-ratio: 16/9; }
-.photo-strip-item img {
-  width: 100%; height: 100%; object-fit: cover;
-  transition: transform .4s ease;
-}
-.photo-strip-item:hover img { transform: scale(1.04); }
-.photo-strip-placeholder {
-  width: 100%; height: 100%; min-height: 180px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 8px;
-  background: var(--surface);
-}
-.photo-strip-placeholder span {
-  font-family: var(--mono); font-size: .56rem;
-  letter-spacing: .14em; color: var(--border); text-align: center; padding: 0 12px;
-}
-.photo-strip-caption {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  background: linear-gradient(transparent, rgba(18,24,31,.6));
-  padding: 20px 16px 12px;
-  font-family: var(--mono); font-size: .58rem;
-  letter-spacing: .12em; color: rgba(255,255,255,.7); text-transform: uppercase;
-}
-
-/* ── BEYOND ENGINEERING ── */
-.beyond {
-  padding: 100px 56px;
-  max-width: 1300px; margin: 0 auto;
-  border-top: 1px solid var(--border);
-}
-.beyond-header {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  margin-bottom: 12px;
-}
-.beyond-heading {
-  font-family: var(--display); font-size: clamp(3rem, 5vw, 4.5rem);
-  line-height: 1; letter-spacing: .03em; color: var(--dark);
-}
-.beyond-sub {
-  font-size: .88rem; color: var(--muted); line-height: 1.7;
-  max-width: 460px; margin-bottom: 48px; margin-top: 12px;
-}
-.beyond-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 2px; background: var(--border);
-}
-.beyond-card {
-  background: var(--bg);
-  display: flex; flex-direction: column;
-  position: relative; overflow: hidden;
-  transition: background .25s;
-  cursor: default;
-}
-.beyond-card:hover { background: var(--surface); }
-.beyond-card-img {
-  width: 100%; aspect-ratio: 4/3; overflow: hidden;
-  background: var(--surface); position: relative;
-  display: flex; align-items: center; justify-content: center;
-}
-.beyond-card-img img {
-  width: 100%; height: 100%; object-fit: cover;
-  transition: transform .5s ease;
-}
-.beyond-card:hover .beyond-card-img img { transform: scale(1.05); }
-.beyond-img-placeholder {
-  width: 100%; height: 100%; min-height: 180px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 10px;
-}
-.beyond-img-placeholder .ph-icon { font-size: 2.4rem; opacity: .25; }
-.beyond-img-placeholder span {
-  font-family: var(--mono); font-size: .56rem;
-  letter-spacing: .14em; color: var(--border); text-align: center; padding: 0 16px;
-}
-.beyond-card-body { padding: 28px 28px 32px; flex: 1; display: flex; flex-direction: column; }
-.beyond-card-tag {
-  font-family: var(--mono); font-size: .58rem; letter-spacing: .16em;
-  text-transform: uppercase; color: var(--navy);
-  margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
-}
-.beyond-card-tag::before {
-  content: ''; width: 20px; height: 1px; background: var(--navy); flex-shrink: 0;
-}
-.beyond-card-title {
-  font-family: var(--display); font-size: 1.7rem;
-  letter-spacing: .04em; color: var(--dark);
-  margin-bottom: 12px; line-height: 1.05;
-}
-.beyond-card-desc {
-  font-size: .84rem; line-height: 1.7; color: var(--muted); flex: 1;
-}
-.beyond-card-stat {
-  margin-top: 20px; padding-top: 16px;
-  border-top: 1px solid var(--border);
-  font-family: var(--mono); font-size: .65rem;
-  letter-spacing: .1em; color: var(--navy);
-  text-transform: uppercase;
-}
-
-
-.projects {
-  padding: 100px 56px; max-width: 1300px; margin: 0 auto;
-  border-top: 1px solid var(--border);
-}
-.projects-header {
-  display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 48px;
-}
-.projects-heading {
-  font-family: var(--display); font-size: clamp(3rem, 5vw, 4.5rem);
-  line-height: 1; letter-spacing: .03em; color: var(--dark);
-}
-.projects-count {
-  font-family: var(--mono); font-size: .68rem; color: var(--muted);
-  letter-spacing: .1em; padding-bottom: 6px;
-}
-.projects-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 2px; background: var(--border);
-}
-.project-card {
-  background: var(--bg);
-  padding: 44px;
-  position: relative; overflow: hidden;
-  cursor: pointer; text-decoration: none; color: inherit;
-  transition: background .25s;
-  display: flex; flex-direction: column; justify-content: space-between;
-  min-height: 280px;
-}
-.project-card:hover { background: var(--surface); }
-.project-card::before {
-  content: ''; position: absolute; top: 0; left: 0;
-  width: 3px; height: 0; background: var(--navy); transition: height .3s;
-}
-.project-card:hover::before { height: 100%; }
-.project-card-top {}
-.project-num {
-  font-family: var(--mono); font-size: .62rem; letter-spacing: .16em;
-  color: var(--muted); margin-bottom: 20px;
-}
-.project-name {
-  font-family: var(--display); font-size: 1.9rem;
-  letter-spacing: .04em; color: var(--dark); margin-bottom: 14px;
-  line-height: 1.05;
-}
-.project-desc {
-  font-size: .84rem; color: var(--muted); line-height: 1.65; margin-bottom: 24px;
-}
-.project-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-.project-tag {
-  font-family: var(--mono); font-size: .58rem; letter-spacing: .1em;
-  padding: 3px 10px; border: 1px solid var(--border);
-  color: var(--muted); text-transform: uppercase;
-  transition: border-color .2s, color .2s;
-}
-.project-card:hover .project-tag { border-color: rgba(30,58,95,.2); color: var(--navy); }
-.project-tag.blue { color: var(--navy); border-color: rgba(30,58,95,.25); }
-.project-arrow {
-  position: absolute; bottom: 28px; right: 28px;
-  font-size: 1.1rem; color: var(--muted); transition: all .25s;
-}
-.project-card:hover .project-arrow { color: var(--navy); transform: translate(3px,-3px); }
-
-/* ── EXPERIENCE ── */
-.experience {
-  padding: 80px 56px 100px; max-width: 1300px; margin: 0 auto;
-  border-top: 1px solid var(--border);
-}
-.timeline { margin-top: 48px; position: relative; }
-.timeline::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-  width: 1px; background: linear-gradient(var(--border), transparent);
-}
-.timeline-item {
-  display: grid; grid-template-columns: 200px 1fr;
-  gap: 48px; padding: 28px 0 28px 36px;
-  border-bottom: 1px solid var(--border); position: relative;
-}
-.timeline-item:last-child { border-bottom: none; }
-.timeline-item::before {
-  content: ''; position: absolute; left: -4px; top: 34px;
-  width: 9px; height: 9px; border: 1px solid var(--navy);
-  background: var(--bg); transform: rotate(45deg);
-}
-.timeline-period {
-  font-family: var(--mono); font-size: .64rem; letter-spacing: .1em;
-  color: var(--muted); text-transform: uppercase; padding-top: 4px;
-}
-.timeline-role {
-  font-family: var(--display); font-size: 1.4rem;
-  letter-spacing: .04em; color: var(--dark); margin-bottom: 4px;
-}
-.timeline-company {
-  font-family: var(--mono); font-size: .7rem;
-  color: var(--navy); letter-spacing: .1em; margin-bottom: 12px;
-}
-.timeline-desc { font-size: .87rem; line-height: 1.8; color: var(--muted); }
+/* ── CHAPTER: HUMAN ── */
+.human-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-top:48px;}
+.human-photo{width:100%;aspect-ratio:3/4;object-fit:cover;border:1px solid var(--border);display:block;}
+.human-content{display:flex;flex-direction:column;gap:32px;}
+.fact-item{padding:24px;border:1px solid var(--border);transition:border-color .2s,background .2s;}
+.fact-item:hover{border-color:var(--navy);background:var(--surface);}
+.fact-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;color:var(--navy);text-transform:uppercase;margin-bottom:8px;}
+.fact-text{font-size:.9rem;line-height:1.7;color:var(--muted);}
+.fact-text strong{color:var(--text);font-weight:500;}
 
 /* ── CONTACT ── */
-.contact {
-  padding: 80px 56px 100px; max-width: 1300px; margin: 0 auto;
-  border-top: 1px solid var(--border);
-  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
-}
-.contact-heading {
-  font-family: var(--display); font-size: clamp(3.5rem, 6vw, 6rem);
-  line-height: .95; letter-spacing: .03em; color: var(--dark); margin-bottom: 20px;
-}
-.contact-heading span { color: var(--navy); }
-.contact-sub {
-  font-size: .92rem; color: var(--muted); line-height: 1.75;
-  margin-bottom: 40px; max-width: 420px;
-}
-.contact-links { display: flex; flex-direction: column; gap: 2px; }
-.contact-link {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 18px 22px; background: var(--surface); border: 1px solid var(--border);
-  text-decoration: none; color: var(--text);
-  font-family: var(--mono); font-size: .74rem; letter-spacing: .08em;
-  transition: border-color .2s, background .2s, color .2s;
-}
-.contact-link:hover { border-color: var(--navy); background: var(--navy-dim); color: var(--navy); }
-.contact-link-arrow { font-size: .9rem; opacity: .4; transition: opacity .2s, transform .2s; }
-.contact-link:hover .contact-link-arrow { opacity: 1; transform: translateX(4px); }
-.contact-right {
-  border: 1px solid var(--border); padding: 32px;
-  position: relative; background: var(--surface);
-}
-.contact-right::before {
-  content: 'STATUS'; position: absolute; top: -10px; left: 20px;
-  font-family: var(--mono); font-size: .58rem; letter-spacing: .15em;
-  color: var(--muted); background: var(--surface); padding: 0 6px;
-}
-.status-item {
-  display: flex; align-items: center; gap: 14px;
-  padding: 13px 0; border-bottom: 1px solid var(--border); font-size: .86rem;
-}
-.status-item:last-child { border-bottom: none; }
-.status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.status-dot.green { background: #2d8c5e; box-shadow: 0 0 8px rgba(45,140,94,.45); animation: pulse 2s infinite; }
-.status-dot.navy  { background: var(--navy); }
-.status-dot.muted { background: var(--border); }
-@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
-.status-label {
-  color: var(--muted); font-family: var(--mono); font-size: .63rem;
-  letter-spacing: .08em; flex: 1; text-transform: uppercase;
-}
-.status-value { font-size: .82rem; color: var(--dark); text-align: right; }
+.contact-wrap{padding:100px 10%;max-width:1300px;margin:0 auto;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.contact-h{font-family:var(--display);font-size:clamp(4rem,8vw,7rem);line-height:.88;letter-spacing:.02em;color:var(--dark);margin-bottom:24px;}
+.contact-h span{color:var(--navy);}
+.contact-sub{font-size:.92rem;line-height:1.75;color:var(--muted);max-width:400px;margin-bottom:40px;}
+.contact-links{display:flex;flex-direction:column;gap:2px;}
+.contact-link{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:var(--surface);border:1px solid var(--border);text-decoration:none;color:var(--text);font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;transition:border-color .2s,background .2s,color .2s;}
+.contact-link:hover{border-color:var(--navy);background:rgba(30,58,95,.06);color:var(--navy);}
+.contact-link-arrow{opacity:.4;transition:opacity .2s,transform .2s;}
+.contact-link:hover .contact-link-arrow{opacity:1;transform:translateX(4px);}
+.status-box{border:1px solid var(--border);padding:32px;background:var(--surface);position:relative;}
+.status-box::before{content:'STATUS';position:absolute;top:-10px;left:20px;font-family:var(--mono);font-size:.58rem;letter-spacing:.15em;color:var(--muted);background:var(--surface);padding:0 6px;}
+.status-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);font-size:.85rem;}
+.status-item:last-child{border-bottom:none;}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.status-dot.green{background:#2d8c5e;box-shadow:0 0 8px rgba(45,140,94,.45);animation:pulse 2s infinite;}
+.status-dot.navy{background:var(--navy);}
+.status-dot.muted{background:var(--border);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.status-label{color:var(--muted);font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;flex:1;text-transform:uppercase;}
+.status-value{font-size:.8rem;color:var(--dark);}
 
-/* ── FOOTER ── */
-footer {
-  border-top: 1px solid var(--border); padding: 28px 56px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.footer-copy {
-  font-family: var(--mono); font-size: .6rem;
-  letter-spacing: .1em; color: var(--muted); text-transform: uppercase;
-}
+footer{border-top:1px solid var(--border);padding:28px 56px;display:flex;align-items:center;justify-content:space-between;}
+.footer-copy{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.visible{opacity:1;transform:none;}
+.reveal-delay-1{transition-delay:.1s;}
+.reveal-delay-2{transition-delay:.2s;}
+.reveal-delay-3{transition-delay:.3s;}
 
 /* ── ANIMATIONS ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(22px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.reveal {
-  opacity: 0; transform: translateY(28px);
-  transition: opacity .7s ease, transform .7s ease;
-}
-.reveal.visible { opacity: 1; transform: none; }
-.reveal-delay-1 { transition-delay: .1s; }
-.reveal-delay-2 { transition-delay: .2s; }
-.reveal-delay-3 { transition-delay: .3s; }
-
-/* ── HAMBURGER BUTTON ── */
-.nav-hamburger {
-  display: none;
-  flex-direction: column; gap: 5px;
-  cursor: pointer; padding: 4px; background: none; border: none;
-}
-.nav-hamburger span {
-  display: block; width: 24px; height: 2px;
-  background: var(--navy); transition: all .3s;
-}
-.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.nav-hamburger.open span:nth-child(2) { opacity: 0; }
-.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-/* ── MOBILE MENU ── */
-.nav-mobile {
-  display: none;
-  position: fixed; top: 65px; left: 0; right: 0;
-  background: rgba(243,237,228,.97);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
-  flex-direction: column;
-  padding: 8px 0 20px;
-  z-index: 99;
-}
-.nav-mobile.open { display: flex; }
-.nav-mobile a {
-  font-family: var(--mono); font-size: .78rem;
-  letter-spacing: .14em; text-transform: uppercase;
-  color: var(--muted); text-decoration: none;
-  padding: 14px 28px;
-  border-bottom: 1px solid var(--border);
-  transition: color .2s, background .2s;
-}
-.nav-mobile a:last-child { border-bottom: none; }
-.nav-mobile a:hover { color: var(--navy); background: var(--navy-dim); }
-.nav-mobile .nav-cv-mobile {
-  margin: 12px 28px 0;
-  background: var(--navy); color: var(--bg) !important;
-  text-align: center; padding: 14px !important;
-  border: none !important;
-}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
 
 /* ── RESPONSIVE ── */
-/* Tablet */
-@media (max-width: 960px) {
-  nav { padding: 18px 28px; }
-  .nav-links { display: none; }
-  .nav-hamburger { display: flex; }
-
-  .hero {
-    grid-template-columns: 1fr;
-    padding: 80px 28px 60px;
-    gap: 40px; min-height: auto;
-  }
-  .hero-left { padding-right: 0; padding-bottom: 0; }
-  .hero-right {
-    border-left: none; border-top: 1px solid var(--border);
-    padding-left: 0; padding-top: 32px; padding-bottom: 0;
-  }
-  .photo-placeholder { max-height: 260px; }
-
-  .about  { grid-template-columns: 1fr; gap: 48px; padding: 72px 28px; }
-  .beyond { padding: 72px 28px; }
-  .beyond-grid { grid-template-columns: 1fr 1fr; }
-  .projects { padding: 72px 28px; }
-  .projects-grid { grid-template-columns: 1fr 1fr; }
-  .experience { padding: 72px 28px; }
-  .contact { grid-template-columns: 1fr; gap: 48px; padding: 72px 28px; }
-
-  .photo-strip { grid-template-columns: 1fr 1fr; }
-  .photo-strip-item:first-child { grid-column: span 1; }
-
-  .timeline-item { grid-template-columns: 1fr; gap: 4px; padding-left: 28px; }
-  footer { padding: 24px 28px; flex-direction: column; gap: 10px; text-align: center; }
+@media(max-width:960px){
+  nav{padding:18px 28px;}
+  .nav-links{display:none;}
+  .nav-hamburger{display:flex;}
+  .chapter{padding:72px 28px;}
+  .eng-grid,.athlete-layout,.human-layout,.contact-wrap{grid-template-columns:1fr;gap:48px;}
+  .maker-cards{grid-template-columns:1fr 1fr;}
+  footer{padding:24px 28px;flex-direction:column;gap:10px;text-align:center;}
 }
-
-/* Mobile */
-@media (max-width: 600px) {
-  nav { padding: 16px 20px; }
-
-  .hero { padding: 72px 20px 48px; gap: 32px; }
-  .hero-tag { font-size: .6rem; margin-bottom: 18px; }
-  .hero-name { font-size: clamp(3.8rem, 18vw, 6rem); margin-bottom: 20px; }
-  .hero-intro { font-size: .9rem; margin-bottom: 32px; }
-  .hero-cta { flex-direction: column; gap: 10px; }
-  .btn-dark, .btn-outline { text-align: center; padding: 14px 24px; width: 100%; }
-  .photo-placeholder { max-height: 220px; }
-  .spec-row { padding: 10px 16px; font-size: .62rem; }
-
-  .about { padding: 56px 20px; gap: 40px; }
-  .about-heading { font-size: clamp(2.4rem, 11vw, 3.5rem); }
-  .skills-grid { grid-template-columns: 1fr; }
-
-  .beyond { padding: 56px 20px; }
-  .beyond-heading { font-size: clamp(2.4rem, 11vw, 3.5rem); }
-  .beyond-grid { grid-template-columns: 1fr; }
-  .beyond-card-title { font-size: 1.5rem; }
-
-  .photo-strip { grid-template-columns: 1fr; }
-  .photo-strip-item:first-child { grid-column: span 1; }
-  .photo-strip-item { min-height: 160px; }
-
-  .projects { padding: 56px 20px; }
-  .projects-heading { font-size: clamp(2.4rem, 11vw, 3.5rem); }
-  .projects-grid { grid-template-columns: 1fr; }
-  .project-card { padding: 28px 24px; min-height: auto; }
-  .project-name { font-size: 1.5rem; }
-  .project-arrow { display: none; }
-  .projects-header { flex-direction: column; align-items: flex-start; gap: 4px; }
-
-  .experience { padding: 56px 20px; }
-  .timeline-item { padding-left: 24px; gap: 2px; }
-  .timeline-period { font-size: .6rem; }
-  .timeline-role { font-size: 1.2rem; }
-
-  .contact { padding: 56px 20px; gap: 40px; }
-  .contact-heading { font-size: clamp(2.8rem, 13vw, 5rem); }
-  .contact-link { font-size: .66rem; padding: 15px 16px; }
-  .contact-right { padding: 24px 20px; }
-  .status-value { font-size: .76rem; }
-
-  .beyond-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-  footer { padding: 20px; }
+@media(max-width:600px){
+  nav{padding:16px 20px;}
+  .chapter{padding:56px 20px;}
+  .chapter-divider{margin:0 20px;}
+  .maker-cards{grid-template-columns:1fr;}
+  .entry-name{font-size:clamp(4rem,20vw,8rem);}
+  .contact-wrap{padding:56px 20px;}
 }
 </style>
-
 </head>
 <body>
 
-<div class="scroll-bar" id="scrollBar"></div>
 <div class="cursor-dot" id="cursorDot"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 
-<nav id="nav">
-  <div class="nav-logo">B.Wigboldus — AE</div>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#experience">Experience</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="/cv" class="nav-cv">CV →</a></li>
-  </ul>
-  <button class="nav-hamburger" id="hamburger" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
-
-<!-- Mobile menu -->
-<div class="nav-mobile" id="mobileMenu">
-  <a href="#about"      onclick="closeMobile()">About</a>
-  <a href="#projects"   onclick="closeMobile()">Projects</a>
-  <a href="#experience" onclick="closeMobile()">Experience</a>
-  <a href="#contact"    onclick="closeMobile()">Contact</a>
-  <a href="/cv" class="nav-cv-mobile">CV →</a>
+<!-- ── ENTRY ── -->
+<div id="entry">
+  <div class="entry-grid-bg"></div>
+  <div class="entry-name">BASTI<span>AAN</span><br>WIGBOLDUS</div>
+  <div class="entry-line"></div>
+  <div class="entry-sub">Automotive Engineer &nbsp;·&nbsp; Maker &nbsp;·&nbsp; Athlete</div>
+  <button class="entry-btn" id="enterBtn">Enter &nbsp;→</button>
 </div>
 
-<!-- ── HERO ── -->
-<section class="hero" id="home">
-  <div class="hero-left">
-    <div class="hero-tag"><span class="hero-tag-text" id="heroTagText"></span><span class="hero-tag-cursor"></span></div>
-    <h1 class="hero-name">Bastiaan<br><span>Wigboldus</span></h1>
-    <p class="hero-intro">
-      Final-year Automotive Engineering student and maker, currently completing my thesis internship at <strong>Hyster-Yale</strong>. I specialize in <strong>mechanical design and simulation</strong>, complemented by <strong>practical, hands-on experience</strong> in the workshop. I'm always motivated to get involved in projects where I can see a design through from the screen to the finished build.
+<!-- ── MAIN SITE ── -->
+<div id="site">
+
+  <div class="chapter-bar"><div class="chapter-bar-fill" id="chapterFill"></div></div>
+  <div class="chapter-label" id="chapterLabel">Intro</div>
+
+  <nav id="nav">
+    <div class="nav-logo">B.Wigboldus</div>
+    <ul class="nav-links">
+      <li><a href="#engineer">Engineer</a></li>
+      <li><a href="#maker">Maker</a></li>
+      <li><a href="#athlete">Athlete</a></li>
+      <li><a href="#human">Human</a></li>
+      <li><a href="#contact" class="nav-cv">Contact →</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="nav-mobile" id="mobileMenu">
+    <a href="#engineer" onclick="closeMobile()">Engineer</a>
+    <a href="#maker"    onclick="closeMobile()">Maker</a>
+    <a href="#athlete"  onclick="closeMobile()">Athlete</a>
+    <a href="#human"    onclick="closeMobile()">Human</a>
+    <a href="#contact"  onclick="closeMobile()" class="nav-cv-mobile">Contact →</a>
+  </div>
+
+  <!-- ── CHAPTER 1: ENGINEER ── -->
+  <section class="chapter" id="engineer" style="padding-top:140px;">
+    <div class="chapter-eyebrow reveal">Chapter 01 — Engineer</div>
+    <h2 class="chapter-h reveal">Built to<br><span>Design.</span></h2>
+    <p class="chapter-body reveal reveal-delay-1">
+      Final-year Automotive Engineering student, currently completing my thesis internship at <strong>Hyster-Yale</strong>. I specialise in mechanical design and simulation — CAD, FEM and CFD are where I do my best work. Two years on the <strong>HAN Formula Student team</strong> as Chief Chassis & Bodywork sharpened my ability to deliver engineering that performs under pressure.
     </p>
-    <div class="hero-cta">
-      <a href="#projects" class="btn-dark">See my work</a>
-      <a href="#contact" class="btn-outline">Get in touch</a>
+    <div class="eng-grid">
+      <div>
+        <div class="chapter-eyebrow reveal" style="margin-bottom:24px;">Core skills</div>
+        <div class="skill-list">
+          <div class="skill-row reveal" style="--w:90%"><span class="skill-name">CAD</span><div class="skill-bar-wrap"><div class="skill-bar"></div></div><span class="skill-pct">SolidWorks · NX</span></div>
+          <div class="skill-row reveal reveal-delay-1" style="--w:85%"><span class="skill-name">FEM / FEA</span><div class="skill-bar-wrap"><div class="skill-bar"></div></div><span class="skill-pct">Structural</span></div>
+          <div class="skill-row reveal reveal-delay-2" style="--w:72%"><span class="skill-name">CFD</span><div class="skill-bar-wrap"><div class="skill-bar"></div></div><span class="skill-pct">Flow Sim</span></div>
+          <div class="skill-row reveal reveal-delay-3" style="--w:68%"><span class="skill-name">Code</span><div class="skill-bar-wrap"><div class="skill-bar"></div></div><span class="skill-pct">Python · C · Flask</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="chapter-eyebrow reveal" style="margin-bottom:24px;">Projects</div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <a href="/projects/hyster-yale-test-bench" style="text-decoration:none;color:inherit;">
+            <div class="fact-item reveal" style="cursor:none;">
+              <div class="fact-label">2026 — Thesis</div>
+              <div class="fact-text"><strong>Hyster-Yale Test Bench</strong> — FEM validation of a hydraulic test bench at a world-leading material handling manufacturer.</div>
+            </div>
+          </a>
+          <a href="/projects/formula-student-front-wing" style="text-decoration:none;color:inherit;">
+            <div class="fact-item reveal reveal-delay-1" style="cursor:none;">
+              <div class="fact-label">2025 — Formula Student</div>
+              <div class="fact-text"><strong>Front Wing CFD</strong> — Design, CFD validation, and full carbon fibre manufacturing for the HFS-E3.</div>
+            </div>
+          </a>
+          <a href="/projects/formula-student-chassis" style="text-decoration:none;color:inherit;">
+            <div class="fact-item reveal reveal-delay-2" style="cursor:none;">
+              <div class="fact-label">2024 — Formula Student</div>
+              <div class="fact-text"><strong>Chassis Design</strong> — FEM-validated steel space frame, designed and built for competition weight targets.</div>
+            </div>
+          </a>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="hero-right">
-    <!-- ↓ REPLACE src WITH YOUR PORTRAIT PHOTO PATH -->
-    <img src="/static/images/portrait_photo.JPG" class="hero-photo" alt="Bastiaan Wigboldus">
+  <div class="chapter-divider"></div>
 
-    <div class="spec-box">
-      <div class="spec-row">
-        <span class="spec-key">Degree</span>
-        <span class="spec-val">BSc Automotive Eng.</span>
-      </div>
-      <div class="spec-row">
-        <span class="spec-key">Year</span>
-        <span class="spec-val">4th — Final Year</span>
-      </div>
-      <div class="spec-row">
-        <span class="spec-key">Currently</span>
-        <span class="spec-val">Thesis Intern @ Hyster-Yale</span>
-      </div>
-      <div class="spec-row">
-        <span class="spec-key">Tools</span>
-        <span class="spec-val">SolidWorks · NX · FEM · CFD · Python</span>
-      </div>
-      <div class="spec-row">
-        <span class="spec-key">Status</span>
-        <span class="spec-val avail">● Open to opportunities</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── ABOUT ── -->
-<section class="about" id="about">
-  <div>
-    <div class="section-label" data-num="01 —">About</div>
-    <h2 class="about-heading reveal">Built to<br><span>Engineer.</span></h2>
-    <p class="about-text reveal reveal-delay-1">
-      I'm Bastiaan — a 21-year-old automotive engineering student in my final bachelor year, with a strong foundation in <strong>mechanical engineering</strong>. CAD, FEM and CFD are where I do my best work. Complimented by hands-on practical experience.
+  <!-- ── CHAPTER 2: MAKER ── -->
+  <section class="chapter" id="maker">
+    <div class="chapter-eyebrow reveal">Chapter 02 — Maker</div>
+    <h2 class="chapter-h reveal">Things I<br><span>Build.</span></h2>
+    <p class="chapter-body reveal reveal-delay-1">
+      Engineering doesn't stop when I close the CAD software. I work part-time as a <strong>classic car mechanic at Du Pied</strong>, keep an Ender 3 running, and build software when I need a tool that doesn't exist yet. Making things is not a hobby — it's how I think.
     </p>
-    <p class="about-text reveal reveal-delay-2">
-      Currently completing my thesis internship at <strong>Hyster-Yale</strong>, applying structural analysis and design to real industrial challenges. Outside of the office I work part-time as a car mechanic at <strong>Du Pied Classic Cars</strong>, working on classic and modern cars.
+    <div class="maker-cards">
+      <div class="maker-card reveal">
+        <div class="maker-icon">🔧</div>
+        <div class="maker-title">Classic Cars</div>
+        <div class="maker-desc">Part-time mechanic at Du Pied Classic Cars — suspension, bodywork, brakes, diagnostics on vehicles from the 50s to today. Keeps engineering honest.</div>
+        <div class="maker-tag">Du Pied Classic Cars · 2025—present</div>
+      </div>
+      <div class="maker-card reveal reveal-delay-1">
+        <div class="maker-icon">🖨️</div>
+        <div class="maker-title">3D Printing</div>
+        <div class="maker-desc">Ender 3 on the desk. Mostly functional parts — aerodynamic bottle cage prototypes, jigs, custom brackets. Design to test loop as fast as possible.</div>
+        <div class="maker-tag">FDM · Functional prototyping</div>
+      </div>
+      <div class="maker-card reveal reveal-delay-2">
+        <div class="maker-icon">💻</div>
+        <div class="maker-title">Software</div>
+        <div class="maker-desc">Built a personal planner web app (Flask + Supabase), a CS50 fleet management system, and a Formula Student internship planning tool. Code when I need a tool that doesn't exist.</div>
+        <div class="maker-tag">Python · Flask · HTML · SQL</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="chapter-divider"></div>
+
+  <!-- ── CHAPTER 3: ATHLETE ── -->
+  <section class="chapter" id="athlete">
+    <div class="chapter-eyebrow reveal">Chapter 03 — Athlete</div>
+    <h2 class="chapter-h reveal">Finish<br><span>Lines.</span></h2>
+    <p class="chapter-body reveal reveal-delay-1">
+      I run, cycle and row. Not because I have to — because endurance sports and engineering share the same logic: <strong>process, patience, and the satisfaction of watching numbers improve</strong>. The Rome Marathon taught me more about holding a pace under pressure than any lecture did.
     </p>
-    <p class="about-text reveal reveal-delay-3">
-      Two years on the HAN Formula Student team (of which one) as <strong>Chief Chassis & Bodywork</strong> sharpened my ability to work under pressure, lead a small team, and deliver engineering that actually performs on track.
-    </p>
-    <div class="personal-aside reveal">
-      <p>When I'm not doing engineering work I like to <strong>run, cycle and workout</strong>. Next to my passion for sports I also enjoy meeting new people and learning new things. I like to think of myself as a <strong>curious and open-minded</strong> person, always looking for new challenges and opportunities to grow.</p>
-    </div>
-  </div>
-  <div>
-    <div class="section-label reveal" data-num="">Core Skills</div>
-    <div class="skills-grid reveal reveal-delay-1">
-      <div class="skill-item reveal" style="--skill-w:90%">
-        <div class="skill-item-name">CAD</div>
-        <div class="skill-item-sub">SolidWorks · NX</div>
-        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
+    <div class="athlete-layout">
+      <div>
+        <div class="stat-big reveal">
+          <div class="stat-number">42<span>.2</span></div>
+          <div class="stat-label">Rome Marathon — completed</div>
+        </div>
+        <div class="stat-big reveal reveal-delay-1">
+          <div class="stat-number" style="font-size:clamp(2.5rem,5vw,4.5rem);">4th</div>
+          <div class="stat-label">Netherlands Sim Racing Championship</div>
+        </div>
+        <div class="stat-big reveal reveal-delay-2">
+          <div class="stat-number" style="font-size:clamp(2rem,4vw,3.5rem);">Trek<span> Domain</span></div>
+          <div class="stat-label">Road bike — eyeing a triathlon next</div>
+        </div>
       </div>
-      <div class="skill-item reveal" style="--skill-w:85%">
-        <div class="skill-item-name">FEM / FEA</div>
-        <div class="skill-item-sub">Structural Analysis</div>
-        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
-      </div>
-      <div class="skill-item reveal" style="--skill-w:75%">
-        <div class="skill-item-name">CFD</div>
-        <div class="skill-item-sub">Flow Simulation</div>
-        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
-      </div>
-      <div class="skill-item reveal" style="--skill-w:80%">
-        <div class="skill-item-name">Mechanic</div>
-        <div class="skill-item-sub">Classic / Modern Cars · Hands-on</div>
-        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
-      </div>
-      <div class="skill-item reveal" style="--skill-w:65%">
-        <div class="skill-item-name">Programming</div>
-        <div class="skill-item-sub">Python · C · HTML · SQL</div>
-        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
-      </div>
-      <div class="skill-item reveal" style="--skill-w:88%">
-        <div class="skill-item-name">Formula Student</div>
-        <div class="skill-item-sub">2 Years · Chief Chassis & Bodywork</div>
-        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── FORMULA STUDENT PHOTO STRIP ── -->
-<!-- ↓ REPLACE src ATTRIBUTES WITH YOUR FORMULA STUDENT PHOTO PATHS -->
-<div class="photo-strip reveal">
-  <div class="photo-strip-item">
-    <img src="/static/images/HFS_E3_in_use.JPG" alt="HFS-E3 Formula Student Car">
-  </div>
-  <div class="photo-strip-item">
-    <img src="/static/images/HFS_E3_team.JPG" alt="HFS-E3 Formula Student Car">
-  </div>
-</div>
-
-<!-- ── BEYOND ENGINEERING ── -->
-<section class="beyond" id="beyond">
-  <div class="beyond-header reveal">
-    <div>
-      <div class="section-label" data-num="— ">Beyond Engineering</div>
-      <h2 class="beyond-heading">More than<br>a résumé.</h2>
-    </div>
-  </div>
-  <p class="beyond-sub reveal">A few things that don't fit on a CV but say something about who I am.</p>
-
-  <div class="beyond-grid">
-
-    <!-- CARD 1: SPORTS -->
-    <div class="beyond-card reveal reveal-delay-2" id="sportCard">
-      <div class="beyond-card-img">
-        <img src="/static/images/Bike.jpg" alt="Bike picture">
-      </div>
-      <div class="beyond-card-body">
-        <div class="beyond-card-tag">Endurance · Goal</div>
-        <div class="beyond-card-title">Running & Cycling</div>
-        <div class="beyond-card-desc">Completed the Rome Marathon and training year-round. Running, cycling, and rowing — endurance sports taught me that the process matters as much as the result. Same principle applies in engineering.</div>
-        <div class="activity-viz" id="runViz">
-          <div class="run-track">
-            <div class="run-progress" id="runProgress"></div>
-            <div class="run-runner" id="runRunner">🏃</div>
+      <div>
+        <div class="chapter-eyebrow reveal" style="margin-bottom:20px;">Training log</div>
+        <div class="timeline-mini">
+          <div class="tl-item reveal">
+            <div class="tl-dot"></div>
+            <div class="tl-year">2025</div>
+            <div class="tl-text">Completed the Rome Marathon. Target was sub-4:30 — process-focused training through the whole winter build.</div>
           </div>
-          <div class="run-labels">
-            <span>0 km</span><span>Rome Marathon — 42.2 km ✓</span>
+          <div class="tl-item reveal reveal-delay-1">
+            <div class="tl-dot"></div>
+            <div class="tl-year">2024</div>
+            <div class="tl-text">4th place in the Netherlands sim racing championship. International LAN events across Europe.</div>
+          </div>
+          <div class="tl-item reveal reveal-delay-2">
+            <div class="tl-dot"></div>
+            <div class="tl-year">2024</div>
+            <div class="tl-text">Study exchange to China — two weeks, a diverse team, and a very different way of working.</div>
+          </div>
+          <div class="tl-item reveal reveal-delay-3">
+            <div class="tl-dot"></div>
+            <div class="tl-year">Next</div>
+            <div class="tl-text">Triathlon on the horizon. Trek Domain AL3 ready. Open water swimming still a work in progress.</div>
           </div>
         </div>
-        <div class="beyond-card-stat">🎯 Rome Marathon finisher · Triathlon next</div>
       </div>
     </div>
+  </section>
 
-    <!-- CARD 2: SIM RACING -->
-    <div class="beyond-card reveal" id="simCard">
-      <div class="beyond-card-img">
-        <img src="/static/images/Simracing.jpg" alt="Sim Racing LAN">
-      </div>
-      <div class="beyond-card-body">
-        <div class="beyond-card-tag">Motorsport · Competition</div>
-        <div class="beyond-card-title">Sim Racing</div>
-        <div class="beyond-card-desc">Competing at national and international level in sim racing — 4th in the Netherlands overall championship, and LAN events abroad. Motorsport when you can't afford the real thing.</div>
-        <div class="activity-viz">
-          <div class="cadence-label" style="margin-bottom:6px;">NL Championship — Grid Position</div>
-          <div class="race-dots" id="raceDots"></div>
-        </div>
-        <div class="beyond-card-stat">🏆 4th of The Netherlands · International LAN Events</div>
-      </div>
-    </div>
+  <div class="chapter-divider"></div>
 
-    <!-- CARD 3: CHINA -->
-    <div class="beyond-card reveal reveal-delay-1">
-      <div class="beyond-card-img">
-        <img src="/static/images/Shanghai.jpg" alt="China exchange trip">
-      </div>
-      <div class="beyond-card-body">
-        <div class="beyond-card-tag">Exchange · Travel</div>
-        <div class="beyond-card-title">Study trip — China</div>
-        <div class="beyond-card-desc">Study trip to China. An amazing 2 weeks part of my Minor in wich I learned a lot about working in a culturaly diverse team.</div>
-        <div class="beyond-card-stat">📍 China · Study Exchange</div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ── PROJECTS 2×2 ── -->
-<section class="projects" id="projects">
-  <div class="projects-header reveal">
-    <div>
-      <div class="section-label" data-num="02 —">Projects</div>
-      <h2 class="projects-heading">Engineering<br>Projects</h2>
-    </div>
-    <div class="projects-count">04 PROJECTS</div>
-  </div>
-
-  <div class="filter-tabs reveal">
-    <button class="filter-tab active" data-filter="all">All</button>
-    <button class="filter-tab" data-filter="fem">FEM / Structural</button>
-    <button class="filter-tab" data-filter="aero">Aero / CFD</button>
-    <button class="filter-tab" data-filter="software">Software</button>
-  </div>
-
-  <div class="projects-grid">
-    <a href="/projects/hyster-yale-test-bench" class="project-card reveal" data-category="fem">
-      <div class="project-card-top">
-        <div class="project-num">01 · 2026</div>
-        <div class="project-name">Hyster-Yale Test Bench</div>
-        <div class="project-desc">Bachelor thesis — design and FEM validation of parts of a hydraulic test bench at one of the world's leading material handling manufacturers.</div>
-        <div class="project-tags">
-          <span class="project-tag">FEM</span>
-          <span class="project-tag">Structural Design</span>
-          <span class="project-tag blue">Thesis</span>
-        </div>
-      </div>
-      <div class="project-arrow">↗</div>
-    </a>
-
-    <a href="/projects/formula-student-front-wing" class="project-card reveal reveal-delay-1" data-category="aero">
-      <div class="project-card-top">
-        <div class="project-num">02 · 2025</div>
-        <div class="project-name">Formula Student Front Wing</div>
-        <div class="project-desc">Design, CFD validation, and complete manufacturing of the carbon fiber front wing on the HFS-E3 produced by the HAN Formula Student Team.</div>
-        <div class="project-tags">
-          <span class="project-tag">Aero</span>
-          <span class="project-tag">CFD</span>
-          <span class="project-tag blue">Formula Student</span>
-        </div>
-      </div>
-      <div class="project-arrow">↗</div>
-    </a>
-
-    <a href="/projects/formula-student-chassis" class="project-card reveal reveal-delay-1" data-category="fem">
-      <div class="project-card-top">
-        <div class="project-num">03 · 2024</div>
-        <div class="project-name">Formula Student Chassis</div>
-        <div class="project-desc">Design, FEM validation, and complete manufacturing of a steel space frame for the HFS-E3. Responsible for structural integrity and weight targets.</div>
-        <div class="project-tags">
-          <span class="project-tag">CAD</span>
-          <span class="project-tag">FEM</span>
-          <span class="project-tag blue">Formula Student</span>
-        </div>
-      </div>
-      <div class="project-arrow">↗</div>
-    </a>
-
-    <a href="/projects/cs50-final-project" class="project-card reveal reveal-delay-2" data-category="software">
-      <div class="project-card-top">
-        <div class="project-num">04 · 2023</div>
-        <div class="project-name">CS50 Final Project</div>
-        <div class="project-desc">Web application for sorting and editing data in a car fleet management system. Built as a CS50 HarvardX final project in Python, Flask and HTML.</div>
-        <div class="project-tags">
-          <span class="project-tag">Python</span>
-          <span class="project-tag">Flask</span>
-          <span class="project-tag blue">Software</span>
-        </div>
-      </div>
-      <div class="project-arrow">↗</div>
-    </a>
-  </div>
-</section>
-
-<!-- ── EXPERIENCE ── -->
-<section class="experience" id="experience">
-  <div class="section-label reveal" data-num="03 —">Experience</div>
-  <h2 class="projects-heading reveal" style="margin-bottom:0">Engineering<br>History</h2>
-
-  <div class="timeline">
-    <div class="timeline-item reveal">
-      <div class="timeline-period">2026 — Present</div>
-      <div>
-        <div class="timeline-role">Thesis Engineering Intern</div>
-        <div class="timeline-company">Hyster-Yale Group</div>
-        <div class="timeline-desc">Bachelor thesis at one of the world's leading material handling manufacturers. Conducting structural analysis and design work on a real-world test setup using NX and FEM simulation.</div>
-      </div>
-    </div>
-    <div class="timeline-item reveal reveal-delay-1">
-      <div class="timeline-period">2025 — Present</div>
-      <div>
-        <div class="timeline-role">Car Mechanic</div>
-        <div class="timeline-company">Du Pied Classic Cars</div>
-        <div class="timeline-desc">Part-time role servicing and restoring classic vehicles alongside modern cars. Hands-on mechanical work covering bodywork, suspension, brakes and diagnostics — keeps engineering grounded in reality.</div>
-      </div>
-    </div>
-    <div class="timeline-item reveal reveal-delay-2">
-      <div class="timeline-period">2023 — 2025</div>
-      <div>
-        <div class="timeline-role">Chief Chassis & Bodywork</div>
-        <div class="timeline-company">HAN Formula Student</div>
-        <div class="timeline-desc">Led a team of engineers in the chassis & bodywork department — simulation, design, and manufacturing of the full mechanical and aerodynamic package for the HFS-E3 electric formula car. Competed at FS Netherlands 2025.</div>
-      </div>
-    </div>
-    <div class="timeline-item reveal reveal-delay-3">
-      <div class="timeline-period">2022 — Present</div>
-      <div>
-        <div class="timeline-role">BSc Automotive Engineering</div>
-        <div class="timeline-company">Final Year — Bachelor</div>
-        <div class="timeline-desc">Four-year programme focused on structural design: structural mechanics, thermodynamics, vehicle dynamics, CAD/CAM and FEM/CFD simulation.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── CONTACT ── -->
-<section class="contact" id="contact">
-  <div>
-    <div class="section-label reveal" data-num="04 —">Contact</div>
-    <h2 class="contact-heading reveal">Let's<br><span>Connect.</span></h2>
-    <p class="contact-sub reveal reveal-delay-1">
-      Final-year automotive engineering student open to graduate roles, engineering positions and exciting projects in mechanical or automotive engineering.
+  <!-- ── CHAPTER 4: HUMAN ── -->
+  <section class="chapter" id="human">
+    <div class="chapter-eyebrow reveal">Chapter 04 — Human</div>
+    <h2 class="chapter-h reveal">More than<br><span>a résumé.</span></h2>
+    <p class="chapter-body reveal reveal-delay-1">
+      The things that don't fit anywhere else — but say the most about who I am.
     </p>
-    <div class="contact-links reveal reveal-delay-2">
-      <a href="mailto:bastiaan.wigboldus@gmail.com" class="contact-link">
-        bastiaan.wigboldus@gmail.com
-        <span class="contact-link-arrow">↗</span>
-      </a>
-      <a href="https://www.linkedin.com/in/bastiaan-wigboldus-6a601a211/" target="_blank" class="contact-link">
-        LinkedIn — Bastiaan Wigboldus
-        <span class="contact-link-arrow">↗</span>
-      </a>
-      <a href="#" class="contact-link">
-        Download CV · PDF
-        <span class="contact-link-arrow">↓</span>
-      </a>
+    <div class="human-layout">
+      <div>
+        <img src="/static/images/portrait_photo.JPG" class="human-photo reveal" alt="Bastiaan Wigboldus">
+      </div>
+      <div class="human-content">
+        <div class="fact-item reveal">
+          <div class="fact-label">Background</div>
+          <div class="fact-text">Non-linear education path — vmbo → havo → hbo → pre-master. I took the long route, and I'm glad I did. <strong>Every detour taught me something the shortcut wouldn't have.</strong></div>
+        </div>
+        <div class="fact-item reveal reveal-delay-1">
+          <div class="fact-label">How I work</div>
+          <div class="fact-text">I like seeing things through from screen to finished object. Design means nothing until it's been tested, broken, and improved. <strong>I'm most useful when I can touch the problem.</strong></div>
+        </div>
+        <div class="fact-item reveal reveal-delay-2">
+          <div class="fact-label">Curiosity</div>
+          <div class="fact-text">Currently reading about aero optimisation for bikes, planning the next run, and figuring out whether a triathlon bike is an engineering problem or just an excuse to spend money.</div>
+        </div>
+        <div class="fact-item reveal reveal-delay-3">
+          <div class="fact-label">What I'm looking for</div>
+          <div class="fact-text">A team that builds things that matter. A place where <strong>physical performance, design, and data intersect</strong> — and where I can grow from engineer to someone who shapes what gets built next.</div>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="contact-right reveal reveal-delay-1">
-    <div class="status-item">
-      <div class="status-dot green"></div>
-      <span class="status-label">Availability</span>
-      <span class="status-value">Open to opportunities</span>
-    </div>
-    <div class="status-item">
-      <div class="status-dot navy"></div>
-      <span class="status-label">Current role</span>
-      <span class="status-value">Thesis Intern @ Hyster-Yale</span>
-    </div>
-    <div class="status-item">
-      <div class="status-dot muted"></div>
-      <span class="status-label">Education</span>
-      <span class="status-value">BSc Automotive Eng. — Y4</span>
-    </div>
-    <div class="status-item">
-      <div class="status-dot muted"></div>
-      <span class="status-label">Preferred roles</span>
-      <span class="status-value">Mechanical · Automotive · CAD/FEM</span>
-    </div>
-    <div class="status-item">
-      <div class="status-dot green"></div>
-      <span class="status-label">Response time</span>
-      <span class="status-value">Within 48h</span>
-    </div>
-  </div>
-</section>
+  </section>
 
-<footer>
-  <div class="footer-copy">© 2025 Bastiaan Wigboldus — Automotive Engineer</div>
-  <div class="footer-copy">Open to opportunities</div>
-</footer>
+  <div class="chapter-divider"></div>
+
+  <!-- ── CONTACT ── -->
+  <div class="contact-wrap" id="contact">
+    <div>
+      <div class="chapter-eyebrow reveal">Get in touch</div>
+      <h2 class="contact-h reveal">Let's<br><span>Connect.</span></h2>
+      <p class="contact-sub reveal reveal-delay-1">Open to graduate roles and engineering positions where mechanical design meets real-world performance.</p>
+      <div class="contact-links reveal reveal-delay-2">
+        <a href="mailto:bastiaan.wigboldus@gmail.com" class="contact-link">bastiaan.wigboldus@gmail.com <span class="contact-link-arrow">↗</span></a>
+        <a href="https://www.linkedin.com/in/bastiaan-wigboldus-6a601a211/" target="_blank" class="contact-link">LinkedIn — Bastiaan Wigboldus <span class="contact-link-arrow">↗</span></a>
+        <a href="#" class="contact-link">Download CV · PDF <span class="contact-link-arrow">↓</span></a>
+      </div>
+    </div>
+    <div class="status-box reveal reveal-delay-1">
+      <div class="status-item"><div class="status-dot green"></div><span class="status-label">Availability</span><span class="status-value">Open to opportunities</span></div>
+      <div class="status-item"><div class="status-dot navy"></div><span class="status-label">Current role</span><span class="status-value">Thesis Intern @ Hyster-Yale</span></div>
+      <div class="status-item"><div class="status-dot muted"></div><span class="status-label">Education</span><span class="status-value">BSc Automotive Eng. — Y4</span></div>
+      <div class="status-item"><div class="status-dot muted"></div><span class="status-label">Location</span><span class="status-value">Netherlands</span></div>
+      <div class="status-item"><div class="status-dot green"></div><span class="status-label">Response time</span><span class="status-value">Within 48h</span></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-copy">© 2026 Bastiaan Wigboldus</div>
+    <div class="footer-copy">Open to opportunities</div>
+  </footer>
+
+</div><!-- #site -->
 
 <script>
-/* ── CUSTOM CURSOR ── */
-const dot = document.getElementById('cursorDot');
-const ring = document.getElementById('cursorRing');
-let mx = -200, my = -200, rx = -200, ry = -200;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-(function animCursor() {
-  rx += (mx - rx) * .12; ry += (my - ry) * .12;
-  dot.style.left = mx + 'px'; dot.style.top = my + 'px';
-  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-  requestAnimationFrame(animCursor);
+/* ── CURSOR ── */
+const dot=document.getElementById('cursorDot');
+const ring=document.getElementById('cursorRing');
+let mx=-200,my=-200,rx=-200,ry=-200;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function loop(){
+  rx+=(mx-rx)*.13;ry+=(my-ry)*.13;
+  dot.style.left=mx+'px';dot.style.top=my+'px';
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(loop);
 })();
-document.querySelectorAll('a, button, .project-card, .skill-item').forEach(el => {
-  el.addEventListener('mouseenter', () => ring.classList.add('expanded'));
-  el.addEventListener('mouseleave', () => ring.classList.remove('expanded'));
-});
-document.querySelectorAll('.beyond-card').forEach(el => {
-  el.addEventListener('mouseenter', () => { ring.classList.add('sport'); dot.classList.add('sport'); });
-  el.addEventListener('mouseleave', () => { ring.classList.remove('sport'); dot.classList.remove('sport'); });
+document.querySelectorAll('a,button,.fact-item,.skill-row,.maker-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('big'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
 });
 
-/* ── SCROLL PROGRESS BAR ── */
-const scrollBar = document.getElementById('scrollBar');
-window.addEventListener('scroll', () => {
-  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
-  scrollBar.style.width = pct + '%';
+/* ── ENTRY ── */
+const entryBtn=document.getElementById('enterBtn');
+const entry=document.getElementById('entry');
+const site=document.getElementById('site');
+entryBtn.addEventListener('click',()=>{
+  entry.classList.add('leaving');
+  setTimeout(()=>{
+    entry.style.display='none';
+    site.classList.add('visible');
+    document.body.style.overflow='';
+  },900);
 });
+document.body.style.overflow='hidden';
 
-/* ── TYPEWRITER ── */
-const phrases = ['Automotive Engineer', 'Endurance Runner', 'Formula Student Alumni', 'Classic Car Mechanic', 'Maker & Builder'];
-let pIdx = 0, cIdx = 0, deleting = false;
-const tagEl = document.getElementById('heroTagText');
-function typewriter() {
-  const phrase = phrases[pIdx];
-  if (!deleting) {
-    tagEl.textContent = phrase.slice(0, ++cIdx);
-    if (cIdx === phrase.length) { deleting = true; setTimeout(typewriter, 1800); return; }
-  } else {
-    tagEl.textContent = phrase.slice(0, --cIdx);
-    if (cIdx === 0) { deleting = false; pIdx = (pIdx + 1) % phrases.length; setTimeout(typewriter, 300); return; }
-  }
-  setTimeout(typewriter, deleting ? 40 : 70);
-}
-setTimeout(typewriter, 900);
-
-/* ── PROJECT FILTER ── */
-document.querySelectorAll('.filter-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    const filter = tab.dataset.filter;
-    document.querySelectorAll('.project-card').forEach(card => {
-      if (filter === 'all' || card.dataset.category === filter) {
-        card.classList.remove('hidden');
-      } else {
-        card.classList.add('hidden');
-      }
-    });
+/* ── CHAPTER PROGRESS ── */
+const chapters=[
+  {id:'engineer',label:'01 — Engineer'},
+  {id:'maker',label:'02 — Maker'},
+  {id:'athlete',label:'03 — Athlete'},
+  {id:'human',label:'04 — Human'},
+  {id:'contact',label:'Contact'},
+];
+const fill=document.getElementById('chapterFill');
+const labelEl=document.getElementById('chapterLabel');
+window.addEventListener('scroll',()=>{
+  const pct=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  fill.style.width=pct+'%';
+  let current='01 — Engineer';
+  chapters.forEach(c=>{
+    const el=document.getElementById(c.id);
+    if(el&&window.scrollY>=el.offsetTop-160)current=c.label;
   });
+  labelEl.textContent=current;
+  labelEl.classList.toggle('show',window.scrollY>100);
 });
 
-/* ── NAV SCROLL ── */
-const nav = document.getElementById('nav');
-const hamburger = document.getElementById('hamburger');
-const mobileMenu = document.getElementById('mobileMenu');
-window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 60);
-});
-hamburger.addEventListener('click', () => {
+/* ── NAV ── */
+const nav=document.getElementById('nav');
+const hamburger=document.getElementById('hamburger');
+const mobileMenu=document.getElementById('mobileMenu');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>60));
+hamburger.addEventListener('click',()=>{
   hamburger.classList.toggle('open');
   mobileMenu.classList.toggle('open');
 });
-function closeMobile() {
-  hamburger.classList.remove('open');
-  mobileMenu.classList.remove('open');
-}
-document.addEventListener('click', e => {
-  if (!nav.contains(e.target) && !mobileMenu.contains(e.target)) closeMobile();
+function closeMobile(){hamburger.classList.remove('open');mobileMenu.classList.remove('open');}
+document.addEventListener('click',e=>{
+  if(!nav.contains(e.target)&&!mobileMenu.contains(e.target))closeMobile();
 });
 
-/* ── SCROLL REVEAL ── */
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(el => {
-    if (el.isIntersecting) {
-      el.target.classList.add('visible');
-      observer.unobserve(el.target);
-      /* skill bars */
-      if (el.target.classList.contains('skill-item')) {
-        const bar = el.target.querySelector('.skill-bar');
-        if (bar) bar.style.width = el.target.style.getPropertyValue('--skill-w');
+/* ── SCROLL REVEAL + SKILL BARS ── */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      const bar=e.target.querySelector('.skill-bar');
+      if(bar){
+        const w=e.target.style.getPropertyValue('--w');
+        setTimeout(()=>bar.style.width=w,100);
       }
+      obs.unobserve(e.target);
     }
   });
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
-/* ── ACTIVE NAV HIGHLIGHT ── */
-const sections = document.querySelectorAll('section[id]');
-const navLinks = document.querySelectorAll('.nav-links a:not(.nav-cv)');
-window.addEventListener('scroll', () => {
-  let current = '';
-  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
-  navLinks.forEach(a => {
-    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--navy)' : '';
+/* ── MAGNETIC BTNS ── */
+document.querySelectorAll('.entry-btn,.nav-cv,.contact-link').forEach(btn=>{
+  btn.addEventListener('mousemove',e=>{
+    const r=btn.getBoundingClientRect();
+    const x=(e.clientX-r.left-r.width/2)*.2;
+    const y=(e.clientY-r.top-r.height/2)*.2;
+    btn.style.transform=`translate(${x}px,${y}px)`;
   });
-});
-
-/* ── RUN TRACKER ANIMATION ── */
-const runObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      setTimeout(() => {
-        document.getElementById('runProgress').style.width = '100%';
-        document.getElementById('runRunner').style.left = 'calc(100% - 16px)';
-      }, 400);
-      runObs.disconnect();
-    }
-  });
-}, { threshold: 0.3 });
-const runViz = document.getElementById('runViz');
-if (runViz) runObs.observe(runViz);
-
-/* ── RACE DOTS ANIMATION ── */
-const dotsContainer = document.getElementById('raceDots');
-if (dotsContainer) {
-  const total = 20;
-  for (let i = 0; i < total; i++) {
-    const d = document.createElement('div');
-    d.className = 'race-dot';
-    dotsContainer.appendChild(d);
-  }
-  const dotsObs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        const dots = dotsContainer.querySelectorAll('.race-dot');
-        // light up from last to 4th (position = 4th out of 20)
-        let i = total - 1;
-        const interval = setInterval(() => {
-          if (i >= total - 4) { dots[i].classList.add('on'); }
-          if (--i < total - 4) clearInterval(interval);
-        }, 60);
-        dotsObs.disconnect();
-      }
-    });
-  }, { threshold: 0.3 });
-  dotsObs.observe(dotsContainer);
-}
-
-/* ── MAGNETIC BUTTONS ── */
-document.querySelectorAll('.btn-dark, .btn-outline, .nav-cv').forEach(btn => {
-  btn.addEventListener('mousemove', e => {
-    const r = btn.getBoundingClientRect();
-    const x = (e.clientX - r.left - r.width/2) * .25;
-    const y = (e.clientY - r.top - r.height/2) * .25;
-    btn.style.transform = `translate(${x}px, ${y}px)`;
-  });
-  btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  btn.addEventListener('mouseleave',()=>btn.style.transform='');
 });
 </script>
 </body>
