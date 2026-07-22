@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Training{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('training.static', filename='css/style.css') }}">
+</head>
+<body>
+<nav class="topnav">
+  <div class="brand"><a href="/" class="home-link">← wigbo.nl</a> · 🏃 Training</div>
+  <div class="links">
+    <a href="{{ url_for('training.dashboard') }}" class="{{ 'active' if request.endpoint=='training.dashboard' }}">Dashboard</a>
+    <a href="{{ url_for('training.plan') }}" class="{{ 'active' if request.endpoint=='training.plan' }}">Plan</a>
+  </div>
+</nav>
+
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

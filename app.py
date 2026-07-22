@@ -2,21 +2,17 @@ import os
 import logging
 from flask import Flask, render_template, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from supabase import create_client
+
+# Shared Supabase client (used by this file and by the training blueprint)
+from supabase_client import supabase, SUPABASE_URL, SUPABASE_KEY
 
 app = Flask(__name__, template_folder="templates")
 # secret for Flask session cookies; set SECRET_KEY in production
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret')
 
-# Configure Supabase client using environment variables
-# Set SUPABASE_URL and SUPABASE_SERVICE_KEY (service_role) in your host environment
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-# prefer the secure service role key on the server; fall back to SUPABASE_KEY if set
-SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY") or os.environ.get("SUPABASE_KEY")
-if SUPABASE_URL and SUPABASE_KEY:
-    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-else:
-    supabase = None
+# Training dashboard, mounted at /training
+from training import training_bp
+app.register_blueprint(training_bp, url_prefix="/training")
 
 
 @app.route("/")

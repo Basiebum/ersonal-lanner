@@ -1,0 +1,72 @@
+{% extends "training/base.html" %}
+{% block title %}Plan{% endblock %}
+{% block content %}
+
+<div class="week-header">
+  <a class="nav-arrow" href="{{ url_for('training.plan', offset=offset-1) }}">&larr;</a>
+  <h1>{{ week_start.strftime('%b %d') }} – {{ week_end.strftime('%b %d, %Y') }}</h1>
+  <a class="nav-arrow" href="{{ url_for('training.plan', offset=offset+1) }}">&rarr;</a>
+  {% if offset != 0 %}<a class="today-link" href="{{ url_for('training.plan') }}">today</a>{% endif %}
+</div>
+
+<div class="ai-box">
+  <h3>Change the plan by typing</h3>
+  {% if ai_enabled %}
+  <form method="post" action="{{ url_for('training.plan_ai_edit') }}">
+    <input type="hidden" name="offset" value="{{ offset }}">
+    <input type="text" name="instruction" placeholder="e.g. move Thursday's run to Saturday and make the long run 15k" required>
+    <button type="submit" class="btn-primary">Apply</button>
+  </form>
+  {% else %}
+    <p class="muted">Set ANTHROPIC_API_KEY in your environment to enable this.</p>
+  {% endif %}
+</div>
+
+<h2>Workouts</h2>
+<table class="workout-table">
+  <thead><tr><th>Date</th><th>Sport</th><th>Title</th><th>Distance</th><th>Duration</th><th>Intensity</th><th></th></tr></thead>
+  <tbody>
+  {% for w in workouts %}
+    <tr>
+      <td>{{ w.date.strftime('%a %d') }}</td>
+      <td><span class="sport-tag sport-{{ w.sport }}">{{ w.sport }}</span></td>
+      <td>{{ w.title }}{% if w.notes %}<div class="muted small">{{ w.notes }}</div>{% endif %}</td>
+      <td>{{ w.planned_distance_km or '—' }}</td>
+      <td>{{ w.planned_duration_min or '—' }}</td>
+      <td>{{ w.intensity or '—' }}</td>
+      <td>
+        <form method="post" action="{{ url_for('training.plan_toggle', workout_id=w.id) }}" style="display:inline">
+          <button type="submit" class="btn-icon" title="Toggle done">{{ '✅' if w.completed else '⬜' }}</button>
+        </form>
+        <form method="post" action="{{ url_for('training.plan_delete', workout_id=w.id) }}" style="display:inline" onsubmit="return confirm('Delete this workout?')">
+          <button type="submit" class="btn-icon" title="Delete">🗑</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="7" class="muted">Nothing planned yet this week.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Add a workout</h2>
+<form method="post" action="{{ url_for('training.plan_add') }}" class="add-form">
+  <input type="date" name="date" required value="{{ week_start.isoformat() }}">
+  <select name="sport">
+    <option value="run">Run</option>
+    <option value="bike">Bike</option>
+    <option value="swim">Swim</option>
+    <option value="strength">Strength</option>
+    <option value="walk">Walk</option>
+    <option value="rest">Rest</option>
+    <option value="other">Other</option>
+  </select>
+  <input type="text" name="title" placeholder="Title (e.g. Long run)" required>
+  <input type="number" step="0.1" name="planned_distance_km" placeholder="Distance (km)">
+  <input type="number" name="planned_duration_min" placeholder="Duration (min)">
+  <input type="text" name="intensity" placeholder="Intensity (easy/tempo/...)">
+  <input type="text" name="notes" placeholder="Notes">
+  <button type="submit" class="btn-primary">Add</button>
+</form>
+
+{% endblock %}

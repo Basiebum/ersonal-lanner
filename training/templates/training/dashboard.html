@@ -1,0 +1,100 @@
+{% extends "training/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="week-header">
+  <a class="nav-arrow" href="{{ url_for('training.dashboard', offset=offset-1) }}">&larr;</a>
+  <h1>{{ week_start.strftime('%b %d') }} – {{ week_end.strftime('%b %d, %Y') }}</h1>
+  <a class="nav-arrow" href="{{ url_for('training.dashboard', offset=offset+1) }}">&rarr;</a>
+  {% if offset != 0 %}<a class="today-link" href="{{ url_for('training.dashboard') }}">today</a>{% endif %}
+</div>
+
+<div class="strava-bar">
+  {% if strava_connected %}
+    <form method="post" action="{{ url_for('training.strava_sync') }}" style="display:inline">
+      <button type="submit" class="btn-secondary">↻ Sync Strava</button>
+    </form>
+    <span class="muted">Strava connected</span>
+  {% else %}
+    <a href="{{ url_for('training.strava_connect') }}" class="btn-primary">Connect Strava</a>
+  {% endif %}
+</div>
+
+<div class="stat-cards">
+  <div class="card">
+    <div class="stat-label">Distance</div>
+    <div class="stat-value">{{ actual_km }} <span class="muted">/ {{ planned_km }} km</span></div>
+    <div class="bar"><div class="bar-fill" style="width: {{ ([100, (actual_km / planned_km * 100) if planned_km else 0] | min) }}%"></div></div>
+  </div>
+  <div class="card">
+    <div class="stat-label">Duration</div>
+    <div class="stat-value">{{ actual_min }} <span class="muted">/ {{ planned_min }} min</span></div>
+    <div class="bar"><div class="bar-fill" style="width: {{ ([100, (actual_min / planned_min * 100) if planned_min else 0] | min) }}%"></div></div>
+  </div>
+  <div class="card">
+    <div class="stat-label">Sessions</div>
+    <div class="stat-value">{{ activities|length }} <span class="muted">/ {{ planned|length }}</span></div>
+  </div>
+</div>
+
+<h2>This week</h2>
+<table class="workout-table">
+  <thead><tr><th>Date</th><th>Planned</th><th>Actual</th><th></th></tr></thead>
+  <tbody>
+  {% for w in planned %}
+    <tr>
+      <td>{{ w.date.strftime('%a %d') }}</td>
+      <td>
+        <span class="sport-tag sport-{{ w.sport }}">{{ w.sport }}</span>
+        {{ w.title }}
+        {% if w.planned_distance_km %} — {{ w.planned_distance_km }} km{% endif %}
+        {% if w.intensity %} <span class="muted">({{ w.intensity }})</span>{% endif %}
+      </td>
+      <td>
+        {% set match = activities | selectattr('date', 'equalto', w.date) | list %}
+        {% if match %}
+          {% for a in match %}
+            <div class="actual-chip">{{ a.distance_km }} km · {{ a.duration_min|round|int }} min{% if a.avg_hr %} · {{ a.avg_hr|round|int }} bpm{% endif %}</div>
+          {% endfor %}
+        {% else %}
+          <span class="muted">—</span>
+        {% endif %}
+      </td>
+      <td>{% if w.completed %}✅{% endif %}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="4" class="muted">No planned workouts this week. <a href="{{ url_for('training.plan') }}">Add some →</a></td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Trends (last 12 weeks)</h2>
+<canvas id="trendChart" height="90"></canvas>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script>
+fetch("{{ url_for('training.api_trend') }}")
+  .then(r => r.json())
+  .then(data => {
+    new Chart(document.getElementById('trendChart'), {
+      type: 'bar',
+      data: {
+        labels: data.map(d => d.label),
+        datasets: [{
+          label: 'Distance (km)',
+          data: data.map(d => d.distance_km),
+          backgroundColor: '#4f6df5'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  });
+</script>
+{% endblock %}

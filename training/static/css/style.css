@@ -1,0 +1,170 @@
+:root {
+  --bg: #0f1117;
+  --card: #171a23;
+  --border: #262b38;
+  --text: #e7e9ee;
+  --muted: #8b90a0;
+  --accent: #4f6df5;
+  --accent-2: #2fd48c;
+  --danger: #f16b6b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.topnav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand { font-weight: 700; font-size: 1.1rem; }
+.home-link { color: var(--muted); text-decoration: none; margin-right: 6px; }
+.home-link:hover { color: var(--text); }
+
+.links a {
+  color: var(--muted);
+  text-decoration: none;
+  margin-left: 24px;
+  font-weight: 500;
+}
+
+.links a.active, .links a:hover { color: var(--text); }
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+}
+
+.week-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.week-header h1 { font-size: 1.3rem; margin: 0; flex: 1; text-align: center; }
+
+.nav-arrow {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 1.2rem;
+  padding: 4px 10px;
+}
+.nav-arrow:hover { color: var(--text); }
+
+.today-link { color: var(--accent); text-decoration: none; font-size: 0.85rem; }
+
+.strava-bar { margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+
+.btn-primary, .btn-secondary {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.btn-secondary { background: var(--card); border: 1px solid var(--border); color: var(--text); }
+.btn-icon { background: none; border: none; cursor: pointer; font-size: 1rem; }
+
+.stat-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.stat-label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.stat-value { font-size: 1.5rem; font-weight: 700; margin-top: 4px; }
+.muted { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
+.small { font-size: 0.78rem; }
+
+.bar { background: #232838; border-radius: 6px; height: 6px; margin-top: 10px; overflow: hidden; }
+.bar-fill { background: var(--accent-2); height: 100%; }
+
+table.workout-table { width: 100%; border-collapse: collapse; margin-bottom: 28px; }
+.workout-table th, .workout-table td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.workout-table th { color: var(--muted); font-weight: 500; font-size: 0.8rem; text-transform: uppercase; }
+
+.sport-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: #232838;
+  color: var(--muted);
+  margin-right: 6px;
+}
+.sport-run { background: #2a2140; color: #b79cf7; }
+.sport-bike { background: #142a3a; color: #6fc3f0; }
+.sport-swim { background: #0f2e2a; color: #4fd6c0; }
+.sport-strength { background: #351a1a; color: #f0937f; }
+.sport-rest { background: #1e222e; color: var(--muted); }
+
+.actual-chip {
+  display: inline-block;
+  background: #142a1f;
+  color: var(--accent-2);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+}
+
+.ai-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 28px;
+}
+.ai-box h3 { margin: 0 0 10px; font-size: 0.95rem; }
+.ai-box form { display: flex; gap: 8px; }
+.ai-box input[type=text] {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #0f1117;
+  color: var(--text);
+}
+
+.add-form { display: flex; flex-wrap: wrap; gap: 8px; }
+.add-form input, .add-form select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+}
+.add-form input[type=text] { flex: 1; min-width: 140px; }
+
+.flash {
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+.flash-success { background: #142a1f; color: var(--accent-2); }
+.flash-error { background: #351a1a; color: var(--danger); }
