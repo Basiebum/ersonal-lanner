@@ -8,13 +8,11 @@ from flask import (
 
 from . import training_bp
 from . import strava as strava_client
-from . import ai_edit
 from supabase_client import supabase
 
 STRAVA_CLIENT_ID = os.environ.get("STRAVA_CLIENT_ID")
 STRAVA_CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET")
 STRAVA_REDIRECT_URI = os.environ.get("STRAVA_REDIRECT_URI")
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 
 
 def login_required(f):
@@ -98,7 +96,6 @@ def dashboard():
         actual_min=round(actual_min, 1),
         trend_weeks=trend_weeks,
         strava_connected=strava_connected,
-        ai_enabled=bool(ANTHROPIC_API_KEY),
     )
 
 
@@ -119,7 +116,6 @@ def plan():
         week_start=week_start,
         week_end=week_end,
         offset=offset,
-        ai_enabled=bool(ANTHROPIC_API_KEY),
     )
 
 
@@ -159,31 +155,6 @@ def plan_toggle(workout_id):
         current = res.data[0].get("completed", False)
         supabase.table("planned_workouts").update({"completed": not current}).eq("id", workout_id).eq("user_id", user_id).execute()
     return redirect(url_for("training.plan"))
-
-
-@training_bp.route("/plan/ai-edit", methods=["POST"])
-@login_required
-def plan_ai_edit():
-    user_id = session["user_id"]
-    instruction = request.form.get("instruction", "").strip()
-    offset = int(request.form.get("offset", 0))
-    today = date.today()
-    week_start, week_end = get_week_bounds(today + timedelta(weeks=offset))
-
-    if not ANTHROPIC_API_KEY:
-        flash("AI editing isn't configured. Add ANTHROPIC_API_KEY to your environment.", "error")
-        return redirect(url_for("training.plan", offset=offset))
-
-    if not instruction:
-        return redirect(url_for("training.plan", offset=offset))
-
-    try:
-        summary = ai_edit.apply_ai_edit(supabase, user_id, instruction, week_start, week_end, ANTHROPIC_API_KEY)
-        flash(summary, "success")
-    except Exception as e:
-        flash(f"Couldn't apply that change: {e}", "error")
-
-    return redirect(url_for("training.plan", offset=offset))
 
 
 @training_bp.route("/strava/connect")

@@ -13,7 +13,6 @@ training/                # NEW — the whole training dashboard, as a blueprint
   __init__.py
   routes.py
   strava.py
-  ai_edit.py
   templates/training/    # namespaced so it won't clash with your templates/
   static/css/             # served at /training/static/css/...
 ```
@@ -66,7 +65,6 @@ Render (Dashboard → your service → Environment):
 STRAVA_CLIENT_ID=...
 STRAVA_CLIENT_SECRET=...
 STRAVA_REDIRECT_URI=https://wigbo.nl/training/strava/callback
-ANTHROPIC_API_KEY=...          # optional, enables the AI plan editor
 ```
 
 Get Strava credentials at https://www.strava.com/settings/api — set
@@ -78,7 +76,6 @@ Add these lines to your existing `requirements.txt` if not already present:
 
 ```
 requests
-anthropic
 ```
 
 (`flask`, `supabase`, `werkzeug`, `gunicorn` you already have.)

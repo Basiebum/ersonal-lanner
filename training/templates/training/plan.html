@@ -9,19 +9,6 @@
   {% if offset != 0 %}<a class="today-link" href="{{ url_for('training.plan') }}">today</a>{% endif %}
 </div>
 
-<div class="ai-box">
-  <h3>Change the plan by typing</h3>
-  {% if ai_enabled %}
-  <form method="post" action="{{ url_for('training.plan_ai_edit') }}">
-    <input type="hidden" name="offset" value="{{ offset }}">
-    <input type="text" name="instruction" placeholder="e.g. move Thursday's run to Saturday and make the long run 15k" required>
-    <button type="submit" class="btn-primary">Apply</button>
-  </form>
-  {% else %}
-    <p class="muted">Set ANTHROPIC_API_KEY in your environment to enable this.</p>
-  {% endif %}
-</div>
-
 <h2>Workouts</h2>
 <table class="workout-table">
   <thead><tr><th>Date</th><th>Sport</th><th>Title</th><th>Distance</th><th>Duration</th><th>Intensity</th><th></th></tr></thead>

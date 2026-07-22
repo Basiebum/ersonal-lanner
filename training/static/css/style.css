@@ -132,24 +132,6 @@ table.workout-table { width: 100%; border-collapse: collapse; margin-bottom: 28p
   margin-bottom: 2px;
 }
 
-.ai-box {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 18px;
-  margin-bottom: 28px;
-}
-.ai-box h3 { margin: 0 0 10px; font-size: 0.95rem; }
-.ai-box form { display: flex; gap: 8px; }
-.ai-box input[type=text] {
-  flex: 1;
-  padding: 9px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: #0f1117;
-  color: var(--text);
-}
-
 .add-form { display: flex; flex-wrap: wrap; gap: 8px; }
 .add-form input, .add-form select {
   padding: 8px 10px;
