@@ -19,4 +19,4 @@ Deployed on Render with `gunicorn app:app` (see `Procfile`). No environment vari
 ## Archive
 
 The earlier version with the planner, login and training dashboard is preserved
-under the git tag `archive/full-app-2026-10-01`.
+on the branch `archive/full-app-2026-10-01`.
